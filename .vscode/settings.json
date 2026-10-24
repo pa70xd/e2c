@@ -1,0 +1,8 @@
+{
+    "files.exclude": {
+        "**/__pycache__": true,
+        "**/*.pyc": true
+    },
+    "github.copilot.chat.codesearch.enabled": true,
+    "postman.settings.dotenv-detection-notification-visibility": false
+}

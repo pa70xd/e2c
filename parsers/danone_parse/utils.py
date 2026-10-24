@@ -1,0 +1,239 @@
+from config.config_general.stopwords import STOPWORDS
+from config.customers.danone.movimientos_danone import MOVEMENTS,CREATE_REQUESTS,IGNORE_REQUESTS
+from config.customers.danone.columns_names import (
+    COL_FILA_ORIGINAL,
+    COL_HASH_ORIGINAL,
+)
+
+import hashlib
+import re
+import unicodedata
+from pathlib import Path
+from bs4 import BeautifulSoup
+from openpyxl import load_workbook
+from openpyxl.comments import Comment
+from openpyxl.styles import PatternFill
+import pandas as pd
+import base64
+
+class DANONE_UTILS:
+
+
+    @staticmethod
+    def analizar_proposito(html,asunto) -> bool:
+        has_request = False
+        has_movement = False
+
+        text = DANONE_UTILS.convertir_html_a_texto(html)
+        text = (f"{text.lower()} {asunto.lower()}")
+
+        print(f"[TEXT] asunto: {text}")
+
+
+        if any(re.search(pattern, text) for pattern in IGNORE_REQUESTS):
+            return False
+
+        has_request = any(
+            re.search(pattern, text)
+            for pattern in CREATE_REQUESTS
+        )
+
+        # print(f"[PROPOSITO] is request: {has_request}")
+
+        has_movement = any(
+            re.search(pattern, text)
+            for pattern in MOVEMENTS
+        )
+
+        # print(f"[PROPOSITO] is movement: {has_movement}")
+
+        result = has_request or has_movement
+
+        return result
+
+    @staticmethod
+    def convertir_html_a_texto(html: str) -> str:
+        texto = BeautifulSoup(html, "html.parser").get_text(separator="\n")
+        texto = DANONE_UTILS.normalizar_texto(texto)
+        texto = DANONE_UTILS.eliminar_stopwords(texto)
+        return texto
+
+    @staticmethod
+    def eliminar_stopwords(texto: str) -> str:
+        texto = texto.lower()
+        texto = re.sub(r"[^\w\s]", " ", texto)
+        palabras = texto.split()
+        palabras = [p for p in palabras if p not in STOPWORDS]
+        return " ".join(palabras)
+
+    @staticmethod
+    def normalizar_texto(texto: str) -> str:
+        if not texto:
+            return ""
+
+        texto = texto.lower()
+        texto = unicodedata.normalize("NFD", texto)
+        texto = "".join(
+            c for c in texto
+            if unicodedata.category(c) != "Mn"
+        )
+        texto = re.sub(r"[^\w\s]", " ", texto)
+        texto = re.sub(r"\s+", " ", texto)
+
+        return texto.strip()
+
+    @staticmethod
+    def unir_tablas(tables: list[dict], duck_conn) -> str:
+        if not tables:
+            return None
+
+        tabla_destino = tables[0]["table"]
+
+        # Obtener columnas de la primera tabla
+        columnas = duck_conn.execute(f"""
+            SELECT column_name
+            FROM information_schema.columns
+            WHERE table_name = '{tabla_destino}'
+            ORDER BY ordinal_position
+        """).fetchall()
+
+        columnas = [c[0] for c in columnas]
+
+        selects = [f'SELECT * FROM "{tabla_destino}"']
+
+        for tabla in tables[1:]:
+            nombre = tabla["table"]
+
+            cols = duck_conn.execute(f"""
+                SELECT column_name
+                FROM information_schema.columns
+                WHERE table_name = '{nombre}'
+                ORDER BY ordinal_position
+            """).fetchall()
+
+            cols = [c[0] for c in cols]
+
+            # Si la estructura cambia, regresar la primera tabla sin modificar
+            if cols != columnas:
+                return tabla_destino
+
+            selects.append(f'SELECT * FROM "{nombre}"')
+
+        union_sql = "\nUNION ALL\n".join(selects)
+
+        duck_conn.execute(f"""
+            CREATE OR REPLACE TABLE "{tabla_destino}" AS
+            {union_sql}
+        """)
+
+        return tabla_destino
+
+    @staticmethod
+    def sql_list(values):
+        return ", ".join(f"'{v}'" for v in values)
+
+    
+    def distinct_type_service(self,table,duckConn):
+
+        type_services = [
+            row[0]
+            for row in duckConn.execute(
+                f'''
+                SELECT DISTINCT "TIPO DE SERVICIO"
+                FROM {table}
+                '''
+            ).fetchall()
+        ]
+
+
+        return type_services
+
+    @staticmethod
+    def safe_filename(subject, sender, received):
+        subject = subject.strip()
+
+        subject = re.sub(r"\.[A-Za-z0-9]{1,5}$", "", subject, flags=re.IGNORECASE)
+        subject = re.sub(r'[<>:"/\\|?*]', "", subject)
+        subject = re.sub(r"\s+", " ", subject).strip()
+
+        sender = sender.replace("<", "").replace(">", "").strip()
+
+        received = received.strftime("%Y-%m-%d %H-%M")
+
+        return f"{subject} - {sender} - {received}"
+
+    @staticmethod
+    def mark_rejected_original_files(duck_conn, temporary_files):
+        rows = duck_conn.execute(f"""
+            SELECT "{COL_HASH_ORIGINAL}", "{COL_FILA_ORIGINAL}", "OS"
+            FROM solicitudes_rechazadas
+            WHERE "{COL_HASH_ORIGINAL}" IS NOT NULL
+        """).fetchall()
+
+        rejected_by_file = {}
+        for file_hash, row_number, reason in rows:
+            rejected_by_file.setdefault(str(file_hash), {})[
+                int(row_number)
+            ] = reason
+
+        if not rejected_by_file:
+            return
+
+        fill = PatternFill(fill_type="solid", fgColor="FFFF00")
+        for _, file_path in temporary_files:
+            path = Path(file_path)
+            if path.suffix.lower() != ".xlsx":
+                print(
+                    f"[WARN] No se pueden pintar filas en {path.name}; "
+                    "solo se admite formato .xlsx"
+                )
+                continue
+
+            workbook = None
+            try:
+                file_hash = hashlib.sha256(path.read_bytes()).hexdigest()
+                rejected_rows = rejected_by_file.get(file_hash, {})
+                if not rejected_rows:
+                    continue
+
+                workbook = load_workbook(path)
+                worksheet = next(
+                    (
+                        sheet
+                        for sheet in workbook.worksheets
+                        if sheet.sheet_state == "visible"
+                    ),
+                    workbook.active,
+                )
+                motivo_column = worksheet.max_column + 1
+                worksheet.cell(
+                    row=1,
+                    column=motivo_column,
+                    value="OS",
+                )
+
+                for row_number, reason in rejected_rows.items():
+                    for cell in worksheet[row_number]:
+                        cell.fill = fill
+                    if reason:
+                        worksheet.cell(
+                            row=row_number,
+                            column=motivo_column,
+                            value=str(reason),
+                        )
+                        worksheet.cell(
+                            row=row_number,
+                            column=1,
+                        ).comment = Comment(str(reason), "REPARE")
+
+                workbook.save(path)
+            except Exception as error:
+                print(
+                    f"[WARN] No se pudo marcar el Excel original "
+                    f"{path.name}: {error}"
+                )
+            finally:
+                if workbook is not None:
+                    workbook.close()
+
+

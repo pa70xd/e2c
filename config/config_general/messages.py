@@ -1,0 +1,1111 @@
+#mensaje inicial de apertura
+class MENSAJES_REPARE:
+
+    def msj_send_presabana(self, folio: str, url: str):
+        return f"""
+        <div style="
+            font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Monaco,
+                        Consolas, 'Liberation Mono', 'Courier New', monospace;
+            max-width: 680px;
+            color: #24292f;
+            font-size: 14px;
+            line-height: 1.6;
+        ">
+
+            <p style="font-size: 15px; margin-bottom: 20px;">
+                🤖 Estimado usuario REPARE,
+            </p>
+
+            <div style="
+                border: 1px solid #d0d7de;
+                border-radius: 6px;
+                padding: 20px;
+                background: #f6f8fa;
+            ">
+
+                <div style="
+                    font-size: 14px;
+                    font-weight: bold;
+                    margin-bottom: 12px;
+                ">
+                    REQUEST RECEIVED
+                </div>
+
+                <div style="color: #57606a;">
+                    Hemos recibido su solicitud y ha iniciado
+                    el <b>proceso de validación</b>.
+                </div>
+
+            </div>
+
+            <div style="
+                margin-top: 18px;
+                padding: 14px 16px;
+                border: 1px solid #d0d7de;
+                border-radius: 6px;
+                background: #ffffff;
+            ">
+
+                <div style="
+                    font-size: 12px;
+                    color: #57606a;
+                    margin-bottom: 5px;
+                ">
+                    FOLIO
+                </div>
+
+                <div style="
+                    font-size: 18px;
+                    font-weight: bold;
+                    letter-spacing: 1px;
+                ">
+                    {folio}
+                </div>
+
+            </div>
+
+            <p style="
+                color: #57606a;
+                margin-top: 18px;
+            ">
+                Se adjunta la <b>pre-sábana</b> correspondiente a su solicitud.
+            </p>
+
+        </div>
+        """
+
+
+
+#----------------------------------------------------nuevo mensaje
+    def formato_desconocido(self):
+        return """
+        <div style="
+            font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Monaco,
+                        Consolas, 'Liberation Mono', 'Courier New', monospace;
+            max-width: 680px;
+            color: #24292f;
+            font-size: 14px;
+            line-height: 1.6;
+        ">
+
+            <p style="font-size: 15px; margin-bottom: 20px;">
+         
+            🤖 Estimado usuario REPARE,
+            </p>
+
+            <div style="
+                border: 1px solid #d0d7de;
+                border-radius: 6px;
+                padding: 20px;
+                background: #f6f8fa;
+            ">
+
+                <div style="
+                    font-size: 14px;
+                    font-weight: bold;
+                    margin-bottom: 12px;
+                ">
+                    REQUEST FAILED
+                </div>
+
+                <div style="color: #57606a;">
+                    El archivo recibido presenta un
+                    <b>formato desconocido o no compatible</b>.
+                </div>
+
+            </div>
+
+            <p style="
+                color: #57606a;
+                margin-top: 18px;
+            ">
+                Verifique el formato del archivo y envíe nuevamente
+                la solicitud utilizando un archivo compatible.
+            </p>
+
+            <div style="
+                margin-top: 20px;
+                padding: 10px 12px;
+                border-left: 3px solid #d0d7de;
+                color: #57606a;
+                font-size: 12px;
+            ">
+                STATUS&nbsp;&nbsp;=&nbsp;&nbsp;<code>ERROR</code><br>
+                CODE&nbsp;&nbsp;&nbsp;=&nbsp;&nbsp;<code>archivo adjuntos</code>
+            </div>
+
+        </div>
+        """
+#==================================================================================
+
+
+    def msj_apertura(self, folio: str, url: str):
+        return f"""
+        <div style="
+            font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Monaco,
+                        Consolas, 'Liberation Mono', 'Courier New', monospace;
+            max-width: 680px;
+            color: #24292f;
+            font-size: 14px;
+            line-height: 1.6;
+        ">
+
+            <p style="font-size: 15px; margin-bottom: 20px;">
+                🤖 Estimado usuario REPARE,
+            </p>
+
+            <div style="
+                border: 1px solid #d0d7de;
+                border-radius: 6px;
+                padding: 20px;
+                background: #f6f8fa;
+            ">
+
+                <div style="
+                    font-size: 14px;
+                    font-weight: bold;
+                    margin-bottom: 12px;
+                ">
+                    REQUEST RECEIVED
+                </div>
+
+                <div style="color: #57606a;">
+                    Se ha recibido una nueva solicitud y ha iniciado
+                    el <b>proceso de validación</b>.
+                </div>
+
+            </div>
+
+            <div style="
+                margin-top: 18px;
+                padding: 14px 16px;
+                border: 1px solid #d0d7de;
+                border-radius: 6px;
+                background: #ffffff;
+            ">
+
+                <div style="
+                    font-size: 12px;
+                    color: #57606a;
+                    margin-bottom: 5px;
+                ">
+                    FOLIO
+                </div>
+
+                <div style="
+                    font-size: 18px;
+                    font-weight: bold;
+                    letter-spacing: 1px;
+                ">
+                    {folio}
+                </div>
+
+            </div>
+
+            <p style="
+                color: #57606a;
+                margin-top: 18px;
+            ">
+                En breve recibirá la <b>sábana inicial</b> para su revisión
+                y complemento de información.
+            </p>
+
+        </div>
+        """
+
+
+
+
+    def msj_add_cliente(self, folio: str, url: str):
+        return f"""
+        <div style="
+            font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Monaco,
+                        Consolas, 'Liberation Mono', 'Courier New', monospace;
+            max-width: 680px;
+            color: #24292f;
+            font-size: 14px;
+            line-height: 1.6;
+        ">
+
+            <p style="font-size: 15px; margin-bottom: 20px;">
+                🤖 Estimado usuario REPARE,
+            </p>
+
+            <div style="
+                border: 1px solid #d0d7de;
+                border-radius: 6px;
+                padding: 20px;
+                background: #f6f8fa;
+            ">
+
+                <div style="
+                    font-size: 14px;
+                    font-weight: bold;
+                    margin-bottom: 12px;
+                ">
+                    REQUEST UPDATED
+                </div>
+
+                <div style="color: #57606a;">
+                    Se ha detectado una nueva solicitud o actualización
+                    y se ha generado la <b>pre-sábana</b> correspondiente.
+                </div>
+
+            </div>
+
+            <div style="
+                margin-top: 18px;
+                padding: 14px 16px;
+                border: 1px solid #d0d7de;
+                border-radius: 6px;
+                background: #ffffff;
+            ">
+
+                <div style="
+                    font-size: 12px;
+                    color: #57606a;
+                    margin-bottom: 5px;
+                ">
+                    FOLIO
+                </div>
+
+                <div style="
+                    font-size: 18px;
+                    font-weight: bold;
+                    letter-spacing: 1px;
+                ">
+                    {folio}
+                </div>
+
+            </div>
+
+        </div>
+        """
+
+
+
+    def msj_fail(self, folio, url):
+        return f"""
+        <div style="
+            font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Monaco,
+                        Consolas, 'Liberation Mono', 'Courier New', monospace;
+            max-width: 680px;
+            color: #24292f;
+            font-size: 14px;
+            line-height: 1.6;
+        ">
+
+            <p style="font-size: 15px; margin-bottom: 20px;">
+                🤖 Estimado usuario REPARE,
+            </p>
+
+            <div style="
+                border: 1px solid #d0d7de;
+                border-radius: 6px;
+                padding: 20px;
+                background: #f6f8fa;
+            ">
+
+                <div style="
+                    font-size: 14px;
+                    font-weight: bold;
+                    margin-bottom: 12px;
+                ">
+                    DOCUMENT READY
+                </div>
+
+                <div style="color: #57606a;">
+                    La información preliminar de la solicitud
+                    <b>{folio}</b> está disponible para su revisión.
+                </div>
+
+            </div>
+
+
+        </div>
+        """
+
+
+
+
+    def msj_fail(self):
+        return """
+        <html>
+        <body style="font-family:Segoe UI,Arial,sans-serif;font-size:14px;color:#333;">
+            <p><b>🤖 Estimado usuario REPARE,</b></p>
+
+            <p>No fue posible preparar el archivo solicitado.</p>
+        </body>
+        </html>
+        """
+
+
+    
+
+    def msj_respuesta(self, type_reply):
+        return f"""
+        <div style="
+            font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Monaco,
+                        Consolas, 'Liberation Mono', 'Courier New', monospace;
+            max-width: 680px;
+            color: #24292f;
+            font-size: 14px;
+            line-height: 1.6;
+        ">
+
+            <p style="font-size: 15px; margin-bottom: 20px;">
+                🤖 Estimado usuario REPARE,
+            </p>
+
+            <div style="
+                border: 1px solid #d0d7de;
+                border-radius: 6px;
+                padding: 20px;
+                background: #f6f8fa;
+            ">
+
+                <div style="
+                    font-size: 14px;
+                    font-weight: bold;
+                    margin-bottom: 12px;
+                ">
+                    RESPONSE RECEIVED
+                </div>
+
+                <div style="color: #57606a;">
+                    Se detectó una respuesta:
+                    <b>{type_reply}</b>
+                </div>
+
+            </div>
+
+        </div>
+        """
+
+
+
+
+    def msj_reply_update_coolers(self, type_reply):
+        return f"""
+        <div style="
+            font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Monaco,
+                        Consolas, 'Liberation Mono', 'Courier New', monospace;
+            max-width: 680px;
+            color: #24292f;
+            font-size: 14px;
+            line-height: 1.6;
+        ">
+
+            <p style="font-size: 15px; margin-bottom: 20px;">
+                🤖 Estimado usuario REPARE,
+            </p>
+
+            <div style="
+                border: 1px solid #d0d7de;
+                border-radius: 6px;
+                padding: 20px;
+                background: #f6f8fa;
+            ">
+
+                <div style="
+                    font-size: 14px;
+                    font-weight: bold;
+                    margin-bottom: 12px;
+                ">
+                    REQUEST UPDATED
+                </div>
+
+                <div style="color: #57606a;">
+                    Se detectaron cambios en la solicitud:
+                    <b>{type_reply}</b>
+                </div>
+
+            </div>
+
+        </div>
+        """
+
+
+
+
+    def msj_reply_add_customer_cooler(self,folio: str, url: str):
+        return f"""
+        <p>🤖 Estimado usuario REPARE,</p>
+        <p>
+            <b>Folio asignado:</b>
+            <span style="color:#0B5ED7;font-weight:bold;text-decoration:underline;">
+                {folio}
+            </span>
+        </p>
+
+        <p>
+            Se adjuntan la <b>solicitud</b> y la <b>pre-sábana</b> actualizadas.
+        </p>
+
+        """
+
+
+
+
+
+    def msj_ayuda(self):
+        return """
+        <div style="
+            font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Monaco,
+                        Consolas, 'Liberation Mono', 'Courier New', monospace;
+            max-width: 680px;
+            color: #24292f;
+            font-size: 14px;
+            line-height: 1.6;
+        ">
+
+            <p style="font-size: 15px; margin-bottom: 20px;">
+                🤖 Estimado usuario REPARE,
+            </p>
+
+            <div style="
+                border: 1px solid #d0d7de;
+                border-radius: 6px;
+                padding: 20px;
+                background: #f6f8fa;
+            ">
+
+                <div style="
+                    font-size: 14px;
+                    font-weight: bold;
+                    margin-bottom: 16px;
+                ">
+                    AVAILABLE COMMANDS
+                </div>
+
+                <div style="color: #57606a;">
+
+                    <b>[bot.help]</b><br>
+                    Consulta los comandos disponibles.<br><br>
+
+                    <b>[bot.estatus]</b><br>
+                    Consulta el estatus actual de una solicitud.<br><br>
+
+                    <b>[bot.cancelar]</b><br>
+                    Solicita la cancelación de una solicitud.<br><br>
+
+                    <b>[bot.finalizar]</b><br>
+                    Solicita la finalización de una solicitud.<br><br>
+
+                    <b>[bot.global]</b><br>
+                    Solicita el documento con el estatus global de solicitudes.
+
+                </div>
+
+            </div>
+
+            <p style="
+                color: #57606a;
+                margin-top: 18px;
+            ">
+                <b>Importante:</b> Responde únicamente al correo del bot
+                para ejecutar los comandos.
+            </p>
+
+        </div>
+        """
+
+
+    def msj_cancelar(self, request_code):
+        return f"""
+        <div style="
+            font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Monaco,
+                        Consolas, 'Liberation Mono', 'Courier New', monospace;
+            max-width: 680px;
+            color: #24292f;
+            font-size: 14px;
+            line-height: 1.6;
+        ">
+
+            <p style="font-size: 15px; margin-bottom: 20px;">
+                🤖 Estimado usuario REPARE,
+            </p>
+
+            <div style="
+                border: 1px solid #d0d7de;
+                border-radius: 6px;
+                padding: 20px;
+                background: #f6f8fa;
+            ">
+
+                <div style="
+                    font-size: 14px;
+                    font-weight: bold;
+                    margin-bottom: 12px;
+                ">
+                    REQUEST CANCELLED
+                </div>
+
+                <div style="color: #57606a;">
+                    La solicitud <b>{request_code}</b> fue
+                    <b>cancelada correctamente</b>.
+                </div>
+
+            </div>
+
+            <p style="
+                color: #57606a;
+                margin-top: 18px;
+            ">
+                La solicitud ya no continuará con su procesamiento.
+            </p>
+
+            <p style="color: #57606a;">
+                Si necesita generar una nueva solicitud, puede responder
+                nuevamente al correo del bot.
+            </p>
+
+        </div>
+        """
+
+
+
+    def msj_finalizar(self, request_code):
+        return f"""
+        <div style="
+            font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Monaco,
+                        Consolas, 'Liberation Mono', 'Courier New', monospace;
+            max-width: 680px;
+            color: #24292f;
+            font-size: 14px;
+            line-height: 1.6;
+        ">
+
+            <p style="font-size: 15px; margin-bottom: 20px;">
+                🤖 Estimado usuario REPARE,
+            </p>
+
+            <div style="
+                border: 1px solid #d0d7de;
+                border-radius: 6px;
+                padding: 20px;
+                background: #f6f8fa;
+            ">
+
+                <div style="
+                    font-size: 14px;
+                    font-weight: bold;
+                    margin-bottom: 12px;
+                ">
+                    REQUEST COMPLETED
+                </div>
+
+                <div style="color: #57606a;">
+                    La solicitud <b>{request_code}</b> fue
+                    <b>finalizada correctamente</b>.
+                </div>
+
+            </div>
+
+        </div>
+        """
+
+
+
+    def msj_solicitud_completa(
+        self,
+        folio: str,
+        url: str,
+    ):
+        return f"""
+        <div style="
+            font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Monaco,
+                        Consolas, 'Liberation Mono', 'Courier New', monospace;
+            max-width: 680px;
+            color: #24292f;
+            font-size: 14px;
+            line-height: 1.6;
+        ">
+
+            <p style="font-size: 15px; margin-bottom: 20px;">
+                🤖 Estimado usuario REPARE,
+            </p>
+
+            <div style="
+                border: 1px solid #d0d7de;
+                border-radius: 6px;
+                padding: 20px;
+                background: #f6f8fa;
+            ">
+
+                <div style="
+                    font-size: 14px;
+                    font-weight: bold;
+                    margin-bottom: 12px;
+                ">
+                    REQUEST COMPLETED
+                </div>
+
+                <div style="color: #57606a;">
+                    La solicitud <b>{folio}</b> ha sido
+                    <b>finalizada correctamente</b>.
+                </div>
+
+            </div>
+
+            <p style="
+                color: #57606a;
+                margin-top: 18px;
+            ">
+                Las <b>OS correspondientes</b> han sido asignadas
+                a los equipos procesados.
+            </p>
+
+        </div>
+        """
+
+ 
+    def msj_solicitud_completa_esc1(
+        self,
+        folio: str,
+        url: str,
+        total: int,
+        con_os: int,
+        sin_os: int,
+    ):
+        return f"""
+        <div style="
+            font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Monaco,
+                        Consolas, 'Liberation Mono', 'Courier New', monospace;
+            max-width: 680px;
+            color: #24292f;
+            font-size: 14px;
+            line-height: 1.6;
+        ">
+
+            <p style="font-size: 15px; margin-bottom: 20px;">
+                🤖 Estimado usuario REPARE,
+            </p>
+
+            <div style="
+                border: 1px solid #d0d7de;
+                border-radius: 6px;
+                padding: 20px;
+                background: #f6f8fa;
+            ">
+
+                <div style="
+                    font-size: 14px;
+                    font-weight: bold;
+                    margin-bottom: 12px;
+                ">
+                    REQUEST COMPLETED
+                </div>
+
+                <div style="color: #57606a;">
+                    La solicitud <b>{folio}</b> ha sido
+                    <b>finalizada correctamente</b>.
+                </div>
+
+            </div>
+
+            <div style="
+                margin-top: 18px;
+                border: 1px solid #d0d7de;
+                border-radius: 6px;
+                padding: 14px 16px;
+                background: #ffffff;
+            ">
+
+                <div style="
+                    font-size: 12px;
+                    color: #57606a;
+                    margin-bottom: 8px;
+                ">
+                    RESUMEN
+                </div>
+
+                <div style="color: #57606a;">
+                    <b>{total}</b> equipos procesados<br>
+                    <b>{con_os}</b> equipos con OS asignada<br>
+                    <b>{sin_os}</b> equipos sin OS asignada
+                </div>
+
+            </div>
+
+        </div>
+        """
+
+
+
+    
+    def msj_cambios(
+        self,
+        folio: str,
+        url: str,
+        total: int,
+        con_os: int,
+        sin_os: int,
+        desconocidos: int,
+    ):
+        return f"""
+        <div style="
+            font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Monaco,
+                        Consolas, 'Liberation Mono', 'Courier New', monospace;
+            max-width: 680px;
+            color: #24292f;
+            font-size: 14px;
+            line-height: 1.6;
+        ">
+
+            <p style="font-size: 15px; margin-bottom: 20px;">
+                🤖 Estimado usuario REPARE,
+            </p>
+
+            <div style="
+                border: 1px solid #d0d7de;
+                border-radius: 6px;
+                padding: 20px;
+                background: #f6f8fa;
+            ">
+
+                <div style="
+                    font-size: 14px;
+                    font-weight: bold;
+                    margin-bottom: 12px;
+                ">
+                    CHANGES APPLIED
+                </div>
+
+                <div style="color: #57606a;">
+                    Los cambios de la solicitud <b>{folio}</b>
+                    han sido aplicados correctamente.
+                </div>
+
+            </div>
+
+            <div style="
+                margin-top: 18px;
+                border: 1px solid #d0d7de;
+                border-radius: 6px;
+                padding: 14px 16px;
+                background: #ffffff;
+            ">
+
+                <div style="
+                    font-size: 12px;
+                    color: #57606a;
+                    margin-bottom: 8px;
+                ">
+                    RESUMEN
+                </div>
+
+                <div style="color: #57606a;">
+                    <b>{total}</b> equipos procesados<br>
+                    <b>{con_os}</b> equipos con OS (ACEPTADOS)<br>
+                    <b>{sin_os}</b> equipos sin OS (PENDIENTES)<br>
+                    <b>{desconocidos}</b> equipos sin OS (RECHAZADOS)
+                </div>
+
+            </div>
+
+        </div>
+        """
+
+    def msj_status_solicitud(self, data):
+
+        status_map = {
+            "IN_PROGRESS": "En proceso",
+            "COMPLETED": "Completada",
+            "PENDING": "Pendiente",
+            "CANCELLED": "Cancelada",
+        }
+
+        status = status_map.get(
+            data["status"],
+            data["status"]
+        )
+
+        mensaje = f"""
+        <div style="
+            font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Monaco,
+                        Consolas, 'Liberation Mono', 'Courier New', monospace;
+            max-width: 680px;
+            color: #24292f;
+            font-size: 14px;
+            line-height: 1.6;
+        ">
+
+            <p style="font-size: 15px; margin-bottom: 20px;">
+                🤖 Estimado usuario REPARE,
+            </p>
+
+            <div style="
+                border: 1px solid #d0d7de;
+                border-radius: 6px;
+                padding: 20px;
+                background: #f6f8fa;
+            ">
+
+                <div style="
+                    font-size: 14px;
+                    font-weight: bold;
+                    margin-bottom: 12px;
+                ">
+                    REQUEST STATUS
+                </div>
+
+                <div style="color: #57606a;">
+                    <b>FOLIO</b>&nbsp;&nbsp; {data["request_code"]}<br>
+                    <b>STATUS</b>&nbsp; {status}
+                </div>
+
+            </div>
+
+            <div style="
+                margin-top: 18px;
+                border: 1px solid #d0d7de;
+                border-radius: 6px;
+                padding: 14px 16px;
+                background: #ffffff;
+            ">
+
+                <div style="
+                    font-size: 12px;
+                    color: #57606a;
+                    margin-bottom: 8px;
+                ">
+                    EQUIPMENT SUMMARY
+                </div>
+
+                <div style="color: #57606a;">
+                    <b>{data["completed_coolers"]}</b> equipos completados<br>
+                    <b>{data["pending_coolers"]}</b> equipos pendientes<br>
+                    <b>{data["failed_coolers"]}</b> equipos cancelados<br>
+                    <b>{data["total_coolers"]}</b> equipos totales
+                </div>
+
+            </div>
+        """
+
+        if data.get("tickets_accepted"):
+            mensaje += """
+            <div style="
+                margin-top: 18px;
+                padding: 14px 16px;
+                border: 1px solid #d0d7de;
+                border-radius: 6px;
+                background: #ffffff;
+            ">
+                <div style="
+                    font-size: 12px;
+                    color: #57606a;
+                    margin-bottom: 8px;
+                ">
+                    COMPLETED TICKETS
+                </div>
+            """
+            for ticket in data["tickets_accepted"]:
+                mensaje += f"<div>{ticket}</div>"
+
+            mensaje += "</div>"
+
+        if data.get("tickets_pending"):
+            mensaje += """
+            <div style="
+                margin-top: 18px;
+                padding: 14px 16px;
+                border: 1px solid #d0d7de;
+                border-radius: 6px;
+                background: #ffffff;
+            ">
+                <div style="
+                    font-size: 12px;
+                    color: #57606a;
+                    margin-bottom: 8px;
+                ">
+                    PENDING TICKETS
+                </div>
+            """
+            for ticket in data["tickets_pending"]:
+                mensaje += f"<div>{ticket}</div>"
+
+            mensaje += "</div>"
+
+        if data.get("tickets_cancelled"):
+            mensaje += """
+            <div style="
+                margin-top: 18px;
+                padding: 14px 16px;
+                border: 1px solid #d0d7de;
+                border-radius: 6px;
+                background: #ffffff;
+            ">
+                <div style="
+                    font-size: 12px;
+                    color: #57606a;
+                    margin-bottom: 8px;
+                ">
+                    CANCELLED TICKETS
+                </div>
+            """
+            for ticket in data["tickets_cancelled"]:
+                mensaje += f"<div>{ticket}</div>"
+
+            mensaje += "</div>"
+
+        mensaje += """
+        </div>
+        """
+
+        return mensaje
+
+
+    def msj_comando_no_reconocido(self):
+        return """
+        <div style="
+            font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Monaco,
+                        Consolas, 'Liberation Mono', 'Courier New', monospace;
+            max-width: 680px;
+            color: #24292f;
+            font-size: 14px;
+            line-height: 1.6;
+        ">
+
+            <p style="font-size: 15px; margin-bottom: 20px;">
+                🤖 Estimado usuario REPARE,
+            </p>
+
+            <div style="
+                border: 1px solid #d0d7de;
+                border-radius: 6px;
+                padding: 20px;
+                background: #f6f8fa;
+            ">
+
+                <div style="
+                    font-size: 14px;
+                    font-weight: bold;
+                    margin-bottom: 12px;
+                ">
+                    COMMAND NOT RECOGNIZED
+                </div>
+
+                <div style="color: #57606a;">
+                    No se reconoció la palabra o comando enviado.
+                    Verifique la información e intente nuevamente.
+                </div>
+
+            </div>
+
+            <p style="
+                color: #57606a;
+                margin-top: 18px;
+            ">
+                Para consultar los comandos disponibles, escriba
+                <b>[bot.help]</b>.
+            </p>
+
+        </div>
+        """
+
+
+    def msj_folio_requerido(self, folio: str | None = None):
+        """Genérico (no exclusivo de un cliente): se usa cuando un comando
+        del bot no puede resolver sobre qué solicitud actuar -- p. ej. en
+        hilos que agrupan varias solicitudes, como el de Holanda. Si
+        `folio` viene, significa que se encontró pero no existe/no es de
+        ese cliente; si no, que no se encontró ninguno."""
+
+        if folio:
+            detalle = (
+                f"No se encontró la solicitud <b>{folio}</b>. "
+                "Verifique el folio e intente nuevamente."
+            )
+        else:
+            detalle = (
+                "No se pudo identificar la solicitud a la que se refiere "
+                "el comando."
+            )
+
+        return f"""
+        <div style="
+            font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Monaco,
+                        Consolas, 'Liberation Mono', 'Courier New', monospace;
+            max-width: 680px;
+            color: #24292f;
+            font-size: 14px;
+            line-height: 1.6;
+        ">
+
+            <p style="font-size: 15px; margin-bottom: 20px;">
+                🤖 Estimado usuario REPARE,
+            </p>
+
+            <div style="
+                border: 1px solid #d0d7de;
+                border-radius: 6px;
+                padding: 20px;
+                background: #f6f8fa;
+            ">
+
+                <div style="
+                    font-size: 14px;
+                    font-weight: bold;
+                    margin-bottom: 12px;
+                ">
+                    FOLIO REQUIRED
+                </div>
+
+                <div style="color: #57606a;">
+                    {detalle}
+                </div>
+
+            </div>
+
+            <p style="
+                color: #57606a;
+                margin-top: 18px;
+            ">
+                Responda al correo del bot que contiene el folio, o
+                escríbalo junto al comando, por ejemplo:
+                <b>bot.estatus REPARE_000157</b>.
+            </p>
+
+        </div>
+        """
+
+
+    def msj_global(self):
+        return """
+        <div style="
+            font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Monaco,
+                        Consolas, 'Liberation Mono', 'Courier New', monospace;
+            max-width: 680px;
+            color: #24292f;
+            font-size: 14px;
+            line-height: 1.6;
+        ">
+
+            <p style="font-size: 15px; margin-bottom: 20px;">
+                🤖 Estimado usuario REPARE,
+            </p>
+
+            <div style="
+                border: 1px solid #d0d7de;
+                border-radius: 6px;
+                padding: 20px;
+                background: #f6f8fa;
+            ">
+
+                <div style="
+                    font-size: 14px;
+                    font-weight: bold;
+                    margin-bottom: 12px;
+                ">
+                    GLOBAL STATUS
+                </div>
+
+                <div style="color: #57606a;">
+                    Consulta global completada correctamente.
+                </div>
+
+            </div>
+
+        </div>
+        """

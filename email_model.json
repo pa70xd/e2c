@@ -1,0 +1,32 @@
+{
+    "id": null,
+    "request_code": null,
+    "graph_message_id": "AAMkADc3MGMwNGI5LWNlMDgtNDZmZi1hMWNhLWM4N2MyODQwODg3YgBGAAAAAAD93j3_3mZCSJmr9mpVohuIBwD5NGbU-8xtTbEa4qfu6mTmAAAAAAEJAAANSWCBckvhTYwdiuH-IRTzAAFGG6dPAAA=",
+    "internet_message_id": "<CH3PR18MB56693C494C59F6905E979C7284D52@CH3PR18MB5669.namprd18.prod.outlook.com>",
+    "conversation_id": "AAQkADc3MGMwNGI5LWNlMDgtNDZmZi1hMWNhLWM4N2MyODQwODg3YgAQADxmu--p8Q1EiqCvcmQynCQ=",
+    "conversation_index": "b'AQHdIwFEPGa7/+nxDUSKoK9yZDKcJA=='",
+    "parent_message_id": null,
+    "change_key": "CQAAABYAAAANSWCBckvhTYwdiuH/IRTzAAFFI7Qr",
+    "direction": "INBOUND",
+    "sender_name": "HURTADO DURAN YAEL ZURIEL",
+    "sender_email": "yael.hurtado@imberacooling.com",
+    "recipients_to": [
+        {
+            "name": "HURTADO DURAN YAEL ZURIEL",
+            "email": "yael.hurtado@imberacooling.com"
+        }
+    ],
+    "recipients_cc": [],
+    "recipients_bcc": [],
+    "subject": "Prueba de ciclo  2",
+    "body": "<html><head>\r\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"><style type=\"text/css\" style=\"display:none\">\r\n<!--\r\np\r\n\t{margin-top:0;\r\n\tmargin-bottom:0}\r\n-->\r\n</style></head><body dir=\"ltr\"><div class=\"elementToProof\" style=\"font-family:Aptos,Aptos_EmbeddedFont,Aptos_MSFontService,Calibri,Helvetica,sans-serif; font-size:12pt; color:rgb(0,0,0)\">Ayuda con la instalacion de los siguientes</div><div class=\"elementToProof\" style=\"font-family:Aptos,Aptos_EmbeddedFont,Aptos_MSFontService,Calibri,Helvetica,sans-serif; font-size:12pt; color:rgb(0,0,0)\"><br></div></body></html>",
+    "has_attachments": true,
+    "attachment_count": 0,
+    "processing_status": "RECEIVED",
+    "processing_message": null,
+    "received_at": "2026-08-03 04:35:18+00:00",
+    "sent_at": "2026-08-03 04:35:18+00:00",
+    "created_at": "2026-08-02 23:11:16.368324",
+    "updated_at": "2026-08-02 23:11:16.368324",
+    "customer": "danone"
+}

@@ -1,0 +1,75 @@
+# Encabezado normalizado (ver HEINEKEN_READER.normalizar_encabezado) -> nombre canónico.
+
+# Precarga D2D (movimientos). Encabezados en la fila 1.
+NAMES_D2D = {
+    "RAZON SOCIAL": "RAZON SOCIAL",
+    "RESPONSABLE": "RESPONSABLE",
+    "MODELO": "MODELO",
+    "SERIE": "SERIE",
+    "FALLA": "FALLA",
+    "REPORTE IMAGEN": "REPORTE IMAGEN",
+    "CALLE Y NUMERO": "CALLE Y NUMERO",
+    "ENTRE CALLE": "ENTRE CALLE",
+    "Y CALLE": "Y CALLE",
+    "COLONIA/POBLADO": "COLONIA",
+    "DELEGACION/MUNICIPIO/CIUDAD": "MUNICIPIO",
+    "CP": "CP",
+    "NUM. TEL": "TELEFONO",
+    "HORARIO DE ATENCION": "HORARIO",
+    "NO CLIENTE DETALLISTA": "CLIENTE DETALLISTA",
+    "CEDIS/DISTRIBUIDORA": "DISTRIBUIDORA",
+    "OBSERVACIONES": "OBSERVACIONES",
+    "SOLICITUD DE SERVICIO": "SOLICITUD DE SERVICIO",
+    "ACTIVO": "ACTIVO",
+    "ID REPORTE/TICKET/FOLIO/PAEEEM": "ID REPORTE",
+    "TECNICO": "TECNICO",
+    "OS": "OS",
+    "SUCURSAL": "SUCURSAL",
+}
+
+# Mantenimiento Ferguez (ruta). Encabezados en la fila 2; algunas columnas son opcionales.
+NAMES_RUTA = {
+    "MODELO": "MODELO",
+    "SERIE": "SERIE",
+    "FALLA REPORTADA & NOTAS ADICIONALES": "FALLA",
+    "HORA ATENCION": "HORARIO",
+    "NUMERO DE CASO/FOLIO": "NUMERO CASO",
+    "FECHA DE VENTA/NUM DE FACTURA": "FECHA VENTA",
+    "N° DE CLIENTE": "NUMERO CLIENTE",
+    "NO DE CLIENTE": "NUMERO CLIENTE",
+    "NOMBRE PUNTO DE VENTA": "NOMBRE PDV",
+    "CALLE": "CALLE",
+    "NUMERO": "NUMERO",
+    "ENTRE CALLE": "ENTRE CALLE",
+    "Y CALLE": "Y CALLE",
+    "COLONIA": "COLONIA",
+    "MUNICIPIO": "MUNICIPIO",
+    "CODIGO POSTAL": "CP",
+    "LATITUD": "LATITUD",
+    "LONGITUD(-)": "LONGITUD",
+    "LONGITUD": "LONGITUD",
+    "TELEFONO Y/O FAX": "TELEFONO",
+    "NOMBRE CONTACTO PUNTO DE VENTA": "CONTACTO",
+    "TIPO DE MOVIMIENTO": "TIPO DE MOVIMIENTO",
+    "CANAL": "CANAL",
+    "REGION": "REGION",
+    "SUCURSAL": "SUCURSAL",
+    "CLIENTE": "CLIENTE",
+    "ORDEN": "ORDEN",
+    "AVISO": "AVISO",
+    "OS": "OS",
+}
+
+COLUMNAS_D2D = list(dict.fromkeys(NAMES_D2D.values()))
+COLUMNAS_RUTA = list(dict.fromkeys(NAMES_RUTA.values()))
+
+# Mínimas para procesar el archivo.
+EXPECTED_D2D = {"RAZON SOCIAL", "MODELO", "SERIE", "FALLA", "CLIENTE DETALLISTA", "DISTRIBUIDORA"}
+EXPECTED_RUTA = {"MODELO", "SERIE", "FALLA", "CP", "TIPO DE MOVIMIENTO"}
+
+# Encabezados que identifican la fila de encabezados.
+MARCADORES_ENCABEZADO = {"MODELO", "SERIE"}
+
+# Columnas internas para ubicar cada fila en el archivo original.
+COL_ARCHIVO = "_ARCHIVO"
+COL_FILA_EXCEL = "_FILA_EXCEL"
