@@ -1,13 +1,13 @@
 ---
 type: Module
 title: Proveedor Haiku (classifier/providers/haiku.py)
-description: Implementación de gate() y extract() del clasificador con Claude Haiku 5.5. Opcional; el default sigue siendo regex. Rama claude/e2c-provider-haiku, sin mergear.
+description: Implementación de gate() y extract() del clasificador con Claude Haiku 5.5. Opcional; el default sigue siendo regex. Mergeado en claude/admiring-lovelace-3oh7g0.
 tags: [classifier, haiku, llm, fase-3]
 ---
 
 # Estado
 
-Rama `claude/e2c-provider-haiku` (commit `a27e690`), sobre `claude/e2c-classifier-core` (`926d693`), **sin mergear**. Verificado en la rama: `classifier/providers/haiku.py`, `classifier/prompts/{gate,extract}.md`, `tests/unit_classifier/test_haiku.py` y `eval/smoke_haiku.py` existen; `anthropic==2.3.0` está en `requirements.txt`. `python -m pytest -q` → **473 passed, 24 skipped, 1 xfailed**, pero solo después de instalar `anthropic` a mano: sin el paquete, la recolección de `test_haiku.py` falla con `ModuleNotFoundError`. En un entorno ya instalado con el `requirements.txt` de la rama no debería pasar.
+Rama `claude/e2c-provider-haiku` (commit `a27e690`), más `ea9141a`, sobre `claude/e2c-classifier-core`, **mergeada en la base** `claude/admiring-lovelace-3oh7g0` (`6d0f897`). Base verificada: 710 passed, 24 skipped, 1 xfailed. Verificado en la rama: `classifier/providers/haiku.py`, `classifier/prompts/{gate,extract}.md`, `tests/unit_classifier/test_haiku.py` y `eval/smoke_haiku.py` existen; `anthropic==2.3.0` está en `requirements.txt`. `python -m pytest -q` → **473 passed, 24 skipped, 1 xfailed**, pero solo después de instalar `anthropic` a mano: sin el paquete, la recolección de `test_haiku.py` falla con `ModuleNotFoundError`. En un entorno ya instalado con el `requirements.txt` de la rama no debería pasar.
 
 # Cómo se activa
 
@@ -25,6 +25,5 @@ Rama `claude/e2c-provider-haiku` (commit `a27e690`), sobre `claude/e2c-classifie
 
 # Límites y pendientes
 
-* `extract()` no recibe el `tipo_evento` del gate: el modelo lo infiere y `validate` exige coherencia.
+* ~~`extract()` no recibe el `tipo_evento` del gate~~ Resuelto en `ea9141a`: `extract(body_redacted, thread_ctx, gate=None)` recibe el `GateResult` validado. La guarda de PII ahora respeta las series conservadas del hilo (`conservar`).
 * **No probado con una key real.** El smoke (`eval/smoke_haiku.py`) está pendiente; todas las pruebas usan un cliente mockeado. No hay medición de precisión contra el umbral de 0.95 (ver [decisiones](../riesgos/decisiones.md)).
-* La sesión lista como pendiente que exista `classifier/redact.py` en la base; hoy vive en la rama `claude/e2c-redact`.

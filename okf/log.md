@@ -198,6 +198,13 @@
 * Nuevo concepto [classifier/revision.md](classifier/revision.md). Cuatro puntos abiertos de la sesión más dos preguntas a ti, en `riesgos/preguntas-abiertas.md`.
 * Solo actúa con `CLASSIFIER_EXTRACT` distinto de `regex`; con el default no corre.
 
+## 2026-10-25 · revision actualizada; Fase 3 parcial en la base
+
+* Base `claude/admiring-lovelace-3oh7g0` en `6d0f897`: ya incluye redact, classifier-core (`ece68b5`, con `281fa4a`) y provider-haiku. Verificado: 710 passed, 24 skipped, 1 xfailed. Mergeada en mi rama.
+* revision (`claude/e2c-revision`, `4292106`), sin mergear; verifiqué 740 passed, 48 skipped, 1 xfailed (sin Postgres). Cambios respecto del resumen anterior: alta sin Excel va a revisión (decisión de la orquestadora), cancelar fila ya CANCELLED es idempotente, filas inválidas a revisión (`separar_invalidas`), cargador solo con proveedor externo, `Decision` en `parser.classifier_decision`.
+* Resueltos y reflejados en `core.md` y `provider-haiku.md`: `ultima_decision` (ContextVar) eliminada, `extract` recibe el gate, `tests/conftest.py` limpia `CLASSIFIER_*`, `redact` acepta `conservar`.
+* Preguntas abiertas de la Fase 3 reducidas a cuatro en `riesgos/preguntas-abiertas.md`.
+
 ## 2026-10-24
 
 * Creación del bundle OKF del repositorio `e2c` (rama `claude/admiring-lovelace-3oh7g0`).

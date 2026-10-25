@@ -26,7 +26,7 @@ pip install -r requirements.txt -r requirements-dev.txt
 python -m pytest -q
 ```
 
-Usa `python -m pytest`, no el binario `pytest`: puede ser de otro intérprete. Esperado en la base `9564d90`: **448 passed, 24 skipped, 1 xfailed** (el xfail es "stopwords antes del regex" en Danone; los 24 skip son el SQL contra Postgres de abajo). La suite no usa red, credenciales ni producción. Detalle en [pruebas/harness.md](../pruebas/harness.md).
+Usa `python -m pytest`, no el binario `pytest`: puede ser de otro intérprete. Esperado en la base con la Fase 3 parcial (`6d0f897`): **710 passed, 24 skipped, 1 xfailed** (448/24/1 en `9564d90`, antes de la Fase 3) (el xfail es "stopwords antes del regex" en Danone; los 24 skip son el SQL contra Postgres de abajo). La suite no usa red, credenciales ni producción. Detalle en [pruebas/harness.md](../pruebas/harness.md).
 
 # 2. Pruebas SQL opcionales (Postgres local desechable)
 
@@ -75,7 +75,7 @@ Todo mergeado en `claude/admiring-lovelace-3oh7g0`. Detalle en [bugs](../riesgos
 
 Además, la Fase 2 (refactor sin cambio de comportamiento, goldens sin diff) está mergeada: `parsers/core/`, `repository/core/`, `bot/commands.py`, `config/data/*.json` y limpieza de código muerto. Ver [deuda técnica](../riesgos/deuda-tecnica.md).
 
-Fase 3 (clasificador): sus ramas aún no están en la base. Cuando lo estén, no exportes `CLASSIFIER_GATE`, `CLASSIFIER_EXTRACT` ni `CLASSIFIER_MIN_CONFIDENCE` al correr la suite: `tests/conftest.py` no las limpia y los goldens correrían con ese proveedor. Ver [núcleo del clasificador](../classifier/core.md).
+Fase 3 (clasificador): ya mergeados redact, núcleo y haiku (`revision` aún no). Por defecto todo usa `regex` y el comportamiento no cambia. `tests/conftest.py` limpia `CLASSIFIER_*` y `ANTHROPIC_API_KEY`, así que exportarlas no altera la suite. Ver [núcleo del clasificador](../classifier/core.md).
 
 # 6. Sigue abierto
 

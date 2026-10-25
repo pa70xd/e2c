@@ -1,17 +1,17 @@
 ---
 type: Module
 title: Redacción de PII (classifier/redact.py)
-description: Función redact() que quita datos personales del texto de un correo antes de enviarlo a cualquier proveedor externo (LLM). Rama claude/e2c-redact, sin mergear.
+description: Función redact() que quita datos personales del texto de un correo antes de enviarlo a cualquier proveedor externo (LLM). Mergeado en claude/admiring-lovelace-3oh7g0.
 tags: [classifier, redact, pii, fase-3]
 ---
 
 # Estado
 
-Rama `claude/e2c-redact` (commit `0d8fc00`), base `claude/admiring-lovelace-3oh7g0`, **sin mergear**. Verificado en la rama: `classifier/redact.py` existe; `python -m pytest -q` → 562 passed, 24 skipped, 1 xfailed (base 448/24/1); `tests/unit_classifier/test_redact.py` (114 pruebas sintéticas con `example.com`, incluye fuzz de idempotencia, según la sesión).
+Rama `claude/e2c-redact` (commit `0d8fc00`), **mergeada en la base** `claude/admiring-lovelace-3oh7g0`. Verificado en la rama: `classifier/redact.py` existe; `python -m pytest -q` → 562 passed, 24 skipped, 1 xfailed (base 448/24/1); `tests/unit_classifier/test_redact.py` (114 pruebas sintéticas con `example.com`, incluye fuzz de idempotencia, según la sesión).
 
 # API
 
-`redact(text: str) -> str`. **Obligatoria antes de cualquier proveedor externo (LLM).** Solo stdlib (`re`, `unicodedata`). Idempotente: en una prueba mía con texto sintético, `redact(redact(t)) == redact(t)`.
+`redact(text: str, conservar: Iterable[str] = ()) -> str`. `conservar` son tokens exactos (p. ej. las series ya guardadas en `thread_ctx.filas`) que no se redactan; lo añadió la integración (`281fa4a`). **Obligatoria antes de cualquier proveedor externo (LLM).** Solo stdlib (`re`, `unicodedata`). Idempotente: en una prueba mía con texto sintético, `redact(redact(t)) == redact(t)`.
 
 # Qué redacta
 
