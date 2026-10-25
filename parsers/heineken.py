@@ -15,6 +15,8 @@ from infrastructure.geocoding.geocoding import GEOCODING
 
 from repository.danone.consultas_postgre import DB_POSTGRE
 from repository.heineken.consultas_postgre import DB_HEINEKEN
+from bot import commands as bot_commands
+from bot.perfiles import perfil_heineken
 
 from config.customers.heineken.reglas_heineken import FLUJO_D2D
 from config.config_general.messages import MENSAJES_REPARE
@@ -141,64 +143,21 @@ class HEINEKEN_REPLY:
         return None
 
     async def _comando_bot(self, client, user_id, mail_id, mail, request_code):
-        """Comandos del operador. Solicitud: D2D por hilo (o folio si no se encuentra); ruta por folio."""
+        """Comandos del operador (bot/commands.py). Solicitud: D2D por hilo (o folio si no se encuentra); ruta por folio."""
         tipo = await DANONE_READER.detectar_tipo_correo(
             client=client, user_id=user_id, mail_id=mail_id, email=mail,
         )
-        if not tipo.get("tiene_palabra_reservada"):
-            return None
-
-        palabra = (tipo.get("palabra") or "").lower()
-
-        if palabra in ("bot.help", "bot.ayuda"):
-            return _respuesta(msj.msj_ayuda())
-
-        if palabra == "bot.global":
-            archivo = None
-            try:
-                data = db_heineken.global_status()
-                if data:
-                    archivo = self.init.process.process_email_request_global(data)
-            except Exception as e:
-                print(f"[HEINEKEN][BOT][ERROR] No se logró generar el estado global: {e}")
-            return _respuesta(msj.msj_global(), [archivo] if archivo else None)
-
-        if palabra not in ("bot.estatus", "bot.status", "bot.cancelar", "bot.finalizar", "bot.cerrar"):
-            return _respuesta(msj.msj_comando_no_reconocido())
-
         if request_code is None:
-            folio = await resolver_folio(client, user_id, mail_id, mail)
-            if not folio:
-                return _respuesta(msj.msj_folio_requerido())
-            solicitud = db_heineken.get_request(folio)
-            if not solicitud:
-                return _respuesta(msj.msj_folio_requerido(folio))
-            request_code = solicitud["request_code"]
-
-        if palabra in ("bot.estatus", "bot.status"):
-            try:
-                data = db_heineken.bot_status(request_code)
-            except Exception as e:
-                print(f"[HEINEKEN][BOT][ERROR] No se logró consultar el estatus de {request_code}: {e}")
-                data = None
-            if not data:
-                return _respuesta(msj.msj_folio_requerido(request_code))
-            return _respuesta(msj.msj_status_solicitud(data))
-
-        if palabra == "bot.cancelar":
-            # Se cancelan también los casos PENDING para que un outbound no reviva la solicitud.
-            try:
-                db.cancel_pending_coolers(request_code)
-                db.cancel_email_request(request_code)
-            except Exception as e:
-                print(f"[HEINEKEN][BOT][ERROR] No se logró cancelar {request_code}: {e}")
-            return _respuesta(msj.msj_cancelar(request_code))
-
-        try:
-            db.complete_email_request(request_code)
-        except Exception as e:
-            print(f"[HEINEKEN][BOT][ERROR] No se logró finalizar {request_code}: {e}")
-        return _respuesta(msj.msj_finalizar(request_code))
+            resolver = bot_commands.resolver_por_folio(
+                lambda: resolver_folio(client, user_id, mail_id, mail),
+                lambda folio: db_heineken.get_request(folio),
+                msj,
+            )
+        else:
+            resolver = bot_commands.solicitud_fija(request_code)
+        return await bot_commands.ejecutar(
+            perfil_heineken(db, db_heineken, msj, self.init.process), tipo, resolver,
+        )
 
     async def _outbound(self, client, user_id, mail_id, mail, flujo, request_code):
         """Respuesta del operador: concilia la OS de cada fila (D2D por serie, ruta por ORDEN)."""

@@ -10,6 +10,8 @@ from config.config_general.messages import MENSAJES_REPARE
 from src.excel_ingestion import Excel_Ingestion
 
 from repository.danone.consultas_postgre import DB_POSTGRE
+from bot import commands as bot_commands
+from bot.perfiles import perfil_danone
 
 
 import os
@@ -449,76 +451,11 @@ class DANONE_REPLY:
                     }
 
         elif direccion == "reply_to_bot":
-
-
-            if result_type["tiene_palabra_reservada"]:
-                palabra = result_type["palabra"].lower()
-                
-                match palabra:
-
-                    case "bot.help" | "bot.ayuda":
-                        mensaje = msj.msj_ayuda()
-                        return {
-                                "mensaje": mensaje,
-                                "attachments": None,
-                            }
-
-                    case "bot.estatus" | "bot.status":
-                        data = None
-                        try:
-                            data = db.email_request_bot_status(request_code)
-                        except Exception as e:
-                            print(f"No se logro cancelar la solicitud {e}")
-                        if not data:
-                            return {
-                                "mensaje": msj.msj_fail(),
-                                "attachments": None,
-                            }
-                        return {
-                            "mensaje": msj.msj_status_solicitud(data),
-                            "attachments": None,
-                        }
-
-                    case "bot.cancelar":
-                        try:
-                            db.cancel_pending_coolers(request_code)
-                            db.cancel_email_request(request_code)
-                        except Exception as e:
-                            print(f"No se logro cancelar la solicitud {e}")
-                        return {
-                            "mensaje": msj.msj_cancelar(request_code),
-                            "attachments": None,
-                        }
-
-                    case "bot.finalizar" | "bot.cerrar":
-                        try:
-                            db.complete_email_request(request_code)
-                        except Exception as e:
-                            print(f"No se logro completar la solicitud {e}")
-                        return {
-                            "mensaje": msj.msj_finalizar(request_code),
-                            "attachments": None,
-                        }
-                    case "bot.global":
-                        file = None
-                        try:
-                            data = db.get_email_request_global()
-                            if data:
-                                file = self.process.process_email_request_global(data)
-
-                        except Exception as e:
-                            print(f"[ERROR] No se logró generar el estado global: {e}")
-
-                        return {
-                            "mensaje": msj.msj_global(),
-                            "attachments": [file] if file else None,
-                        }
-                    case _:
-                        return  {
-                                    "mensaje": msj.msj_comando_no_reconocido(),
-                                    "attachments": None,
-                                }
-                return None
+            return await bot_commands.ejecutar(
+                perfil_danone(db, msj, self.process),
+                result_type,
+                bot_commands.solicitud_fija(request_code),
+            )
 
 
         # ==========================================================
