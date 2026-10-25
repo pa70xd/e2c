@@ -1,0 +1,22 @@
+{
+  "init": {
+    "subject": "Casos REPARE ",
+    "body": "Buen dia.\nSe adjuntan los casos de la semana.\nSaludos,\nContacto Holanda Ejemplo"
+  },
+  "outbound": {
+    "subject": "RE: Casos REPARE ",
+    "body": "Hola. Adjunto las OS de los casos.\nSaludos,\nOperador REPARE Ejemplo"
+  },
+  "comandos": {
+    "estatus": "bot.estatus REPARE_000042",
+    "cancelar": "bot.cancelar REPARE_000042",
+    "finalizar": "bot.cerrar REPARE_000042",
+    "sin_folio": "bot.estatus",
+    "ayuda": "bot.ayuda",
+    "global": "bot.global"
+  },
+  "fuera_de_asunto": {
+    "subject": "Otro tema distinto",
+    "body": "Este correo no pertenece al hilo de Holanda."
+  }
+}
