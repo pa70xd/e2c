@@ -242,7 +242,15 @@ async def processMail(data):
                 return "EMAIL_DUPLICADO"
               
             
-            customer, direccion = validator.detect_direccion(email)
+            detected = validator.detect_direccion(email)
+            if detected is None:
+                print(
+                    "[Error] No se pudo determinar la dirección del correo "
+                    "(remitente/destinatarios fuera de los buzones configurados)."
+                )
+                duckConn.close()
+                return None
+            customer, direccion = detected
             if customer == "test":
                 customer = resolve_test_customer(email.subject)
                 if customer is None:
