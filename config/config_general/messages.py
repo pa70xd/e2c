@@ -210,47 +210,6 @@ class MENSAJES_REPARE:
 
 
 
-    def msj_fail(self, folio, url):
-        return f"""
-        <div style="
-            font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Monaco,
-                        Consolas, 'Liberation Mono', 'Courier New', monospace;
-            max-width: 680px;
-            color: #24292f;
-            font-size: 14px;
-            line-height: 1.6;
-        ">
-
-            <p style="font-size: 15px; margin-bottom: 20px;">
-                🤖 Estimado usuario REPARE,
-            </p>
-
-            <div style="
-                border: 1px solid #d0d7de;
-                border-radius: 6px;
-                padding: 20px;
-                background: #f6f8fa;
-            ">
-
-                <div style="
-                    font-size: 14px;
-                    font-weight: bold;
-                    margin-bottom: 12px;
-                ">
-                    DOCUMENT READY
-                </div>
-
-                <div style="color: #57606a;">
-                    La información preliminar de la solicitud
-                    <b>{folio}</b> está disponible para su revisión.
-                </div>
-
-            </div>
-
-
-        </div>
-        """
-
 
 
 
