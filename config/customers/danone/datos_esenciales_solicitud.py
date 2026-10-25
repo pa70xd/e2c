@@ -27,7 +27,7 @@ datos_no_esenciales = [
 ]
 
 
-TIPOS_SERVICIO_VALIDOSs = [
+TIPOS_SERVICIO_VALIDOS = [
     "INSTALACION",
     "INSTALACIONES",
     "ALTA",
