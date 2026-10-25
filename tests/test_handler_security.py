@@ -48,6 +48,15 @@ def test_con_client_state_descarta_los_que_no_coinciden(client, procesados, monk
     assert "clientState no coincide" in capsys.readouterr().out
 
 
+@pytest.fixture(autouse=True)
+def _recarga_main_sin_cors_env(monkeypatch):
+    # Al terminar cada test, `main` se recarga sin CORS_ALLOW_ORIGINS para no filtrar estado.
+    yield
+    monkeypatch.delenv("CORS_ALLOW_ORIGINS", raising=False)
+    import main
+    importlib.reload(main)
+
+
 def _preflight(client):
     return client.options(
         "/receive_mail",
