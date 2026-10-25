@@ -9,10 +9,18 @@ tags: [catalogos, datos]
 
 | Archivo | Contenido | Uso | Problemas |
 |---|---|---|---|
-| `config/config_general/distribuidoras.py` | ~3,472 entradas `código \| nombre` | Danone (`catalog.py`) | Nombres truncados (~50 con paréntesis sin cerrar). Clave `502635` duplicada. |
-| `config/customers/danone/model_line_cat.py` | ~851 modelos, 20 categorías, 41 pares | Danone (`catalog.py`) | Un modelo en varias listas. Placeholder `XXXXX`. Copia de CH en CONGELADOR y CORTINA. |
+| `config/config_general/distribuidoras.py` | `CATALOG_DISTRIBUIDORAS`: 3,471 entradas `código \| nombre`. En la rama `claude/e2c-catalogos` (Fase 2, sin mergear) los datos viven en `config/data/distribuidoras.json` y el `.py` solo los carga. | Danone (`catalog.py`) | Nombres truncados (~50 con paréntesis sin cerrar). Clave `502635` duplicada (colapsada al último valor). |
+| `config/customers/danone/model_line_cat.py` | 851 modelos, 20 categorías, 41 pares. En la rama `claude/e2c-catalogos` (sin mergear) los datos viven en `config/data/danone_model_line_cat.json` | Danone (`catalog.py`) | Un modelo en varias listas. Placeholder `XXXXX`. Copia de CH en CONGELADOR y CORTINA. |
 | `config/customers/heineken/reglas_heineken.py` | Canal, puesto, distribuidora, servicios D2D | Heineken | Tuplas posicionales. Distribuidora fija. |
 | `config/config_general/compact_names.py` | Nombre corto de distribuidora | Sin uso activo | Lanza ValueError si se activa para Penafiel. |
+
+## Cargador de JSON (rama `claude/e2c-catalogos`, sin mergear)
+
+* `config/data/loader.py::load_json(name)` lee `config/data/<name>` en UTF-8 y devuelve el objeto JSON. La ruta se resuelve con `Path(__file__)`, no con el cwd.
+* Mismos nombres, tipos, valores y orden que antes (`CATALOG_DISTRIBUIDORAS` dict `str→str`; `catalog` dict categoría → dict → lista). Los problemas de datos siguen igual (nombres truncados, clave duplicada, placeholder `XXXXX`).
+* Editar estos catálogos ahora significa editar el JSON.
+* `tests/unit_catalogos/` compara contra el original del commit `55acb2f`.
+* Verificado en la rama: 3471 / 20 / 41 / 851 y `pytest -q` → 310 passed, 24 skipped, 1 xfailed.
 
 # Archivos de datos en raíz
 
@@ -23,9 +31,9 @@ tags: [catalogos, datos]
 | `dfs_pto_venta.csv` | 19 puntos de venta | 7 filas con caracteres corruptos (U+FFFD) |
 | `tabla_con_distribuidora.csv` | 8 filas de solicitud | Contiene teléfonos, direcciones y coordenadas reales |
 | `solicitudes_rechazadas.csv` | 8 filas de rechazadas | Encabezado con typo `FECHA SOLCITUD`. No coincide con el SQL. |
-| `email.json` | Volcado de un mensaje Graph | Versionado en la base; mergeado en `claude/admiring-lovelace-3oh7g0` (rama `claude/e2c-fix-mecanicos`) se quita del índice. Contiene datos personales de terceros. Ver [seguridad](../riesgos/seguridad.md). |
-| `email_model.json` | Ejemplo de `email_request` | Incluye cuerpo de correo real. En rama `claude/e2c-fix-mecanicos` se quita del índice. |
-| `mail.json` | Volcado `__dict__` de kiota | No es JSON válido de Graph. En rama `claude/e2c-fix-mecanicos` se quita del índice. |
+| `email.json` | Volcado de un mensaje Graph | Ya no está en el índice (mergeado en `claude/admiring-lovelace-3oh7g0`, rama `claude/e2c-fix-mecanicos`); sigue en el historial. Contiene datos personales de terceros. Ver [seguridad](../riesgos/seguridad.md). |
+| `email_model.json` | Ejemplo de `email_request` | Incluye cuerpo de correo real. Ya no está en el índice (rama `claude/e2c-fix-mecanicos`, mergeada). |
+| `mail.json` | Volcado `__dict__` de kiota | No es JSON válido de Graph. Ya no está en el índice (rama `claude/e2c-fix-mecanicos`, mergeada). |
 | `emails pruebas` | Archivo vacío | Sin uso |
 
 # Excel de plantilla

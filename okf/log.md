@@ -107,6 +107,11 @@
 * Unificadas `unir_tablas`, `normalizar_texto`, `eliminar_stopwords`, `convertir_html_a_texto` y `detectar_tipo_correo`. Sigue duplicado `process_data`, `safe_filename`, `sql_list`, `normalize`. Documentado en `parsers/gen-base.md` y `riesgos/deuda-tecnica.md`.
 * La equivalencia de comportamiento entre copias (AST) es afirmación de la sesión; yo solo verifiqué que los goldens no cambian.
 
+## 2026-10-25 · catalogos: resumen (Fase 2)
+
+* Rama `claude/e2c-catalogos`, sin mergear (commit `8a54b96`). Verificado: `config/data/{distribuidoras,danone_model_line_cat}.json` y `loader.py`; conteos 3471 / 20 / 41 / 851; `pytest -q` → 310 passed, 24 skipped, 1 xfailed. Documentado en `data/catalogos.md`.
+* Corrección menor: la cifra de distribuidoras pasa de "~3,472" a 3,471 entradas cargadas (la clave `502635` duplicada colapsa al último valor).
+
 ## 2026-10-24
 
 * Creación del bundle OKF del repositorio `e2c` (rama `claude/admiring-lovelace-3oh7g0`).
