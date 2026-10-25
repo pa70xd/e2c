@@ -316,28 +316,32 @@ def test_reenvio_identico_no_duplica_ni_reaplica(proveedor, repo):
     segundo, decision2, avisos2 = procesar(repo)
 
     assert [f.row_number for f in primero["resultado"].aplicadas] == [2]
-    # En el reenvío la fila 2 ya está CANCELLED: no se toca y va a revisión
-    # (regla: CANCELLED tampoco se toca); la 3 sigue en revisión.
+    # En el reenvío la fila 2 ya está CANCELLED: es idempotente ("sin
+    # cambios", sin aviso por ella); la 3 (ACCEPTED) sigue en revisión.
     assert segundo["resultado"].aplicadas == ()
     assert sorted((f.row_number, f.status) for f in decision2.filas_revision) == [(2, CANCELLED), (3, ACCEPTED)]
+    assert [(f.row_number, f.motivo) for f in segundo["resultado"].sin_cambios] == [(2, "ya_cancelada")]
+    assert [f.row_number for f in segundo["resultado"].revision] == [3]
     assert repo.filas == estado
     assert len(repo.escrituras()) == escrituras
     assert len(avisos1) == len(avisos2) == 1
-
-
-def test_reenvio_identico_de_alta_no_duplica(proveedor, repo):
-    proveedor.gate = GateResult(es_os=True, tipo_evento=AGREGAR_FILAS, confidence=0.9)
-    proveedor.rows = [RowExtraida(accion=AGREGAR, serie_fabricante="FAB-0009", modelo="VR-17")]
-
-    primero, _, _ = procesar(repo)
-    segundo, _, avisos = procesar(repo)
-
-    assert [(f.row_number, f.serie) for f in primero["resultado"].aplicadas] == [(5, "FAB-0009")]
-    assert segundo["resultado"].aplicadas == ()
-    assert [f.motivo for f in segundo["resultado"].sin_cambios] == ["serie_ya_registrada"]
-    assert len(repo.filas) == 5
-    assert avisos == []
+    assert "FAB-0002" not in avisos2[0]
     assert "Sin cambios" in segundo["mensaje"]
+
+
+def test_cancelar_fila_ya_cancelada_no_avisa_a_repare(proveedor, monkeypatch):
+    filas = filas_base()[:2]
+    filas[1]["status"] = CANCELLED
+    r = FakeRepo(filas)
+    monkeypatch.setattr(classifier, "_cargador_contexto", review.cargador(r))
+    proveedor.gate = GateResult(es_os=True, tipo_evento=CANCELAR_FILAS, confidence=0.9)
+    proveedor.rows = [cancelar(2)]
+    out, _, enviados = procesar(r)
+
+    assert out["resultado"].revision == ()
+    assert [f.motivo for f in out["resultado"].sin_cambios] == ["ya_cancelada"]
+    assert r.escrituras() == []
+    assert enviados == []
 
 
 def test_reenvio_identico_de_modificacion_es_idempotente(proveedor, repo):
@@ -350,14 +354,22 @@ def test_reenvio_identico_de_modificacion_es_idempotente(proveedor, repo):
     assert repo.filas == estado
 
 
-def test_agregar_sin_serie_va_a_revision(proveedor, repo):
+# ------------------------------------------------------------ altas desde texto
+@pytest.mark.parametrize("fila", [
+    RowExtraida(accion=AGREGAR, serie_fabricante="FAB-0009", modelo="VR-17"),
+    RowExtraida(accion=AGREGAR, modelo="VR-17"),
+], ids=["con_serie", "sin_serie"])
+def test_alta_sin_excel_no_se_inserta_y_va_a_revision(proveedor, repo, fila):
     proveedor.gate = GateResult(es_os=True, tipo_evento=AGREGAR_FILAS, confidence=0.9)
-    proveedor.rows = [RowExtraida(accion=AGREGAR, modelo="VR-17")]
+    proveedor.rows = [fila]
     out, _, enviados = procesar(repo)
 
-    assert [f.motivo for f in out["resultado"].revision] == ["agregar_sin_serie"]
-    assert "send_email_coolers" not in repo.escrituras()
+    assert out["resultado"].aplicadas == ()
+    assert [f.motivo for f in out["resultado"].revision] == ["alta sin Excel; requiere datos completos"]
+    assert repo.escrituras() == []
+    assert len(repo.filas) == 4
     assert len(enviados) == 1
+    assert "alta sin Excel; requiere datos completos" in enviados[0]
 
 
 # ------------------------------------------------------------ carreras y errores

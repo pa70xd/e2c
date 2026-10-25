@@ -3,6 +3,14 @@
 Solo se escriben filas PENDING, con UPDATE por fila filtrado por
 ``request_code + row_number + status = 'PENDING'``: si la fila cambió de
 estado entre la carga del contexto y el UPDATE, no se toca y va a revisión.
+
+Decisiones de la orquestadora (2026-10-25):
+
+* Un alta desde texto (sin Excel) no se inserta: sin distribuidora ni
+  geocodificación rompe las sábanas y Tableau. Va a revisión con
+  ``ALTA_SIN_EXCEL``.
+* Cancelar una fila ya CANCELLED es idempotente: "sin cambios", sin aviso a
+  REPARE.
 """
 
 from __future__ import annotations
@@ -15,6 +23,7 @@ from classifier.contracts import (
     AGREGAR,
     CANCELAR,
     CANCELAR_SOLICITUD,
+    CANCELLED,
     COMENTARIO_REVISION,
     MODIFICAR,
     PENDING,
@@ -27,20 +36,11 @@ from classifier.contracts import (
 # clasificador). Códigos sin PII.
 FILA_INEXISTENTE = "fila_inexistente"
 ESTADO_CAMBIO = "estado_cambio"
-AGREGAR_SIN_SERIE = "agregar_sin_serie"
+ALTA_SIN_EXCEL = "alta sin Excel; requiere datos completos"
 ERROR_REPOSITORIO = "error_repositorio"
-SERIE_YA_REGISTRADA = "serie_ya_registrada"
+YA_CANCELADA = "ya_cancelada"
 
 CAMPOS_CAMBIO = ("folio", "serie_fabricante", "serie_dnn_bnf", "modelo", "tipo_servicio", "direccion")
-
-# Columnas de cooler_request que espera ``send_email_coolers``.
-COLUMNAS_COOLER = (
-    "request_code row_number id_cliente fecha_solicitud modelo serie_fabricante serie_dnn_bnf "
-    "tipo_servicio canal region plaza razon_social direccion cp ciudad colonia latitud longitud "
-    "ruta telefono_1 telefono_2 comentarios cbu cliente os status rejection_reason prioridad folio "
-    "ticket_solicitud assigned_to gestion_observaciones fecha_asignacion fecha_atencion "
-    "fecha_completado"
-).split()
 
 
 @dataclass(frozen=True)
@@ -65,7 +65,7 @@ class Resultado:
     request_code: Optional[str]
     aplicadas: tuple[FilaAplicada, ...] = ()
     revision: tuple[FilaEnRevision, ...] = ()
-    # Pedidos que no cambian nada (p. ej. agregar una serie ya registrada).
+    # Pedidos que no cambian nada (p. ej. cancelar una fila ya cancelada).
     sin_cambios: tuple[FilaEnRevision, ...] = ()
     solicitud_cancelada: bool = False
     errores: tuple[str, ...] = field(default_factory=tuple)
@@ -85,25 +85,6 @@ def _serie(*valores) -> Optional[str]:
 def _serie_guardada(ctx: ThreadCtx, row_number) -> Optional[str]:
     fila = ctx.fila(row_number) if row_number is not None else None
     return _serie(fila.serie_fabricante, fila.serie_dnn_bnf) if fila else None
-
-
-def _serie_registrada(ctx: ThreadCtx, row: RowExtraida) -> bool:
-    nuevas = {_serie(row.serie_fabricante), _serie(row.serie_dnn_bnf)} - {None}
-    for fila in ctx.filas or ():
-        if nuevas & ({_serie(fila.serie_fabricante), _serie(fila.serie_dnn_bnf)} - {None}):
-            return True
-    return False
-
-
-def _fila_nueva(request_code, row_number, row: RowExtraida) -> dict:
-    parametros = dict.fromkeys(COLUMNAS_COOLER)
-    parametros.update(
-        request_code=request_code,
-        row_number=row_number,
-        status=PENDING,
-        **{c: getattr(row, c) for c in CAMPOS_CAMBIO},
-    )
-    return parametros
 
 
 def aplicar(decision: Decision, ctx: ThreadCtx, repo) -> Resultado:
@@ -139,6 +120,11 @@ def aplicar(decision: Decision, ctx: ThreadCtx, repo) -> Resultado:
             a_revision(row_number, accion, None, ESTADO_CAMBIO)
 
     for fr in decision.filas_revision:
+        if fr.accion == CANCELAR and fr.status == CANCELLED:
+            sin_cambios.append(FilaEnRevision(
+                fr.row_number, CANCELAR, CANCELLED, YA_CANCELADA, _serie_guardada(ctx, fr.row_number)
+            ))
+            continue
         motivo = FILA_INEXISTENTE if fr.status is None else fr.motivo
         a_revision(fr.row_number, fr.accion, fr.status, motivo)
 
@@ -149,34 +135,20 @@ def aplicar(decision: Decision, ctx: ThreadCtx, repo) -> Resultado:
                        _serie(row.serie_fabricante, row.serie_dnn_bnf))
         return Resultado(None, (), tuple(revision), (), False, tuple(errores))
 
-    siguiente = max((f.row_number for f in ctx.filas or ()), default=0) + 1
-
     for row in decision.filas_aplicables:
         if row.accion == AGREGAR:
-            serie = _serie(row.serie_fabricante, row.serie_dnn_bnf)
-            if serie is None:
-                # Sin serie no se puede evitar un duplicado al reenviar.
-                a_revision(None, AGREGAR, None, AGREGAR_SIN_SERIE)
-                continue
-            if _serie_registrada(ctx, row):
-                sin_cambios.append(FilaEnRevision(None, AGREGAR, None, SERIE_YA_REGISTRADA, serie))
-                continue
-            try:
-                insertada = repo.send_email_coolers(_fila_nueva(request_code, siguiente, row))
-            except Exception as e:
-                errores.append(f"{AGREGAR}:{siguiente}:{type(e).__name__}")
-                a_revision(None, AGREGAR, None, ERROR_REPOSITORIO, serie)
-                continue
-            if insertada:
-                aplicadas.append(FilaAplicada(siguiente, AGREGAR, serie))
-                siguiente += 1
-            else:
-                sin_cambios.append(FilaEnRevision(None, AGREGAR, None, SERIE_YA_REGISTRADA, serie))
+            a_revision(None, AGREGAR, None, ALTA_SIN_EXCEL,
+                       _serie(row.serie_fabricante, row.serie_dnn_bnf))
             continue
 
         fila = ctx.fila(row.row_number)
         if fila is None:
             a_revision(row.row_number, row.accion, None, FILA_INEXISTENTE)
+            continue
+        if row.accion == CANCELAR and fila.status == CANCELLED:
+            sin_cambios.append(FilaEnRevision(
+                row.row_number, CANCELAR, CANCELLED, YA_CANCELADA, _serie_guardada(ctx, row.row_number)
+            ))
             continue
         if fila.status != PENDING:
             # El clasificador ya debió mandarla a revisión; por si acaso.

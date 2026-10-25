@@ -87,3 +87,21 @@ def test_mismo_correo_con_default_regex_va_al_parser(harness, monkeypatch):
     assert "get_cooler_rows" not in nombres
     assert "cancel_pending_cooler_row" not in nombres
     assert all("requiere revisión" not in r["body"] for r in harness.replies)
+
+
+@pytest.mark.parametrize("gate, extract, consulta", [
+    (None, None, False),          # default: ninguna consulta nueva por correo
+    ("regex", "regex", False),
+    ("fake", "regex", True),      # basta un proveedor externo
+    ("regex", "fake", True),
+], ids=["default", "regex_explicito", "gate_externo", "extract_externo"])
+def test_cargador_solo_con_proveedor_externo(harness, externo, monkeypatch, gate, extract, consulta):
+    for var, valor in (("CLASSIFIER_GATE", gate), ("CLASSIFIER_EXTRACT", extract)):
+        if valor is None:
+            monkeypatch.delenv(var, raising=False)
+        else:
+            monkeypatch.setenv(var, valor)
+    _preparar(harness)
+    harness.deliver(inbound(CLIENTE, CORREO, f"msg-cargador-{gate}-{extract}", "conv-cargador"))
+
+    assert ("get_cooler_rows" in harness.repo.names()) is consulta

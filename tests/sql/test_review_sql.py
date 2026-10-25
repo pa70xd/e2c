@@ -108,8 +108,8 @@ def test_cancel_pending_cooler_row_no_toca_accepted_ni_cancelada(repo):
 
 # --------------------------------------------------------------- aplicador real
 def test_aplicar_contra_postgres(repo, monkeypatch):
-    """review.aplicar con el DB_POSTGRE real: alta, cambio y cancelación de
-    PENDING; la ACCEPTED queda intacta y va a revisión."""
+    """review.aplicar con el DB_POSTGRE real: cambio y cancelación de PENDING;
+    la ACCEPTED y el alta desde texto quedan fuera y van a revisión."""
     import review
     from classifier.contracts import (
         AGREGAR, CANCELAR, ETAPA_REPLY, MODIFICAR, MODIFICAR_FILAS, Decision, FilaRevision,
@@ -128,7 +128,6 @@ def test_aplicar_contra_postgres(repo, monkeypatch):
         RowExtraida(accion=MODIFICAR, row_number=1, modelo="M1-CORR"),
         RowExtraida(accion=CANCELAR, row_number=2),
         RowExtraida(accion=AGREGAR, serie_fabricante="FAB-0010", modelo="M10"),
-        RowExtraida(accion=AGREGAR, serie_fabricante="FAB-0003"),  # ya registrada
     )
     decision = Decision(
         gate=GateResult(True, MODIFICAR_FILAS, 0.9),
@@ -141,9 +140,10 @@ def test_aplicar_contra_postgres(repo, monkeypatch):
 
     resultado = review.aplicar(decision, ctx, repo.DB_POSTGRE)
 
-    assert [(f.row_number, f.accion) for f in resultado.aplicadas] == [(1, MODIFICAR), (2, CANCELAR), (4, AGREGAR)]
-    assert [(f.row_number, f.motivo) for f in resultado.revision] == [(3, "fila_accepted")]
-    assert [f.motivo for f in resultado.sin_cambios] == ["serie_ya_registrada"]
+    assert [(f.row_number, f.accion) for f in resultado.aplicadas] == [(1, MODIFICAR), (2, CANCELAR)]
+    assert [(f.row_number, f.motivo) for f in resultado.revision] == [
+        (3, "fila_accepted"), (None, "alta sin Excel; requiere datos completos")
+    ]
     assert resultado.errores == ()
     propias = [
         (f["row_number"], f["serie_fabricante"], f["modelo"], f["status"])
@@ -153,5 +153,4 @@ def test_aplicar_contra_postgres(repo, monkeypatch):
         (1, "FAB-0001", "M1-CORR", "PENDING"),
         (2, "FAB-0002", "M2", "CANCELLED"),
         (3, "FAB-0003", None, "ACCEPTED"),
-        (4, "FAB-0010", "M10", "PENDING"),
     ]
