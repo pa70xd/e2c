@@ -96,6 +96,11 @@
 | catalogos | sonnet | `claude/e2c-catalogos` | session_015uwaotKiEb9kcpDcdfmWnf (en curso) |
 | limpieza | haiku | pendiente | pendiente: se crea después de mergear las 4 anteriores |
 
+## 2026-10-25 · Decisión: cancelar filas ACCEPTED desde un hilo
+
+* Decisión del usuario, relayada por la orquestadora: pedir en un hilo cancelar un cooler ya ACCEPTED (con OS) **no** lo cancela automáticamente; va a revisión humana, como las correcciones de filas ACCEPTED. Las filas PENDING sí se pueden cancelar. Registrada como respondida en `riesgos/preguntas-abiertas.md`.
+* Pendiente (Fase 3): canal de revisión (propuesta: respuesta en el hilo a REPARE con las filas marcadas); cola persistida como ticket aparte. Aún no implementado.
+
 ## 2026-10-24
 
 * Creación del bundle OKF del repositorio `e2c` (rama `claude/admiring-lovelace-3oh7g0`).
