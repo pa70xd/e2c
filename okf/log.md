@@ -53,6 +53,16 @@
 * Integración en `claude/admiring-lovelace-3oh7g0` (verificado con `git log`): ya incluye harness, fix-mecanicos y fix-orquestador (merge `16c251a`). Fix-parsers aún no. Estados de esas tres ramas actualizados a "mergeado" en el bundle. fix-orquestador tiene un commit posterior (`efb8ccb`, test) que no vi en la base.
 * `msj_fail` duplicada (`messages.py:287` y `:331`) sigue sin corregir; el fix de `bot.estatus` depende de la segunda.
 
+## 2026-10-25 · Estado de integración (base 04f1ebe)
+
+* Base `claude/admiring-lovelace-3oh7g0` en `04f1ebe`: verifiqué `python -m pytest -q` → 292 passed, 3 xfailed.
+* Mergeados: harness (`6b13b82`), fix-mecanicos (`dc02a2d`), fix-orquestador (`16c251a` + `efb8ccb`), fix-parsers (`04f1ebe`).
+* Corregidos en la base: regex aviso (con lookahead que excluye "aviso de privacidad", verificado en `movimientos_danone.py:164` y `movimientos_penafiel.py:317`), coma de `form_solicitud.sql`, JSON con PII fuera del índice (siguen en el historial), `detect_direccion` None manejado en el llamador (el contrato `None` se mantiene), `CORS_ALLOW_ORIGINS`, `GRAPH_CLIENT_STATE` (opcional; `subscriptions.py` aún no envía `clientState`), NaN en `send_email_coolers`, `bot.cancelar` Danone y Penafiel, `bot.estatus`.
+* Pendiente: fix-returning (bug 3 + `NOT EXISTS` de `cooler_request.sql`; fila ACCEPTED reenviada queda sin cambios con log de revisión).
+* Reproducido y abierto: stopwords antes de IGNORE en Danone.
+* Abiertos sin dueño: `msj_fail` duplicada (conservar la firma sin argumentos, la usa `bot.estatus`), `/lifecyclenotif` sin `clientState`, `PARSERS_REPLY` `KeyError`, `bot.global` con `tzinfo`, `bot.*` desconocido no detectado.
+* Runbook: usar `python -m pytest -q`; `DEBUG=true` obligatorio para QA.
+
 ## 2026-10-24
 
 * Creación del bundle OKF del repositorio `e2c` (rama `claude/admiring-lovelace-3oh7g0`).

@@ -32,7 +32,7 @@ tags: [postgres, sql, repositorio]
 * `insert_update_cooler`: update de la fila PENDING y luego insert. Ver [bugs](../riesgos/bugs.md).
 * `update_cooler`: update por request y serie.
 * `update_email_request`: recalcula contadores y status.
-* `send_email_coolers` (danone, gen, penafiel): en rama `claude/e2c-fix-parsers` (sin mergear) usa las series limpias (NaN→None) en INSERT y `WHERE NOT EXISTS`.
+* `send_email_coolers` (danone, gen, penafiel): mergeado en `claude/admiring-lovelace-3oh7g0` (rama `claude/e2c-fix-parsers`) usa las series limpias (NaN→None) en INSERT y `WHERE NOT EXISTS`.
 * `cancel_email_request`, `complete_email_request`, `cancel_pending_coolers`.
 * `get_distribuidora_mov` y `get_distribuidora_ruta`: lookup por CP y precio.
 
