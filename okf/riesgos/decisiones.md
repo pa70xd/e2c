@@ -12,7 +12,7 @@ tags: [decisiones, fase-3]
 * Sesiones creadas (en curso): classifier-core (opus) · `claude/e2c-classifier-core`; redact (sonnet) · `claude/e2c-redact`.
 * Pendientes, arrancan cuando los contratos estén estables: provider-haiku (sonnet), revision (opus), eval (sonnet).
 * El proveedor `jev` queda fuera hasta que haya acceso.
-* No sé aún qué es el "gate" ni sobre qué muestra se mide la precisión: queda por documentar cuando lo reporten las sesiones.
+* El "gate" es la decisión es_os/tipo_evento del clasificador (ver [núcleo](../classifier/core.md)). La precisión se mide con el [evaluador](../classifier/eval.md): sobre el set sintético, regex da 0.7419 (no cumple); haiku no se ha medido. El set real aún no existe.
 
 # Filas ACCEPTED en hilos (2026-10-25)
 

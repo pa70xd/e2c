@@ -212,6 +212,11 @@
 * Runbook: cifras 768/48/1, variables nuevas, advertencia de no activar haiku sin `eval/smoke_haiku.py` con key real y sin precisión >= 0.95 en gate, y `requirements.txt` UTF-16 LE.
 * Sigue pendiente: sesión eval (esperan los correos de ejemplo) y las preguntas abiertas de la Fase 3.
 
+## 2026-10-25 · eval: resumen (Fase 3)
+
+* Rama `claude/e2c-eval` (`80fef31`), sin mergear. Verificado: archivos, 67 casos, `pytest -q` → 792 passed, 48 skipped, 1 xfailed; corrí `run_eval.py --provider regex` sobre el set sintético y reproduje la línea base: gate precisión 0.7419 (no cumple 0.95).
+* Nuevo concepto [classifier/eval.md](classifier/eval.md). `decisiones.md` y runbook actualizados: haiku sin medir; set real pendiente.
+
 ## 2026-10-24
 
 * Creación del bundle OKF del repositorio `e2c` (rama `claude/admiring-lovelace-3oh7g0`).

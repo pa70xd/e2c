@@ -77,7 +77,7 @@ Además, la Fase 2 (refactor sin cambio de comportamiento, goldens sin diff) est
 
 Fase 3 (clasificador, mergeada): `classifier/`, `review/` y el proveedor haiku. Por defecto todo usa `regex` y el comportamiento no cambia. `tests/conftest.py` limpia `CLASSIFIER_*` y `ANTHROPIC_API_KEY`, así que exportarlas no altera la suite. Ver [núcleo del clasificador](../classifier/core.md) y [revisión por hilo](../flows/revision-por-hilo.md).
 
-**ADVERTENCIA: no actives haiku** (`CLASSIFIER_GATE=haiku` o `CLASSIFIER_EXTRACT=haiku`) **sin antes** correr `eval/smoke_haiku.py` con una key real y sin que la evaluación supere **precisión >= 0.95 en gate** (umbral de [decisiones](../riesgos/decisiones.md)). La evaluación (sesión eval) aún no existe: espera los correos de ejemplo. Además, `review` solo corre con un proveedor externo y manda avisos reales a REPARE.
+**ADVERTENCIA: no actives haiku** (`CLASSIFIER_GATE=haiku` o `CLASSIFIER_EXTRACT=haiku`) **sin antes** correr `eval/smoke_haiku.py` con una key real y sin que la evaluación supere **precisión >= 0.95 en gate** (umbral de [decisiones](../riesgos/decisiones.md)). El evaluador existe en la rama `claude/e2c-eval` (sin mergear; ver [evaluador](../classifier/eval.md)): sobre el set sintético, regex da precisión de gate 0.7419 (no cumple) y haiku no se ha medido. Falta el set real. Además, `review` solo corre con un proveedor externo y manda avisos reales a REPARE.
 
 Variables nuevas, todas opcionales y sin valores en el repo: `CLASSIFIER_GATE`, `CLASSIFIER_EXTRACT` (default `regex`), `CLASSIFIER_MIN_CONFIDENCE` (default 0.7), `ANTHROPIC_API_KEY` (solo para haiku). Nota: `requirements.txt` es UTF-16 LE con CRLF (ahí está `anthropic==2.3.0`): conserva esa codificación si lo editas.
 
