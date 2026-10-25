@@ -1,0 +1,38 @@
+{
+  "deliveries": [
+    {
+      "message": {
+        "id": "msg-danone-sinprop",
+        "subject": "Seguimiento a solicitud",
+        "from": "contacto@danone-cliente.example.com",
+        "to": [
+          "cliente.danone@repare.example.com"
+        ],
+        "attachments": [
+          "solicitud_servicios.xlsx"
+        ]
+      },
+      "result": null,
+      "error": null,
+      "replies_sent": 0
+    }
+  ],
+  "repo_calls": [
+    {
+      "module": "danone.DB_POSTGRE",
+      "fn": "conversation_exists",
+      "params": {
+        "conversation_id": "conv-danone-002"
+      }
+    },
+    {
+      "module": "danone.DB_POSTGRE",
+      "fn": "email_init_exist",
+      "params": {
+        "mail_id": "msg-danone-sinprop"
+      }
+    }
+  ],
+  "external_calls": [],
+  "replies": []
+}
