@@ -31,7 +31,7 @@ tags: [docker, cloud-run, env]
 | `CLASSIFIER_GATE` | classifier (Fase 3) | Opcional. Proveedor del gate; default `regex`. Verificado en `classifier/registry.py` de la rama `claude/e2c-classifier-core` (`926d693`, sin mergear). |
 | `CLASSIFIER_EXTRACT` | classifier (Fase 3) | Opcional. Proveedor de la extracción; default `regex`. Misma rama. |
 | `CLASSIFIER_MIN_CONFIDENCE` | classifier (Fase 3) | Opcional. Confianza mínima del gate externo; default 0.7. Misma rama. |
-| `ANTHROPIC_API_KEY` | provider-haiku (Fase 3) | Opcional. Reportada por la orquestadora; no la he visto en el código (rama `claude/e2c-provider-haiku`, sin verificar). No pegues su valor en el repo. |
+| `ANTHROPIC_API_KEY` | provider-haiku (Fase 3) | Opcional. Verificada en `classifier/providers/haiku.py` de la rama `claude/e2c-provider-haiku` (`a27e690`, sin mergear). Sin ella, el proveedor haiku cae a regex. No pegues su valor en el repo. |
 
 Sin uso: `MAIL`, `NOTIFICATIONS_TOPIC_ID`, `NOTIFY_ERROR_MAILS`, `SECRET_ID`, `GOOGLE_MAPS_API_KEY` (catálogos muertos).
 

@@ -179,6 +179,12 @@
 * Nota: el registro da `regex` como default del **gate** también; la orquestadora solo mencionó el default de `CLASSIFIER_EXTRACT`.
 * Pendiente: eval (sonnet), cuando el usuario mande los correos de ejemplo.
 
+## 2026-10-25 · provider-haiku: resumen (Fase 3)
+
+* Rama `claude/e2c-provider-haiku` (`a27e690`), sin mergear. Verificado: archivos, `anthropic==2.3.0` en `requirements.txt`, modelo `claude-haiku-5-5`, timeout 8 s, 1 reintento, guarda de PII. `pytest -q` → 473 passed, 24 skipped, 1 xfailed **tras instalar `anthropic`** (sin él, `test_haiku.py` falla en recolección).
+* Nuevo concepto [classifier/provider-haiku.md](classifier/provider-haiku.md). `ANTHROPIC_API_KEY` pasa a verificada en `despliegue.md`.
+* Sin probar con key real (`eval/smoke_haiku.py` pendiente); sin medir precisión.
+
 ## 2026-10-24
 
 * Creación del bundle OKF del repositorio `e2c` (rama `claude/admiring-lovelace-3oh7g0`).
