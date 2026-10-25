@@ -74,7 +74,7 @@
 ## 2026-10-25 · Decisión: correcciones sobre filas ACCEPTED
 
 * Decisión del usuario, relayada por la orquestadora: una corrección en un hilo sobre una fila ya ACCEPTED **no se aplica**; va a revisión humana con "requiere revisión". Registrada como respondida en `riesgos/preguntas-abiertas.md`.
-* Implementación actual: solo un `print` `[BASEDATOS]` en `insert_update_cooler` (rama `claude/e2c-fix-returning`, sin mergear). No hay cola de revisión persistida; ticket para la Fase 3.
+* Implementación actual: solo un `print` `[BASEDATOS]` en `insert_update_cooler` (rama `claude/e2c-fix-returning`, mergeada en la base). No hay cola de revisión persistida; ticket para la Fase 3.
 * Sigue abierto: si un hilo puede cancelar filas ya aceptadas.
 
 ## 2026-10-25 · Fase 0 y Fase 1 cerradas; runbook del lunes

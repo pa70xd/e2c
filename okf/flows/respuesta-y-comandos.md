@@ -24,7 +24,7 @@ Según `EMAIL_TYPE.detect_direccion` ([email_type](../services/email-type.md)):
 # Inbound (cliente → REPARE)
 
 * Requiere Excel. Sin Excel no se procesa.
-* Aplica las mismas reglas de negocio que la solicitud inicial, luego `insert_update_cooler` y `update_email_request`. En `claude/e2c-fix-returning` (sin mergear), una fila ACCEPTED reenviada no se aplica y se loguea para revisión.
+* Aplica las mismas reglas de negocio que la solicitud inicial, luego `insert_update_cooler` y `update_email_request`. En la base (rama `claude/e2c-fix-returning`), una fila ACCEPTED reenviada no se aplica y se loguea para revisión.
 * Responde con `msj_add_cliente`.
 
 # Outbound (REPARE → cliente)
