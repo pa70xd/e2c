@@ -96,5 +96,4 @@ def test_decidir_por_defecto_es_regex_sin_log(capsys):
     assert (d.proveedor_gate, d.proveedor_extract) == ("regex", "regex")
     assert d.tipo_evento == CANCELAR_SOLICITUD
     assert d.rows == () and d.filas_revision == () and d.fallbacks == ()
-    assert classifier.ultima_decision() is d
     assert "[CLASSIFIER]" not in capsys.readouterr().out

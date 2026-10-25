@@ -60,19 +60,7 @@ def cargar(nombre: str):
         raise ProveedorNoDisponible(f"proveedor_no_implementado:{nombre}") from None
 
 
-def _redact_stub(text: str) -> str:
-    raise NotImplementedError(
-        "classifier/redact.py no existe: no se manda texto a un proveedor externo sin redactar"
-    )
-
-
 def get_redactor():
-    """``classifier.redact.redact`` si existe; si no, un stub que lanza
-    ``NotImplementedError``."""
-    try:
-        from classifier.redact import redact
-    except ModuleNotFoundError as e:
-        if e.name != "classifier.redact":
-            raise
-        return _redact_stub
+    """``redact(text, conservar=())`` de ``classifier/redact.py``."""
+    from classifier.redact import redact
     return redact

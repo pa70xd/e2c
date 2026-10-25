@@ -11,14 +11,14 @@ Uso:
 * ``decidir_correo(email, customer, etapa, direccion)``: decisión desde
   ``src/service.py`` (mensajes de hilo y ``init`` de Holanda y Heineken).
 * ``debe_continuar(decision, thread_ctx)``: si el correo sigue al parser.
-* ``ultima_decision()``: la última ``Decision`` del contexto actual (la misma
-  tarea async de ``processMail``; para el
-  canal de revisión: ``Decision.filas_revision``).
+
+La ``Decision`` viaja como valor de retorno; no hay estado global (varios
+correos se procesan en paralelo). ``src/service.py`` la deja en el parser del
+correo como ``parser.classifier_decision`` (``Decision.filas_revision`` para
+el canal de revisión).
 """
 
 from __future__ import annotations
-
-from contextvars import ContextVar
 
 from classifier import registry, validate
 from classifier.contracts import (
@@ -29,8 +29,6 @@ from classifier.contracts import (
     ThreadCtx,
 )
 from classifier.providers import regex as regex_provider
-
-_ULTIMA: ContextVar = ContextVar("classifier_ultima_decision", default=None)
 
 # Direcciones internas de REPARE: los comandos bot.* son deterministas y el
 # gate no los bloquea.
@@ -44,10 +42,6 @@ _cargador_contexto = None
 def registrar_cargador_contexto(fn) -> None:
     global _cargador_contexto
     _cargador_contexto = fn
-
-
-def ultima_decision() -> Decision | None:
-    return _ULTIMA.get()
 
 
 def _codigo_error(e: BaseException) -> str:
@@ -83,13 +77,15 @@ def decidir(subject, body, thread_ctx: ThreadCtx) -> Decision:
     def texto_redactado():
         nonlocal redactado
         if redactado is None:
-            redact = registry.get_redactor()
+            # Las series ya guardadas no se redactan (parecen teléfonos).
+            conservar = thread_ctx.series()
             try:
+                redact = registry.get_redactor()
                 redactado = (
-                    redact(subject) if subject else subject,
-                    redact(body or ""),
+                    redact(subject, conservar=conservar) if subject else subject,
+                    redact(body or "", conservar=conservar),
                 )
-            except NotImplementedError:
+            except (ImportError, NotImplementedError):
                 raise _RedaccionFallida("redaccion_no_disponible") from None
             except Exception:
                 raise _RedaccionFallida("redaccion_error") from None
@@ -118,7 +114,7 @@ def decidir(subject, body, thread_ctx: ThreadCtx) -> Decision:
         try:
             proveedor = registry.cargar(nombre_extract)
             _, b = texto_redactado()
-            salida = proveedor.extract(b, thread_ctx)
+            salida = proveedor.extract(b, thread_ctx, gate=gate)
             salida = list(salida) if isinstance(salida, (list, tuple)) else salida
             errores = validate.validar_rows(salida, gate, thread_ctx)
             if errores:
@@ -128,7 +124,7 @@ def decidir(subject, body, thread_ctx: ThreadCtx) -> Decision:
         except Exception as e:
             fallbacks.append(f"extract:{nombre_extract}:{_codigo_error(e)}")
     if rows is None:
-        rows = tuple(regex_provider.extract(body, thread_ctx)) if gate.es_os else ()
+        rows = tuple(regex_provider.extract(body, thread_ctx, gate=gate)) if gate.es_os else ()
 
     aplicables, revision = validate.separar_revision(rows, gate, thread_ctx)
     decision = Decision(
@@ -140,7 +136,6 @@ def decidir(subject, body, thread_ctx: ThreadCtx) -> Decision:
         filas_revision=revision,
         fallbacks=tuple(fallbacks),
     )
-    _ULTIMA.set(decision)
 
     if nombre_gate != PROVEEDOR_REGEX or nombre_extract != PROVEEDOR_REGEX:
         _log(decision, thread_ctx)

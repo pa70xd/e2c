@@ -88,5 +88,5 @@ def gate(subject, body_redacted, thread_ctx) -> GateResult:
     return _gate_reply(subject, body_redacted, thread_ctx)
 
 
-def extract(body_redacted, thread_ctx):
+def extract(body_redacted, thread_ctx, gate=None):
     return []

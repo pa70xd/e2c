@@ -39,9 +39,14 @@ class Proveedores:
         return modulo
 
     def redactor(self, fn=None):
-        def redact(text):
-            self.redactados.append(text)
+        def redact(text, conservar=()):
+            self.redactados.append((text, tuple(conservar)))
             return "<R>" if fn is None else fn(text)
+        self.mp.setattr(registry, "get_redactor", lambda: redact)
+
+    def sin_redaccion(self, error=NotImplementedError):
+        def redact(text, conservar=()):
+            raise error("redacción caída")
         self.mp.setattr(registry, "get_redactor", lambda: redact)
 
     def usar(self, gate=None, extract=None):

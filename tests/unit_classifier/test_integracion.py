@@ -61,11 +61,10 @@ def test_proveedor_externo_que_falla_da_el_mismo_golden(
 
 @pytest.mark.parametrize("cliente, correo, excel, conv, nombre", ESCENARIOS, ids=[e[-1] for e in ESCENARIOS])
 def test_sin_redaccion_da_el_mismo_golden(harness, fixtures_for, proveedores, cliente, correo, excel, conv, nombre):
-    """Con haiku elegido y sin classifier/redact.py nada sale del proceso."""
+    """Si la redacción falla, nada sale del proceso."""
     llamadas = []
     proveedores.registrar("fake", gate=lambda *a: llamadas.append(a), extract=lambda *a: llamadas.append(a))
-    from classifier import registry
-    proveedores.mp.setattr(registry, "get_redactor", lambda: registry._redact_stub)
+    proveedores.sin_redaccion()
     proveedores.usar(gate="fake", extract="fake")
     _entregar(harness, fixtures_for, cliente, correo, excel, conv, nombre)
     assert llamadas == []
@@ -126,7 +125,37 @@ def test_error_del_clasificador_no_corta_el_flujo(monkeypatch):
         raise ValueError("x")
 
     monkeypatch.setattr(classifier, "decidir_correo", roto)
-    assert service.classifier_permite(object(), "holanda", "init") is True
+    assert service.classifier_gate(object(), "holanda", "init") == (True, None)
+
+
+def test_la_decision_viaja_en_el_parser(harness, fixtures_for, proveedores, monkeypatch):
+    """Sin estado global: cada parser recibe la Decision de su correo."""
+    from parsers.danone import DANONE_REPLY
+    from parsers.holanda import HOLANDA_INIT
+
+    vistas = []
+    for clase in (DANONE_REPLY, HOLANDA_INIT):
+        original = clase.parse
+
+        async def parse(self, *a, _original=original, **k):
+            vistas.append(self.classifier_decision)
+            return await _original(self, *a, **k)
+
+        monkeypatch.setattr(clase, "parse", parse)
+
+    proveedores.registrar("fake", gate=lambda s, b, c: GateResult(True, "modificar_filas" if c.etapa == "reply" else "nueva_solicitud", 0.9))
+    proveedores.redactor()
+    proveedores.usar(gate="fake")
+    fx = fixtures_for("danone")
+    harness.deliver(inbound("danone", fx.correos["inbound"], "msg-danone-in", "conv-danone-001"),
+                    [fx.xlsx("ampliacion_servicios.xlsx")])
+    fh = fixtures_for("holanda")
+    harness.deliver(inbound("holanda", fh.correos["init"], "msg-holanda-init", "conv-holanda-001"),
+                    [fh.xlsx("Casos REPARE 02032026.xlsx")])
+    assert [(d.proveedor_gate, d.tipo_evento) for d in vistas] == [
+        ("fake", "modificar_filas"), ("fake", "nueva_solicitud"),
+    ]
+    assert not hasattr(__import__("classifier"), "ultima_decision")
 
 
 def test_gate_en_parser_init_cubre_danone_y_penafiel():

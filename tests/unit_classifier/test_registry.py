@@ -48,26 +48,25 @@ def test_cargar_desconocido_o_no_implementado():
         registry.cargar("jev")
 
 
-def test_stub_de_redaccion_lanza_not_implemented():
-    with pytest.raises(NotImplementedError):
-        registry._redact_stub("texto")
+def test_get_redactor_es_la_redact_real():
+    from classifier.redact import redact
+    assert registry.get_redactor() is redact
 
 
-def test_sin_redact_py_se_usa_el_stub(monkeypatch):
-    import sys
-    monkeypatch.setitem(sys.modules, "classifier.redact", None)
-    assert registry.get_redactor() is registry._redact_stub
-
-
-def test_externo_sin_redaccion_cae_a_regex_y_no_llama_al_proveedor(monkeypatch, proveedores, capsys):
+@pytest.mark.parametrize(
+    "error, codigo",
+    [(NotImplementedError, "redaccion_no_disponible"), (ImportError, "redaccion_no_disponible"),
+     (ValueError, "redaccion_error")],
+)
+def test_externo_sin_redaccion_cae_a_regex_y_no_llama_al_proveedor(proveedores, capsys, error, codigo):
     llamadas = []
     proveedores.registrar("fake", gate=lambda *a: llamadas.append(a))
-    monkeypatch.setattr(registry, "get_redactor", lambda: registry._redact_stub)
+    proveedores.sin_redaccion(error)
     proveedores.usar(gate="fake")
     d = classifier.decidir("RE: x", CUERPO, REPLY)
     assert llamadas == []
     assert d.proveedor_gate == "regex"
-    assert d.fallbacks == ("gate:fake:redaccion_no_disponible",)
+    assert d.fallbacks == (f"gate:fake:{codigo}",)
     out = capsys.readouterr().out
     assert "[CLASSIFIER]" in out and "PRIVADA" not in out and "Inventada" not in out
 
@@ -84,8 +83,34 @@ def test_externo_recibe_texto_redactado(proveedores):
     proveedores.usar(gate="fake")
     d = classifier.decidir("RE: Calle Inventada", CUERPO, REPLY)
     assert recibido == [("<R>", "<R>")]
-    assert proveedores.redactados == ["RE: Calle Inventada", CUERPO]
+    assert proveedores.redactados == [("RE: Calle Inventada", ()), (CUERPO, ())]
     assert (d.proveedor_gate, d.tipo_evento, d.fallbacks) == ("fake", "estatus", ())
+
+
+def test_redact_conserva_las_series_del_hilo(proveedores):
+    ctx = ThreadCtx(
+        etapa=ETAPA_REPLY,
+        filas=(FilaGuardada(1, PENDING, "5512345678", ""), FilaGuardada(2, ACCEPTED, None, "DB-9"),
+               FilaGuardada(3, PENDING, "5512345678", None)),
+    )
+    proveedores.registrar("fake", gate=lambda s, b, c: GateResult(True, "estatus", 0.95))
+    proveedores.redactor()
+    proveedores.usar(gate="fake")
+    classifier.decidir(None, "la 5512345678 falla", ctx)
+    assert proveedores.redactados == [("la 5512345678 falla", ("5512345678", "DB-9"))]
+
+
+def test_redact_real_con_series_del_hilo(proveedores):
+    recibido = []
+    proveedores.registrar("fake", gate=lambda s, b, c: recibido.append(b) or GateResult(True, "estatus", 0.95))
+    proveedores.usar(gate="fake")
+    ctx = ThreadCtx(etapa=ETAPA_REPLY, filas=(FilaGuardada(1, PENDING, "5512345678"),))
+    d = classifier.decidir(None, "cambien 5512345678 hoy", ctx)
+    assert "5512345678" in recibido[0]
+    assert d.proveedor_gate == "fake"
+    # Sin la serie en el hilo, la misma cifra se trata como teléfono.
+    classifier.decidir(None, "cambien 5512345678 hoy", REPLY)
+    assert "5512345678" not in recibido[1]
 
 
 @pytest.mark.parametrize(
@@ -138,17 +163,19 @@ def test_no_os_externo_en_init(proveedores):
 
 
 def test_extract_externo_y_revision_de_accepted(proveedores):
+    recibido_gate = []
     rows = [RowExtraida("modificar", modelo="M2", row_number=1),
             RowExtraida("modificar", modelo="M3", row_number=2)]
     proveedores.registrar(
         "fake",
         gate=lambda s, b, c: GateResult(True, "modificar_filas", 0.9),
-        extract=lambda b, c: rows,
+        extract=lambda b, c, gate=None: recibido_gate.append(gate) or rows,
     )
     proveedores.redactor()
     proveedores.usar(gate="fake", extract="fake")
     d = classifier.decidir("RE: x", CUERPO, FILAS)
     assert (d.proveedor_gate, d.proveedor_extract) == ("fake", "fake")
+    assert recibido_gate == [d.gate] and d.gate.tipo_evento == "modificar_filas"
     assert d.rows == tuple(rows)
     assert [r.row_number for r in d.filas_aplicables] == [1]
     assert [(r.row_number, r.comentario) for r in d.filas_revision] == [(2, "requiere revisión")]
@@ -156,7 +183,7 @@ def test_extract_externo_y_revision_de_accepted(proveedores):
 
 
 def test_extract_invalido_cae_a_regex(proveedores):
-    proveedores.registrar("fake", extract=lambda b, c: [RowExtraida("modificar", row_number=1)])
+    proveedores.registrar("fake", extract=lambda b, c, gate=None: [RowExtraida("modificar", row_number=1)])
     proveedores.redactor()
     proveedores.usar(extract="fake")
     # Sin filas cargadas no se puede verificar la referencia.
@@ -171,7 +198,7 @@ def test_extract_no_corre_si_no_es_os(proveedores):
     proveedores.registrar(
         "fake",
         gate=lambda s, b, c: GateResult(False, "no_os", 0.9),
-        extract=lambda b, c: llamadas.append(b) or [],
+        extract=lambda b, c, gate=None: llamadas.append(b) or [],
     )
     proveedores.redactor()
     proveedores.usar(gate="fake", extract="fake")
