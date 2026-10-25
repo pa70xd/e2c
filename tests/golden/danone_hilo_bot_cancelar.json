@@ -26,6 +26,13 @@
     },
     {
       "module": "danone.DB_POSTGRE",
+      "fn": "cancel_pending_coolers",
+      "params": {
+        "request_code": "REPARE_000042"
+      }
+    },
+    {
+      "module": "danone.DB_POSTGRE",
       "fn": "cancel_email_request",
       "params": {
         "request_code": "REPARE_000042"

@@ -98,10 +98,7 @@ REPO_MODULES = [
 ]
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason="bug 'NaN a PostgreSQL' (reportado) de okf/riesgos/bugs.md: send_email_coolers manda parametros[...] crudos, no los limpios",
-)
+# Corregido: send_email_coolers manda las series limpias (NaN -> None).
 @pytest.mark.parametrize("modulo", REPO_MODULES, ids=["danone", "gen", "penafiel"])
 def test_send_email_coolers_no_manda_nan(sql_spy, modulo):
     repo = sql_spy.install(modulo)
@@ -128,18 +125,18 @@ def test_insert_update_cooler_no_inserta_si_actualizo(sql_spy, modulo):
 
 
 # ---------------------------------------------------------------------------
-# Bug 5 — Danone bot.cancelar no cancela coolers pendientes
+# Bug 5 — bot.cancelar no cancelaba coolers pendientes (corregido en Danone y Penafiel)
 # ---------------------------------------------------------------------------
 
-@pytest.mark.xfail(
-    strict=True,
-    reason="bug 5 de okf/riesgos/bugs.md: Danone bot.cancelar solo llama cancel_email_request",
-)
-def test_danone_bot_cancelar_cancela_coolers_pendientes(harness, fixtures_for):
-    fx = fixtures_for("danone")
-    msg = bot_command("danone", fx.correos["bot"]["subject"], "bot.cancelar", "msg-bug5", "conv-bug5")
+@pytest.mark.parametrize("cliente", ["danone", "penafiel"])
+def test_bot_cancelar_cancela_coolers_pendientes(harness, fixtures_for, cliente):
+    fx = fixtures_for(cliente)
+    asunto = fx.correos.get("bot", fx.correos.get("outbound"))["subject"]
+    msg = bot_command(cliente, asunto, "bot.cancelar", f"msg-bug5-{cliente}", f"conv-bug5-{cliente}")
     harness.deliver(msg)
-    assert "cancel_pending_coolers" in harness.repo.names()
+    nombres = harness.repo.names()
+    assert "cancel_pending_coolers" in nombres
+    assert nombres.index("cancel_pending_coolers") < nombres.index("cancel_email_request")
 
 
 # ---------------------------------------------------------------------------
@@ -174,10 +171,9 @@ def test_process_mail_no_revienta_con_direccion_none(harness):
 
 
 # ---------------------------------------------------------------------------
-# Bug 7 — bot.estatus de Danone/Penafiel: `data` sin asignar si la consulta falla
+# Bug 7 — bot.estatus de Danone/Penafiel: `data` sin asignar si la consulta falla (corregido)
 # ---------------------------------------------------------------------------
 
-@pytest.mark.xfail(strict=True, reason="bug 7 de okf/riesgos/bugs.md: bot.estatus lanza UnboundLocalError si la consulta falla")
 @pytest.mark.parametrize("cliente, modulo, clase", [
     ("danone", "parsers.danone", "DANONE_REPLY"),
     ("penafiel", "parsers.penafiel", "PENAFIEL_REPLY"),
