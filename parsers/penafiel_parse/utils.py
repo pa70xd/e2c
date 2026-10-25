@@ -16,6 +16,13 @@ class PENAFIEL_UTILS:
 
     @staticmethod
     def analizar_proposito(text) -> bool:
+        # La decisión pasa por el gate del clasificador; con el proveedor
+        # por defecto (regex) es exactamente analizar_proposito_regex.
+        from classifier import gate_proposito
+        return gate_proposito("penafiel", None, text)
+
+    @staticmethod
+    def analizar_proposito_regex(text) -> bool:
         return gen_utils.analizar_proposito( text, MOVEMENTS, CREATE_REQUESTS, IGNORE_REQUESTS )
 
 

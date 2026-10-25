@@ -25,6 +25,8 @@ from src.excel_ingestion import Excel_Ingestion
 from src.email_type import EMAIL_TYPE
 from infrastructure.graphapi.graphapi import reply_mail_onl_text, reply_mail_init_files
 from parsers.gen_parse.reader import GEN_READER
+import classifier
+from classifier.contracts import ETAPA_INIT, ETAPA_REPLY
 
 from datetime import datetime
 from zoneinfo import ZoneInfo
@@ -97,6 +99,25 @@ PARSERS_REPLY = {
     "test_holanda"   : HOLANDA_REPLY,
     "test_heineken": HEINEKEN_REPLY,
 }
+
+# Clientes cuyo parser INIT ya pasa por el gate del clasificador en
+# analizar_proposito. Los demás pasan por el gate aquí.
+GATE_EN_PARSER_INIT = {"danone", "penafiel", "test_danone", "test_penafiel"}
+
+
+def classifier_permite(email, customer, etapa, direccion=None) -> bool:
+    """Gate del clasificador. Con el proveedor por defecto (regex) siempre
+    deja pasar lo que antes pasaba. Si el clasificador falla, el flujo sigue
+    como antes."""
+    try:
+        decision, ctx = classifier.decidir_correo(email, customer, etapa, direccion)
+    except Exception as e:
+        print(f"[CLASSIFIER][ERROR] {type(e).__name__}; se sigue sin gate")
+        return True
+    if classifier.debe_continuar(decision, ctx):
+        return True
+    print(f"[CLASSIFIER][INFO] {etapa} descartado: tipo={decision.tipo_evento}")
+    return False
 
 
 # SABANA = Template_Sabana()
@@ -263,6 +284,11 @@ async def processMail(data):
             # print(f"{flujo}CUSTOMER: {customer}")
             # print(f"{flujo}DIRECCIO: {direccion}")
 
+            # Todo mensaje de hilo pasa por el gate (agrega, cambia o cancela filas).
+            if not classifier_permite(email, customer, ETAPA_REPLY, direccion):
+                duckConn.close()
+                return None
+
             parser = PARSERS_REPLY[customer](duckConn)
 
             try :
@@ -321,6 +347,10 @@ async def processMail(data):
                             print(f"{flujo}[INFO] Segunda notificación detectada. Se ignora.")
                             duckConn.close()
                             return "EMAIL_DUPLICADO"
+
+            if customer not in GATE_EN_PARSER_INIT and not classifier_permite(email, customer, ETAPA_INIT):
+                duckConn.close()
+                return None
 
             parser = PARSERS_INIT[customer](duckConn)
 
