@@ -14,6 +14,7 @@ Bundle OKF del repositorio `e2c`: backend FastAPI que recibe correos de clientes
 
 ## Flujos
 
+* [Revisión por hilo (flujo)](flows/revision-por-hilo.md) - qué se aplica y qué va a revisión humana cuando un hilo pide cambios.
 * [Recepción de correo](flows/recepcion-correo.md) - desde la notificación de Graph hasta el procesamiento.
 * [Solicitud inicial](flows/solicitud-inicial.md) - correo nuevo con Excel: parseo, validación, persistencia y respuesta.
 * [Respuesta y comandos del bot](flows/respuesta-y-comandos.md) - hilos, outbound de REPARE, `bot.*`.
@@ -58,6 +59,13 @@ Bundle OKF del repositorio `e2c`: backend FastAPI que recibe correos de clientes
 
 * [config_general](config/config-general.md) - mensajes, palabras reservadas, stopwords.
 
+## Clasificador (Fase 3)
+
+* [Revisión por hilo](classifier/revision.md) - aplica cambios en filas PENDING y manda el resto a revisión humana por correo (mergeado en la base).
+* [Núcleo del clasificador](classifier/core.md) - contratos, validación, registro, proveedor regex y gate en el flujo (mergeado en la base).
+* [Proveedor Haiku](classifier/provider-haiku.md) - `gate()` y `extract()` con Claude Haiku 5.5, opcional (mergeado en la base).
+* [Redacción de PII](classifier/redact.md) - `redact()`, obligatoria antes de cualquier proveedor externo (mergeado en la base).
+
 ## Pruebas
 
 * [Harness de pruebas offline](pruebas/harness.md) - pytest sin red, goldens y xfail de bugs conocidos (mergeado en `claude/admiring-lovelace-3oh7g0`).
@@ -68,6 +76,7 @@ Bundle OKF del repositorio `e2c`: backend FastAPI que recibe correos de clientes
 * [Seguridad](riesgos/seguridad.md)
 * [Deuda técnica](riesgos/deuda-tecnica.md)
 * [Preguntas abiertas de negocio](riesgos/preguntas-abiertas.md)
+* [Decisiones del proyecto](riesgos/decisiones.md) - umbral de la Fase 3, filas ACCEPTED, reglas de fase.
 
 ## Historial
 

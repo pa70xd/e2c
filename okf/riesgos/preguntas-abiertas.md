@@ -26,7 +26,16 @@ tags: [pendientes, negocio]
 # Repo
 
 * ¿KOF se habilita? Requiere reglas, buzón y registro en los mapas de parsers.
+# Clasificador y revisión por hilo (Fase 3)
+
+* Con Excel adjunto no se atiende lo que pida el texto del correo. ¿Debe atenderse?
+* ¿Confirmas que las filas CANCELLED y REJECTED también van a revisión (hoy decisión de la sesión classifier-core, no tuya)?
+* ¿La cola de revisión debe persistirse? Hoy solo hay correo a REPARE. Ver [revisión](../classifier/revision.md).
+* Alta desde texto sin Excel: hoy va a revisión (decisión de la orquestadora). ¿Lo confirmas?
+
 # Respondidas
+
+Ver también [decisiones](decisiones.md).
 
 * **¿Un hilo puede cancelar filas ya ACCEPTED (con OS)?** No automáticamente. Decisión del usuario del 2026-10-25, relayada por la orquestadora: va a revisión humana, igual que las correcciones sobre filas ACCEPTED. Las filas PENDING sí se pueden cancelar desde un hilo. Pendiente para la Fase 3: el canal de revisión (propuesta: respuesta en el hilo a REPARE con las filas marcadas); la cola persistida queda como ticket aparte. No implementado: hoy `bot.cancelar` actúa sobre coolers PENDING y la solicitud; no verifiqué cómo trata filas ACCEPTED.
 * **¿Una corrección por hilo puede modificar filas ACCEPTED?** No. Decisión del usuario del 2026-10-25, relayada por la orquestadora: la corrección sobre una fila ya ACCEPTED no se aplica y va a revisión humana con el comentario "requiere revisión". Hoy se implementa solo como un `print` `[BASEDATOS]` en `insert_update_cooler` (rama `claude/e2c-fix-returning`, mergeada en la base). Pendiente: ese aviso vive únicamente en los logs y no hay cola de revisión persistida; queda como ticket de la Fase 3.

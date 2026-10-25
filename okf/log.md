@@ -145,6 +145,73 @@
 * limpieza (session_01KH6MyNGZBXmdsy9TTGyijF) terminada. Las 5 sesiones de la Fase 2 terminaron.
 * Consolidado en los conceptos: `parsers/gen-base.md`, `data/capa-repositorio.md`, `flows/respuesta-y-comandos.md`, `data/catalogos.md`, `riesgos/deuda-tecnica.md` y `services/codigo-muerto.md`. Runbook actualizado a 448/24/1.
 
+## 2026-10-25 · Fase 3 iniciada
+
+* Aprobada por el usuario el 2026-10-25 (según la orquestadora). **Umbral de activación decidido antes de evaluar: precisión >= 0.95 en gate.** Registrado en el concepto nuevo [riesgos/decisiones.md](riesgos/decisiones.md).
+
+| Sesión | Modelo | Rama | ID |
+|---|---|---|---|
+| classifier-core | opus | `claude/e2c-classifier-core` | session_01MjCtnSt5V8AtZX5biRwjqa (en curso) |
+| redact | sonnet | `claude/e2c-redact` | session_014K2t9mPLbMU47mUSfoU7xY (en curso) |
+| provider-haiku | sonnet | pendiente | pendiente: arranca cuando los contratos estén estables |
+| revision | opus | pendiente | pendiente: ídem |
+| eval | sonnet | pendiente | pendiente: ídem |
+
+* El proveedor `jev` queda fuera hasta que haya acceso.
+
+## 2026-10-25 · redact: resumen (Fase 3)
+
+* Rama `claude/e2c-redact` (`0d8fc00`), sin mergear. Verificado: `classifier/redact.py` y `tests/unit_classifier/test_redact.py`; `pytest -q` → 562 passed, 24 skipped, 1 xfailed; prueba mía con texto sintético (correo, teléfono, firma redactados; serie, modelo y folio intactos; idempotente).
+* Nuevo concepto [classifier/redact.md](classifier/redact.md), enlazado en el índice.
+* Límite anotado: con 10 dígitos sin contexto se redacta como teléfono (privacidad primero); impacto en precisión sin medir.
+
+## 2026-10-25 · Fase 3: más sesiones
+
+* Nuevas, ambas desde `claude/e2c-classifier-core` (`926d693`):
+
+| Sesión | Modelo | Rama | ID |
+|---|---|---|---|
+| provider-haiku | sonnet | `claude/e2c-provider-haiku` | session_01AAwN4LQL6wjzvahTn2iCMk (en curso) |
+| revision | opus | `claude/e2c-revision` | session_0113agkPSN7r2SH56gk1jwWN (en curso) |
+
+* `revision`: canal de revisión (respuesta en el hilo a REPARE por Graph); también agrega el cargador de filas de `cooler_request` para `thread_ctx`. Según la orquestadora.
+* Variables opcionales nuevas: `CLASSIFIER_GATE`, `CLASSIFIER_EXTRACT`, `CLASSIFIER_MIN_CONFIDENCE` (las tres verificadas en `classifier/registry.py`; defaults `regex`, `regex`, 0.7) y `ANTHROPIC_API_KEY` (sin verificar). Documentadas en `deploy/despliegue.md`.
+* Nota: el registro da `regex` como default del **gate** también; la orquestadora solo mencionó el default de `CLASSIFIER_EXTRACT`.
+* Pendiente: eval (sonnet), cuando el usuario mande los correos de ejemplo.
+
+## 2026-10-25 · provider-haiku: resumen (Fase 3)
+
+* Rama `claude/e2c-provider-haiku` (`a27e690`), sin mergear. Verificado: archivos, `anthropic==2.3.0` en `requirements.txt`, modelo `claude-haiku-5-5`, timeout 8 s, 1 reintento, guarda de PII. `pytest -q` → 473 passed, 24 skipped, 1 xfailed **tras instalar `anthropic`** (sin él, `test_haiku.py` falla en recolección).
+* Nuevo concepto [classifier/provider-haiku.md](classifier/provider-haiku.md). `ANTHROPIC_API_KEY` pasa a verificada en `despliegue.md`.
+* Sin probar con key real (`eval/smoke_haiku.py` pendiente); sin medir precisión.
+
+## 2026-10-25 · classifier-core: resumen (Fase 3)
+
+* Rama `claude/e2c-classifier-core` (`926d693`, `d3fa0b2`), sin mergear. Verificado: estructura, integración en `src/service.py`, `pytest -q` → 560 passed, 24 skipped, 1 xfailed. `--update-golden` sin diff es afirmación de la sesión.
+* Nuevo concepto [classifier/core.md](classifier/core.md).
+* **Decisión no tomada por el usuario:** CANCELLED/REJECTED a revisión (motivo `estado_no_pending`). Anotada en `riesgos/decisiones.md` como pendiente de confirmación.
+* Huecos: sin lector de filas de `cooler_request` (lo agrega `revision`), decisiones del hilo no persistidas, `tests/conftest.py` no limpia `CLASSIFIER_*`, `ultima_decision()` es `ContextVar`. Runbook avisa del tercero.
+
+## 2026-10-25 · revision: resumen (Fase 3)
+
+* Rama `claude/e2c-revision` (`e872203`), sin mergear. Verificado: `review/`, los tres SQL, los métodos de `DBPostgreBase` y los mensajes; `pytest -q` → 492 passed, 48 skipped, 1 xfailed. **No ejecuté** los 48 tests contra Postgres local (540 passed con `E2C_TEST_PG_DSN`, según la sesión).
+* Nuevo concepto [classifier/revision.md](classifier/revision.md). Cuatro puntos abiertos de la sesión más dos preguntas a ti, en `riesgos/preguntas-abiertas.md`.
+* Solo actúa con `CLASSIFIER_EXTRACT` distinto de `regex`; con el default no corre.
+
+## 2026-10-25 · revision actualizada; Fase 3 parcial en la base
+
+* Base `claude/admiring-lovelace-3oh7g0` en `6d0f897`: ya incluye redact, classifier-core (`ece68b5`, con `281fa4a`) y provider-haiku. Verificado: 710 passed, 24 skipped, 1 xfailed. Mergeada en mi rama.
+* revision (`claude/e2c-revision`, `4292106`), sin mergear; verifiqué 740 passed, 48 skipped, 1 xfailed (sin Postgres). Cambios respecto del resumen anterior: alta sin Excel va a revisión (decisión de la orquestadora), cancelar fila ya CANCELLED es idempotente, filas inválidas a revisión (`separar_invalidas`), cargador solo con proveedor externo, `Decision` en `parser.classifier_decision`.
+* Resueltos y reflejados en `core.md` y `provider-haiku.md`: `ultima_decision` (ContextVar) eliminada, `extract` recibe el gate, `tests/conftest.py` limpia `CLASSIFIER_*`, `redact` acepta `conservar`.
+* Preguntas abiertas de la Fase 3 reducidas a cuatro en `riesgos/preguntas-abiertas.md`.
+
+## 2026-10-25 · Código de la Fase 3 mergeado (base 29881a7)
+
+* Base `claude/admiring-lovelace-3oh7g0` en `29881a7`: verifiqué `python -m pytest -q` → 768 passed, 48 skipped, 1 xfailed. Merges: redact `1e87314`, classifier-core `ece68b5`, provider-haiku `6d0f897`, revision `29881a7`. Las 4 sesiones (classifier-core, redact, provider-haiku, revision) terminaron. Mergeada en mi rama.
+* Nuevo flujo [flows/revision-por-hilo.md](flows/revision-por-hilo.md); conceptos de `classifier/` (core, haiku, redact, revision) pasan a "mergeado".
+* Runbook: cifras 768/48/1, variables nuevas, advertencia de no activar haiku sin `eval/smoke_haiku.py` con key real y sin precisión >= 0.95 en gate, y `requirements.txt` UTF-16 LE.
+* Sigue pendiente: sesión eval (esperan los correos de ejemplo) y las preguntas abiertas de la Fase 3.
+
 ## 2026-10-24
 
 * Creación del bundle OKF del repositorio `e2c` (rama `claude/admiring-lovelace-3oh7g0`).
