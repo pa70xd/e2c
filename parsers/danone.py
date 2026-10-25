@@ -475,6 +475,7 @@ class DANONE_REPLY:
 
                     case "bot.cancelar":
                         try:
+                            db.cancel_pending_coolers(request_code)
                             db.cancel_email_request(request_code)
                         except Exception as e:
                             print(f"No se logro cancelar la solicitud {e}")
