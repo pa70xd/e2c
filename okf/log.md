@@ -112,6 +112,13 @@
 * Rama `claude/e2c-catalogos`, sin mergear (commit `8a54b96`). Verificado: `config/data/{distribuidoras,danone_model_line_cat}.json` y `loader.py`; conteos 3471 / 20 / 41 / 851; `pytest -q` → 310 passed, 24 skipped, 1 xfailed. Documentado en `data/catalogos.md`.
 * Corrección menor: la cifra de distribuidoras pasa de "~3,472" a 3,471 entradas cargadas (la clave `502635` duplicada colapsa al último valor).
 
+## 2026-10-25 · bot-commands: resumen (Fase 2)
+
+* Rama `claude/e2c-bot-commands`, sin mergear (5 commits, el último `312df12`). Verificado: existen `bot/{commands,perfiles}.py` y `tests/unit_bot/`; `pytest -q` en la rama → 374 passed, 24 skipped, 1 xfailed; sin cambios a `tests/golden` respecto de la base.
+* Documentado en `flows/respuesta-y-comandos.md` y `riesgos/deuda-tecnica.md`. También corregí la tabla de comandos, que seguía diciendo que `bot.cancelar` de Danone/Penafiel no cancelaba coolers (corregido en la base).
+* Se confirma que `msj_comando_no_reconocido` es inalcanzable (el lector solo detecta palabras reservadas).
+* Que el comportamiento es idéntico (matriz antes/después) es afirmación de la sesión; yo solo verifiqué suite y goldens.
+
 ## 2026-10-24
 
 * Creación del bundle OKF del repositorio `e2c` (rama `claude/admiring-lovelace-3oh7g0`).
