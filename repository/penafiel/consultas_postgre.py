@@ -245,8 +245,8 @@ class DB_POSTGRE:
                 parametros["id_cliente"],
                 parametros["fecha_solicitud"],
                 parametros["modelo"],
-                parametros["serie_fabricante"],
-                parametros["serie_dnn_bnf"],
+                serie_fabricante,
+                serie_dnn_bnf,
                 parametros["tipo_servicio"],
                 parametros["canal"],
                 parametros["region"],
@@ -279,8 +279,8 @@ class DB_POSTGRE:
                 parametros["fecha_completado"],
 
                 parametros["request_code"],
-                parametros["serie_fabricante"],
-                parametros["serie_dnn_bnf"],
+                serie_fabricante,
+                serie_dnn_bnf,
 
             ),
     )
