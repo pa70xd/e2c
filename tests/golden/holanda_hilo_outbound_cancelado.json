@@ -1,0 +1,66 @@
+{
+  "deliveries": [
+    {
+      "message": {
+        "id": "msg-holanda-out-canc",
+        "subject": "RE: Casos REPARE ",
+        "from": "cliente.holanda@repare.example.com",
+        "to": [
+          "contacto@holanda-cliente.example.com"
+        ],
+        "attachments": [
+          "Casos REPARE OS.xlsx"
+        ]
+      },
+      "result": "recibido",
+      "error": null,
+      "replies_sent": 1
+    }
+  ],
+  "repo_calls": [
+    {
+      "module": "holanda.DB_HOLANDA",
+      "fn": "update_os_by_caso2",
+      "params": {
+        "caso2": "C100001H",
+        "os_value": "4030000201"
+      }
+    },
+    {
+      "module": "holanda.DB_HOLANDA",
+      "fn": "update_os_by_caso2",
+      "params": {
+        "caso2": "C200001G",
+        "os_value": "4030000202"
+      }
+    },
+    {
+      "module": "holanda.DB_HOLANDA",
+      "fn": "get_request_codes_by_caso2",
+      "params": {
+        "casos": [
+          "C100001H",
+          "C200001G"
+        ]
+      }
+    },
+    {
+      "module": "danone.DB_POSTGRE",
+      "fn": "get_email_request_status",
+      "params": {
+        "request_code": "REPARE_000042"
+      }
+    }
+  ],
+  "external_calls": [],
+  "replies": [
+    {
+      "in_reply_to": "msg-holanda-out-canc",
+      "to": [
+        "cliente.holanda@repare.example.com"
+      ],
+      "body": "<div style=\" font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; max-width: 680px; color: #24292f; font-size: 14px; line-height: 1.6; \"> <p style=\"font-size: 15px; margin-bottom: 20px;\"> 🤖 Estimado usuario REPARE, </p> <div style=\" border: 1px solid #d0d7de; border-radius: 6px; padding: 20px; background: #f6f8fa; \"> <div style=\" font-size: 14px; font-weight: bold; margin-bottom: 12px; \"> CHANGES APPLIED </div> <div style=\"color: #57606a;\"> Los cambios de la solicitud <b>REPARE_000042</b> han sido aplicados correctamente. </div> </div> <div style=\" margin-top: 18px; border: 1px solid #d0d7de; border-radius: 6px; padding: 14px 16px; background: #ffffff; \"> <div style=\" font-size: 12px; color: #57606a; margin-bottom: 8px; \"> RESUMEN </div> <div style=\"color: #57606a;\"> <b>2</b> equipos procesados<br> <b>2</b> equipos con OS (ACEPTADOS)<br> <b>0</b> equipos sin OS (PENDIENTES)<br> <b>0</b> equipos sin OS (RECHAZADOS) </div> </div> </div>",
+      "attachments": []
+    }
+  ]
+}

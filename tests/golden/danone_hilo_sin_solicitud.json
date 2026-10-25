@@ -1,0 +1,32 @@
+{
+  "deliveries": [
+    {
+      "message": {
+        "id": "msg-danone-out-huerfano",
+        "subject": "RE: Solicitud de servicios REPARE 02/03/2026",
+        "from": "cliente.danone@repare.example.com",
+        "to": [
+          "contacto@danone-cliente.example.com"
+        ],
+        "attachments": [
+          "respuesta_os.xlsx"
+        ]
+      },
+      "result": null,
+      "error": null,
+      "replies_sent": 0
+    }
+  ],
+  "repo_calls": [
+    {
+      "module": "danone.DB_POSTGRE",
+      "fn": "email_reply_validate",
+      "params": {
+        "conversation_id": "conv-danone-999",
+        "subject": "RE: Solicitud de servicios REPARE 02/03/2026"
+      }
+    }
+  ],
+  "external_calls": [],
+  "replies": []
+}

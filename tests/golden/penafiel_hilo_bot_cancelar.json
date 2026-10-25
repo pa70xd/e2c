@@ -1,0 +1,46 @@
+{
+  "deliveries": [
+    {
+      "message": {
+        "id": "msg-penafiel-bot-cancelar",
+        "subject": "RE: Solicitud de servicio Penafiel 02/03/2026",
+        "from": "cliente.penafiel@repare.example.com",
+        "to": [
+          "cliente.penafiel@repare.example.com"
+        ],
+        "attachments": []
+      },
+      "result": "recibido",
+      "error": null,
+      "replies_sent": 1
+    }
+  ],
+  "repo_calls": [
+    {
+      "module": "penafiel.DB_POSTGRE",
+      "fn": "email_reply_validate",
+      "params": {
+        "conversation_id": "conv-penafiel-001",
+        "subject": "RE: Solicitud de servicio Penafiel 02/03/2026"
+      }
+    },
+    {
+      "module": "penafiel.DB_POSTGRE",
+      "fn": "cancel_email_request",
+      "params": {
+        "request_code": "REPARE_000042"
+      }
+    }
+  ],
+  "external_calls": [],
+  "replies": [
+    {
+      "in_reply_to": "msg-penafiel-bot-cancelar",
+      "to": [
+        "cliente.penafiel@repare.example.com"
+      ],
+      "body": "<div style=\" font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; max-width: 680px; color: #24292f; font-size: 14px; line-height: 1.6; \"> <p style=\"font-size: 15px; margin-bottom: 20px;\"> 🤖 Estimado usuario REPARE, </p> <div style=\" border: 1px solid #d0d7de; border-radius: 6px; padding: 20px; background: #f6f8fa; \"> <div style=\" font-size: 14px; font-weight: bold; margin-bottom: 12px; \"> REQUEST CANCELLED </div> <div style=\"color: #57606a;\"> La solicitud <b>REPARE_000042</b> fue <b>cancelada correctamente</b>. </div> </div> <p style=\" color: #57606a; margin-top: 18px; \"> La solicitud ya no continuará con su procesamiento. </p> <p style=\"color: #57606a;\"> Si necesita generar una nueva solicitud, puede responder nuevamente al correo del bot. </p> </div>",
+      "attachments": []
+    }
+  ]
+}

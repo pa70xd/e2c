@@ -1,0 +1,69 @@
+{
+  "deliveries": [
+    {
+      "message": {
+        "id": "msg-holanda-bot-global",
+        "subject": "RE: Casos REPARE ",
+        "from": "cliente.holanda@repare.example.com",
+        "to": [
+          "cliente.holanda@repare.example.com"
+        ],
+        "attachments": []
+      },
+      "result": "recibido",
+      "error": null,
+      "replies_sent": 1
+    }
+  ],
+  "repo_calls": [
+    {
+      "module": "holanda.DB_HOLANDA",
+      "fn": "global_status",
+      "params": {}
+    }
+  ],
+  "external_calls": [],
+  "replies": [
+    {
+      "in_reply_to": "msg-holanda-bot-global",
+      "to": [
+        "cliente.holanda@repare.example.com"
+      ],
+      "body": "<div style=\" font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; max-width: 680px; color: #24292f; font-size: 14px; line-height: 1.6; \"> <p style=\"font-size: 15px; margin-bottom: 20px;\"> 🤖 Estimado usuario REPARE, </p> <div style=\" border: 1px solid #d0d7de; border-radius: 6px; padding: 20px; background: #f6f8fa; \"> <div style=\" font-size: 14px; font-weight: bold; margin-bottom: 12px; \"> GLOBAL STATUS </div> <div style=\"color: #57606a;\"> Consulta global completada correctamente. </div> </div> </div>",
+      "attachments": [
+        {
+          "name": "estatus_global_<fecha>.xlsx",
+          "sheets": [
+            {
+              "title": "Solicitud",
+              "state": "visible",
+              "rows": [
+                [
+                  "request_code",
+                  "status",
+                  "total_coolers",
+                  "created_at",
+                  "cliente"
+                ],
+                [
+                  "REPARE_000042",
+                  "IN_PROGRESS",
+                  3,
+                  "2026-03-02T09:30:00",
+                  "DANONE"
+                ],
+                [
+                  "REPARE_000043",
+                  "COMPLETED",
+                  1,
+                  "2026-03-03T10:00:00",
+                  "BONAFONT"
+                ]
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

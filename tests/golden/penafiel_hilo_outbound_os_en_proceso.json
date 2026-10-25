@@ -1,0 +1,103 @@
+{
+  "deliveries": [
+    {
+      "message": {
+        "id": "msg-penafiel-out-en_proceso",
+        "subject": "RE: Solicitud de servicio Penafiel 02/03/2026",
+        "from": "cliente.penafiel@repare.example.com",
+        "to": [
+          "contacto@penafiel-cliente.example.com"
+        ],
+        "attachments": [
+          "respuesta_os.xlsx"
+        ]
+      },
+      "result": "recibido",
+      "error": null,
+      "replies_sent": 1
+    }
+  ],
+  "repo_calls": [
+    {
+      "module": "penafiel.DB_POSTGRE",
+      "fn": "email_reply_validate",
+      "params": {
+        "conversation_id": "conv-penafiel-001",
+        "subject": "RE: Solicitud de servicio Penafiel 02/03/2026"
+      }
+    },
+    {
+      "module": "penafiel.DB_POSTGRE",
+      "fn": "update_cooler",
+      "params": {
+        "request_code": "REPARE_000042",
+        "df": {
+          "__dataframe__": {
+            "columns": [
+              "customer_id",
+              "serial_number",
+              "serial_dnn",
+              "os",
+              "status"
+            ],
+            "rows": [
+              [
+                "2000001",
+                "",
+                "PEN-S-0001",
+                "4030000101",
+                "ACCEPTED"
+              ],
+              [
+                "2000002",
+                "",
+                "PEN-S-0002",
+                "EN REVISION",
+                "PENDING"
+              ],
+              [
+                "2000003",
+                "",
+                "PEN-S-0003",
+                "",
+                "REJECTED"
+              ]
+            ]
+          }
+        }
+      }
+    },
+    {
+      "module": "penafiel.DB_POSTGRE",
+      "fn": "update_email_request",
+      "params": {
+        "request_code": "REPARE_000042"
+      }
+    },
+    {
+      "module": "penafiel.DB_POSTGRE",
+      "fn": "get_email_request_status",
+      "params": {
+        "request_code": "REPARE_000042"
+      }
+    },
+    {
+      "module": "penafiel.DB_POSTGRE",
+      "fn": "get_total_coolers",
+      "params": {
+        "request_code": "REPARE_000042"
+      }
+    }
+  ],
+  "external_calls": [],
+  "replies": [
+    {
+      "in_reply_to": "msg-penafiel-out-en_proceso",
+      "to": [
+        "cliente.penafiel@repare.example.com"
+      ],
+      "body": "<div style=\" font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; max-width: 680px; color: #24292f; font-size: 14px; line-height: 1.6; \"> <p style=\"font-size: 15px; margin-bottom: 20px;\"> 🤖 Estimado usuario REPARE, </p> <div style=\" border: 1px solid #d0d7de; border-radius: 6px; padding: 20px; background: #f6f8fa; \"> <div style=\" font-size: 14px; font-weight: bold; margin-bottom: 12px; \"> CHANGES APPLIED </div> <div style=\"color: #57606a;\"> Los cambios de la solicitud <b>REPARE_000042</b> han sido aplicados correctamente. </div> </div> <div style=\" margin-top: 18px; border: 1px solid #d0d7de; border-radius: 6px; padding: 14px 16px; background: #ffffff; \"> <div style=\" font-size: 12px; color: #57606a; margin-bottom: 8px; \"> RESUMEN </div> <div style=\"color: #57606a;\"> <b>3</b> equipos procesados<br> <b>2</b> equipos con OS (ACEPTADOS)<br> <b>1</b> equipos sin OS (PENDIENTES)<br> <b>0</b> equipos sin OS (RECHAZADOS) </div> </div> </div>",
+      "attachments": []
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "init": {
+    "subject": "Solicitud de servicios REPARE 02/03/2026",
+    "body": "Buen dia.\nFavor de realizar las instalaciones y retiros de los equipos del archivo adjunto.\nSaludos,\nContacto Danone Ejemplo"
+  },
+  "inbound": {
+    "subject": "RE: Solicitud de servicios REPARE 02/03/2026",
+    "body": "Buen dia.\nAdjunto dos equipos adicionales para la misma solicitud.\nSaludos,\nContacto Danone Ejemplo"
+  },
+  "outbound": {
+    "subject": "RE: Solicitud de servicios REPARE 02/03/2026",
+    "body": "Hola. Adjunto las OS generadas para los equipos de la solicitud.\nSaludos,\nOperador REPARE Ejemplo"
+  },
+  "bot": {
+    "subject": "RE: Solicitud de servicios REPARE 02/03/2026",
+    "body": "🤖 Estimado usuario REPARE,\nEste es un mensaje automatico de ejemplo del bot."
+  },
+  "comandos": {
+    "ayuda": "bot.ayuda",
+    "estatus": "bot.estatus",
+    "cancelar": "bot.cancelar",
+    "finalizar": "bot.finalizar",
+    "global": "bot.global",
+    "desconocido": "bot.inexistente"
+  },
+  "sin_proposito": {
+    "subject": "Seguimiento a solicitud",
+    "body": "Hola, solo quiero consultar el estatus de mi solicitud anterior."
+  }
+}
