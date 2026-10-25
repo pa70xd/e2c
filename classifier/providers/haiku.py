@@ -97,8 +97,17 @@ _TELEFONO = re.compile(
 )
 
 
-def _hay_pii(*textos: Optional[str]) -> bool:
-    return any(t and (_EMAIL.search(t) or _TELEFONO.search(t)) for t in textos)
+def _hay_pii(*textos: Optional[str], conservar: tuple = ()) -> bool:
+    """Correo o teléfono en el texto. Las series ya guardadas en el hilo
+    (``conservar``) no cuentan: ``redact`` las deja pasar a propósito."""
+    for t in textos:
+        if not t:
+            continue
+        for serie in sorted(conservar, key=len, reverse=True):
+            t = t.replace(serie, " ")
+        if _EMAIL.search(t) or _TELEFONO.search(t):
+            return True
+    return False
 
 
 # ------------------------------------------------------------------ cliente
@@ -246,23 +255,25 @@ def _render_ctx(ctx: ThreadCtx) -> str:
     return "\n".join(lineas)
 
 
-def _mensaje(ctx: ThreadCtx, body: str, subject: Optional[str] = None) -> str:
+def _mensaje(ctx: ThreadCtx, body: str, subject: Optional[str] = None, gate: Optional[GateResult] = None) -> str:
     partes = [f"<contexto>\n{_render_ctx(ctx)}\n</contexto>"]
+    if gate is not None:
+        partes.append(f"<tipo_evento>{gate.tipo_evento}</tipo_evento>")
     if subject:
         partes.append(f"<asunto>\n{subject}\n</asunto>")
     partes.append(f"<correo>\n{body}\n</correo>")
     return "\n".join(partes)
 
 
-def _exigir_redactado(op: str, *textos: Optional[str]) -> None:
-    if _hay_pii(*textos):
+def _exigir_redactado(op: str, ctx: ThreadCtx, *textos: Optional[str]) -> None:
+    if _hay_pii(*textos, conservar=ctx.series()):
         print(f"{_LOG} op={op} texto con correo o teléfono sin redactar: no se llama a la API")
         raise ProveedorNoDisponible("haiku_pii_sin_redactar")
 
 
 # ------------------------------------------------------------------ API pública
 def gate(subject: Optional[str], body_redacted: str, thread_ctx: ThreadCtx) -> GateResult:
-    _exigir_redactado("gate", subject, body_redacted)
+    _exigir_redactado("gate", thread_ctx, subject, body_redacted)
     datos = _llamar("gate", _SCHEMA_GATE, _mensaje(thread_ctx, body_redacted or "", subject))
     if not all(k in datos for k in ("es_os", "tipo_evento", "confidence")):
         raise HaikuSalidaInvalida("gate_campos_faltantes")
@@ -281,13 +292,13 @@ def gate(subject: Optional[str], body_redacted: str, thread_ctx: ThreadCtx) -> G
     return resultado
 
 
-def extract(body_redacted: str, thread_ctx: ThreadCtx) -> list[RowExtraida]:
-    # extract() no recibe el tipo de evento del gate: el modelo lo infiere del
-    # texto y del hilo; validate.validar_rows exige coherencia con el gate.
-    _exigir_redactado("extract", body_redacted)
+def extract(body_redacted: str, thread_ctx: ThreadCtx, gate: Optional[GateResult] = None) -> list[RowExtraida]:
+    # Con ``gate`` el tipo_evento ya decidido va en el mensaje; sin él, el
+    # modelo lo infiere. validate.validar_rows exige coherencia con el gate.
+    _exigir_redactado("extract", thread_ctx, body_redacted)
     if thread_ctx.filas is None and thread_ctx.etapa != "init":
         raise ProveedorNoDisponible("haiku_filas_no_cargadas")
-    datos = _llamar("extract", _SCHEMA_EXTRACT, _mensaje(thread_ctx, body_redacted or ""))
+    datos = _llamar("extract", _SCHEMA_EXTRACT, _mensaje(thread_ctx, body_redacted or "", gate=gate))
     filas = datos.get("rows")
     if not isinstance(filas, list):
         raise HaikuSalidaInvalida("extract_rows_no_lista")

@@ -119,7 +119,7 @@ def test_extract_init_sin_filas_cargadas(cliente):
 def test_prompts_versionados_con_ejemplos():
     for nombre in ("gate", "extract"):
         texto, version = haiku._prompt(nombre)
-        assert version == f"{nombre}-v1"
+        assert version == {"gate": "gate-v1", "extract": "extract-v2"}[nombre]
         assert 6 <= texto.count("\nEjemplo ") <= 10
     assert haiku._hay_pii(haiku._prompt("gate")[0], haiku._prompt("extract")[0]) is False
 
@@ -200,7 +200,6 @@ def test_sin_api_key_cae_a_regex(monkeypatch):
     monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
     monkeypatch.setenv("CLASSIFIER_GATE", "haiku")
     monkeypatch.setenv("CLASSIFIER_EXTRACT", "haiku")
-    monkeypatch.setattr(registry, "get_redactor", lambda: (lambda t: t))  # redact.py es de otra sesión
     d = decidir("Asunto", "bot.estatus", CTX_REPLY)
     assert d.proveedor_gate == "regex" and d.proveedor_extract == "regex"
     assert "gate:haiku:haiku_sin_api_key" in d.fallbacks
@@ -230,14 +229,49 @@ def test_series_no_son_telefonos(cliente):
     haiku.gate("a", "serie 1234567890 y SF-1001 modelo VR-26", CTX_REPLY)
 
 
-def test_pii_cae_a_regex_via_decidir(cliente, monkeypatch):
+def test_pii_sin_redactor_cae_a_regex(cliente, monkeypatch):
     fake = cliente(_resp(GATE_OK))
     monkeypatch.setenv("CLASSIFIER_GATE", "haiku")
-    monkeypatch.setattr(registry, "get_redactor", lambda: (lambda t: t))  # redactor que no quita nada
+    monkeypatch.setattr(registry, "get_redactor", lambda: (lambda t, conservar=(): t))  # redactor que no quita nada
     d = decidir("Asunto", "bot.estatus de persona@ejemplo.com", CTX_REPLY)
     assert d.proveedor_gate == "regex"
     assert d.fallbacks == ("gate:haiku:haiku_pii_sin_redactar",)
     assert fake.llamadas == []
+
+
+def test_decidir_manda_texto_redactado_y_conserva_series(cliente, monkeypatch):
+    """Con el redact real: haiku se llama, no ve correo ni teléfono y sí ve las series guardadas."""
+    ctx = ThreadCtx(
+        etapa="reply", customer="danone", direccion="inbound",
+        filas=(FilaGuardada(1, "PENDING", "5512345678"),),
+    )
+    fake = cliente(_resp({**GATE_OK, "tipo_evento": "cancelar_filas"}))
+    monkeypatch.setenv("CLASSIFIER_GATE", "haiku")
+    cuerpo = "Cancelen la serie 5512345678. Mi correo es persona@ejemplo.com y mi tel 55 9876 5432."
+    d = decidir("Cancelación de persona@ejemplo.com", cuerpo, ctx)
+    assert d.proveedor_gate == "haiku" and d.fallbacks == ()
+    msg = fake.llamadas[0]["messages"][0]["content"]
+    assert "persona@ejemplo.com" not in msg and "9876" not in msg
+    assert "[CORREO]" in msg and "[TELEFONO]" in msg
+    assert "5512345678" in msg  # serie conservada, no se confunde con teléfono
+
+
+def test_serie_conservada_no_dispara_guarda_de_pii(cliente):
+    ctx = ThreadCtx(etapa="reply", filas=(FilaGuardada(1, "PENDING", "55-1234-5678"),))
+    cliente(_resp(GATE_OK))
+    haiku.gate("a", "la serie 55-1234-5678", ctx)  # sin conservar sería teléfono
+    with pytest.raises(ProveedorNoDisponible):
+        haiku.gate("a", "la serie 55-1234-5678", CTX_REPLY)
+
+
+def test_extract_recibe_gate_en_el_mensaje(cliente):
+    fake = cliente(_resp({"rows": [_fila(accion="cancelar", row_number=1)]}))
+    g = GateResult(True, "cancelar_filas", 0.95)
+    rows = haiku.extract("cancelen la primera", CTX_REPLY, gate=g)
+    assert "<tipo_evento>cancelar_filas</tipo_evento>" in fake.llamadas[0]["messages"][0]["content"]
+    assert validate.validar_rows(rows, g, CTX_REPLY) == []
+    haiku.extract("cancelen la primera", CTX_REPLY)
+    assert "<tipo_evento>" not in fake.llamadas[1]["messages"][0]["content"]
 
 
 def test_extract_reply_sin_filas_cargadas(cliente):
