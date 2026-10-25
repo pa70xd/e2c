@@ -93,6 +93,9 @@ def pytest_addoption(parser):
 @pytest.fixture(autouse=True)
 def _offline(monkeypatch):
     monkeypatch.chdir(_WORKDIR)
+    # Clasificador por defecto (regex) y sin llave de un proveedor externo.
+    for var in ("CLASSIFIER_GATE", "CLASSIFIER_EXTRACT", "CLASSIFIER_MIN_CONFIDENCE", "ANTHROPIC_API_KEY"):
+        monkeypatch.delenv(var, raising=False)
     VIOLATIONS.clear()
     block_network(monkeypatch)
     block_database(monkeypatch)

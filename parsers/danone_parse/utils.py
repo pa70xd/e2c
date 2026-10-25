@@ -25,6 +25,13 @@ class DANONE_UTILS:
 
     @staticmethod
     def analizar_proposito(html,asunto) -> bool:
+        # La decisión pasa por el gate del clasificador; con el proveedor
+        # por defecto (regex) es exactamente analizar_proposito_regex.
+        from classifier import gate_proposito
+        return gate_proposito("danone", asunto, html)
+
+    @staticmethod
+    def analizar_proposito_regex(html,asunto) -> bool:
         has_request = False
         has_movement = False
 
