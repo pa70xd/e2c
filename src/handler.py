@@ -9,6 +9,7 @@ from fastapi import APIRouter, status, Body, Response, BackgroundTasks
 import msal
 from datetime import datetime, timedelta
 import os
+import hmac
 import requests
 from google.cloud import pubsub_v1
 from src.service import processMail
@@ -27,6 +28,15 @@ AUTHORITY = f"https://login.microsoftonline.com/{TENANT_ID}"
 SCOPES = ["https://graph.microsoft.com/.default"]
 PROJECT_ID = os.getenv('PROJECT_ID')
 NOTIFICATIONS_TOPIC_ID = os.getenv('NOTIFICATIONS_TOPIC_ID', default='graph-api-testing')
+# Opcional: si está definida, /receive_mail solo procesa notificaciones cuyo clientState coincida.
+GRAPH_CLIENT_STATE = os.getenv('GRAPH_CLIENT_STATE')
+
+
+def _client_state_valid(mail) -> bool:
+    received = mail.get("clientState") if isinstance(mail, dict) else None
+    if not isinstance(received, str):
+        return False
+    return hmac.compare_digest(received.encode(), GRAPH_CLIENT_STATE.encode())
 
 
 @handler.post(
@@ -102,6 +112,9 @@ async def recieve_mail(
             return validationToken
 
     for mail in payload["value"]:
+        if GRAPH_CLIENT_STATE and not _client_state_valid(mail):
+            print("[SEGURIDAD] Notificación descartada: clientState no coincide.")
+            continue
         background_tasks.add_task(procesar_mail_background, mail)
 
     return "Correo recibido, procesando en background."

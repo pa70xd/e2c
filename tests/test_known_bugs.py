@@ -142,7 +142,7 @@ def test_danone_bot_cancelar_cancela_coolers_pendientes(harness, fixtures_for):
 
 
 # ---------------------------------------------------------------------------
-# Bug 6 — detect_direccion puede devolver None y service.py desempaqueta
+# Bug 6 (corregido) — service.py protege el None de detect_direccion
 # ---------------------------------------------------------------------------
 
 def _correo_con_repare_solo_en_copia():
@@ -158,18 +158,19 @@ def _correo_con_repare_solo_en_copia():
     )
 
 
-@pytest.mark.xfail(strict=True, reason="bug 6 de okf/riesgos/bugs.md: detect_direccion devuelve None (EMAIL_TYPE)")
-def test_detect_direccion_nunca_devuelve_none(tmp_path):
+def test_detect_direccion_devuelve_none_si_repare_solo_va_en_copia(tmp_path):
+    # Contrato deliberado: detect_direccion no cambia (None = sin dirección);
+    # la protección vive en los llamadores (service.processMail).
     import json
 
     config = tmp_path / "m.json"
     config.write_text(json.dumps(MAILBOXES), encoding="utf-8")
-    assert EMAIL_TYPE(config_path=str(config)).detect_direccion(_correo_con_repare_solo_en_copia()) is not None
+    assert EMAIL_TYPE(config_path=str(config)).detect_direccion(_correo_con_repare_solo_en_copia()) is None
 
 
-@pytest.mark.xfail(strict=True, reason="bug 6 de okf/riesgos/bugs.md: service.py:245 desempaqueta None y revienta")
 def test_process_mail_no_revienta_con_direccion_none(harness):
-    harness.deliver(_correo_con_repare_solo_en_copia())
+    assert harness.deliver(_correo_con_repare_solo_en_copia()) is None
+    assert harness.graph.sent == []
 
 
 # ---------------------------------------------------------------------------
