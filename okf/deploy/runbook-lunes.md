@@ -75,6 +75,8 @@ Todo mergeado en `claude/admiring-lovelace-3oh7g0`. Detalle en [bugs](../riesgos
 
 Además, la Fase 2 (refactor sin cambio de comportamiento, goldens sin diff) está mergeada: `parsers/core/`, `repository/core/`, `bot/commands.py`, `config/data/*.json` y limpieza de código muerto. Ver [deuda técnica](../riesgos/deuda-tecnica.md).
 
+Fase 3 (clasificador): sus ramas aún no están en la base. Cuando lo estén, no exportes `CLASSIFIER_GATE`, `CLASSIFIER_EXTRACT` ni `CLASSIFIER_MIN_CONFIDENCE` al correr la suite: `tests/conftest.py` no las limpia y los goldens correrían con ese proveedor. Ver [núcleo del clasificador](../classifier/core.md).
+
 # 6. Sigue abierto
 
 * Stopwords antes del regex en Danone (reproducido).

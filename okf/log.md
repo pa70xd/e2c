@@ -185,6 +185,13 @@
 * Nuevo concepto [classifier/provider-haiku.md](classifier/provider-haiku.md). `ANTHROPIC_API_KEY` pasa a verificada en `despliegue.md`.
 * Sin probar con key real (`eval/smoke_haiku.py` pendiente); sin medir precisión.
 
+## 2026-10-25 · classifier-core: resumen (Fase 3)
+
+* Rama `claude/e2c-classifier-core` (`926d693`, `d3fa0b2`), sin mergear. Verificado: estructura, integración en `src/service.py`, `pytest -q` → 560 passed, 24 skipped, 1 xfailed. `--update-golden` sin diff es afirmación de la sesión.
+* Nuevo concepto [classifier/core.md](classifier/core.md).
+* **Decisión no tomada por el usuario:** CANCELLED/REJECTED a revisión (motivo `estado_no_pending`). Anotada en `riesgos/decisiones.md` como pendiente de confirmación.
+* Huecos: sin lector de filas de `cooler_request` (lo agrega `revision`), decisiones del hilo no persistidas, `tests/conftest.py` no limpia `CLASSIFIER_*`, `ultima_decision()` es `ContextVar`. Runbook avisa del tercero.
+
 ## 2026-10-24
 
 * Creación del bundle OKF del repositorio `e2c` (rama `claude/admiring-lovelace-3oh7g0`).

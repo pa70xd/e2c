@@ -20,6 +20,10 @@ tags: [decisiones, fase-3]
 * Pedir cancelar un cooler ya ACCEPTED (con OS) **no** lo cancela automáticamente; va a revisión humana. Las filas PENDING sí se pueden cancelar desde un hilo.
 * Pendiente (Fase 3): canal de revisión (propuesta: respuesta en el hilo a REPARE con las filas marcadas). La cola persistida es un ticket aparte. Detalle en [preguntas abiertas](preguntas-abiertas.md).
 
+# Pendiente de confirmación del usuario
+
+* classifier-core decidió **por precaución, sin consultar al usuario**, que las filas CANCELLED y REJECTED también van a revisión humana (motivo `estado_no_pending`), además de ACCEPTED. No es una decisión del usuario. Ver [núcleo del clasificador](../classifier/core.md).
+
 # Fase 2
 
 * Refactor sin cambio de comportamiento; cualquier diff en un golden detiene el trabajo.
