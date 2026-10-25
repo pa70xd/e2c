@@ -375,3 +375,28 @@ def test_idempotencia_y_fugas_con_texto_aleatorio():
         salida = redact(texto)
         assert redact(salida) == salida, repr(texto)
         assert not EMAIL_RE.search(salida), repr(texto)
+
+
+def test_conservar_serie_de_10_digitos():
+    assert redact("Cancelar 5555550199 hoy") == "Cancelar [TELEFONO] hoy"
+    assert redact("Cancelar 5555550199 hoy", conservar=["5555550199"]) == "Cancelar 5555550199 hoy"
+
+
+def test_conservar_no_protege_otros_telefonos():
+    salida = redact("5555550199 y llamar al 5555550101", conservar=["5555550199"])
+    assert salida == "5555550199 y llamar al [TELEFONO]"
+
+
+def test_conservar_solo_token_exacto_y_en_firma():
+    salida = redact("Baja\nSaludos\nJuan Pérez\n5555550199", conservar=("5555550199",))
+    assert "Juan" not in salida
+    assert redact("tel 55555501990", conservar=["5555550199"]) == "tel 55555501990"
+    assert redact("tel 5555550101", conservar=["5555550199"]) == "tel [TELEFONO]"
+    assert redact("x", conservar=[]) == "x"
+
+
+def test_conservar_es_idempotente():
+    t = "Serie 5555550199 Tel 5555550101 a@example.com"
+    una = redact(t, conservar=["5555550199"])
+    assert una == "Serie 5555550199 Tel [TELEFONO] [CORREO]"
+    assert redact(una, conservar=["5555550199"]) == una

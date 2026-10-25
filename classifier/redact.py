@@ -39,6 +39,7 @@ folio, dirección de punto de venta o una línea larga de prosa).
 """
 import re
 import unicodedata
+from typing import Iterable
 
 CORREO = "[CORREO]"
 TELEFONO = "[TELEFONO]"
@@ -296,7 +297,7 @@ _LINEA_LARGA = 100
 
 
 def _es_contenido(cuerpo: str) -> bool:
-    return bool(_CONTENIDO.search(cuerpo) or _SERIE_TOKEN.search(cuerpo))
+    return "\ue000" in cuerpo or bool(_CONTENIDO.search(cuerpo) or _SERIE_TOKEN.search(cuerpo))
 
 
 def _es_frontera(cuerpo: str) -> bool:
@@ -429,14 +430,30 @@ def _firmas(t: str) -> str:
 
 
 # ---------------------------------------------------------------------- público
-def redact(text: str) -> str:
-    """Sustituye PII por marcadores estables. Idempotente y sin dependencias."""
+def redact(text: str, conservar: Iterable[str] = ()) -> str:
+    """Sustituye PII por marcadores estables. Idempotente y sin dependencias.
+
+    ``conservar``: tokens exactos (p. ej. series ya guardadas en thread_ctx) que
+    nunca se redactan, aunque parezcan teléfono. Solo coinciden como token
+    completo; cualquier otro número sigue las reglas normales.
+    """
     if not text:
         return text
     t = _normalizar(text)
+    protegidos = []
+    for tok in sorted({unicodedata.normalize("NFKC", str(c)).strip() for c in conservar if c},
+                      key=len, reverse=True):
+        marca = f"\ue000{chr(0xe100 + len(protegidos))}\ue001"
+        nuevo = re.sub(rf"(?<![\w]){re.escape(tok)}(?![\w])", marca, t)
+        if nuevo != t:
+            protegidos.append((marca, tok))
+            t = nuevo
     t = _correos(t)
     t = _ids(t)
     t = _telefonos(t)
     t = _nombres(t)
     t = _firmas(t)
-    return re.sub(r"[ \t]+$", "", t, flags=re.M)
+    t = re.sub(r"[ \t]+$", "", t, flags=re.M)
+    for marca, tok in protegidos:
+        t = t.replace(marca, tok)
+    return t
