@@ -5,5 +5,9 @@ SET
     updated_at = CURRENT_TIMESTAMP
 WHERE
     request_code = %s
-    AND (serie_fabricante = %s or serie_dnn_bnf = %s)
+    AND (
+        serie_fabricante = NULLIF(TRIM(%s), '')
+        OR serie_dnn_bnf = NULLIF(TRIM(%s), '')
+    )
     AND status <> 'CANCELLED'
+RETURNING request_code, row_number;

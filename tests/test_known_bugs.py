@@ -109,13 +109,10 @@ def test_send_email_coolers_no_manda_nan(sql_spy, modulo):
 
 
 # ---------------------------------------------------------------------------
-# Bug 3 — insert_update_cooler nunca detecta que el UPDATE tocó la fila
+# Bug 3 — insert_update_cooler nunca detectaba que el UPDATE tocó la fila
+# Corregido: email_update_cooler.sql trae RETURNING. Ver también tests/sql/.
 # ---------------------------------------------------------------------------
 
-@pytest.mark.xfail(
-    strict=True,
-    reason="bug 3 de okf/riesgos/bugs.md: email_update_cooler.sql no tiene RETURNING; siempre inserta",
-)
 @pytest.mark.parametrize("modulo", ["repository.danone.consultas_postgre", "repository.penafiel.consultas_postgre"], ids=["danone", "penafiel"])
 def test_insert_update_cooler_no_inserta_si_actualizo(sql_spy, modulo):
     repo = sql_spy.install(modulo)

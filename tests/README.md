@@ -95,6 +95,17 @@ No copiar nada de `emails pruebas/`, de los `*.json`/CSV de la raíz ni de corre
 reales: solo se tomó de ahí la estructura (encabezados). Dominios `example.com`,
 teléfonos 555-01xx.
 
+## SQL contra PostgreSQL local (`tests/sql/`)
+
+Corre el SQL de coolers (`cooler_request.sql`, `email_update_cooler.sql`,
+`update_cooler.sql`) con el código real del repositorio contra un PostgreSQL
+desechable. Se salta si no está `E2C_TEST_PG_DSN`. Solo acepta socket Unix o
+127.0.0.1/localhost y crea su propio esquema temporal.
+
+```bash
+E2C_TEST_PG_DSN="host=/ruta/al/socket port=55432 dbname=postgres user=postgres" pytest -q tests/sql
+```
+
 ## Bugs conocidos (`xfail`)
 
 `test_known_bugs.py` afirma el comportamiento **correcto**; hoy falla y queda como
@@ -106,7 +117,7 @@ goldens afectados. Ver `pytest -rx` para la lista con la razón.
 
 * **KOF** (`parsers/kof.py` es un stub) y código muerto (`src/attachments.py`,
   `models/service_request.py`, `subscriptions.py`).
-* **SQL real**: ningún `.sql` se ejecuta contra PostgreSQL. Solo `send_email_coolers` e
+* **SQL real**: fuera de `tests/sql/`, ningún `.sql` se ejecuta contra PostgreSQL. Solo `send_email_coolers` e
   `insert_update_cooler` corren su código real con un `execute_query` falso (ver
   `test_known_bugs.py`). `FakeRepo` fija las respuestas, así que no detecta cambios en
   el SQL (contadores de `email_request_update.sql`, `RETURNING`, etc.).

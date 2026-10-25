@@ -279,6 +279,7 @@ class DB_POSTGRE:
                 parametros["fecha_completado"],
 
                 parametros["request_code"],
+                parametros["row_number"],
                 serie_fabricante,
                 serie_dnn_bnf,
 
@@ -404,6 +405,7 @@ class DB_POSTGRE:
             parametros["fecha_completado"],
 
             request_code,
+            row_number,
             serie_fabricante,
             serie_dnn_bnf,
         )
@@ -412,6 +414,9 @@ class DB_POSTGRE:
             query=insert_sql,
             params=insert_params,
         )
+
+        if not inserted:
+            print(f"[BASEDATOS] cooler reenviado no aplicado (fila no PENDING o serie ya registrada), requiere revisión: request_code={request_code} row_number={row_number}")
 
         return inserted
 
@@ -460,8 +465,10 @@ class DB_POSTGRE:
                 ),
             )
 
-            if result is not None:
+            if result:
                 updated += 1
+
+        return updated
 
 
     @staticmethod
