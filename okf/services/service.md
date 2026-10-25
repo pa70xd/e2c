@@ -24,7 +24,7 @@ tags: [orquestador, processMail]
 
 # Problemas
 
-* `validator.detect_direccion(email)` puede devolver `None`. Desempaquetarlo en la línea 245 revienta con `TypeError` sin capturar. Verificado. Corregido en rama `claude/e2c-fix-orquestador` (sin mergear).
+* `validator.detect_direccion(email)` puede devolver `None`. Desempaquetarlo en la línea 245 revienta con `TypeError` sin capturar. Verificado. Corregido mergeado en `claude/admiring-lovelace-3oh7g0` (rama `claude/e2c-fix-orquestador`).
 * `PARSERS_REPLY[customer]` lanza `KeyError` fuera del try.
 * En DEBUG escribe `email.json` con el correo completo. Ver [seguridad](../riesgos/seguridad.md).
 * Varias salidas tempranas no cierran DuckDB.

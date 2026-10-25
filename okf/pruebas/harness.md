@@ -1,13 +1,13 @@
 ---
 type: Testing
 title: Harness de pruebas offline
-description: Suite pytest sin red ni credenciales, con goldens por parser y xfail estrictos para bugs conocidos. Rama claude/e2c-harness, sin mergear.
+description: Suite pytest sin red ni credenciales, con goldens por parser y xfail estrictos para bugs conocidos. Mergeado en claude/admiring-lovelace-3oh7g0.
 tags: [pruebas, harness, golden]
 ---
 
 # Estado
 
-Existe solo en la rama `claude/e2c-harness`, sin mergear. Verificado: en esa rama `pytest -q` da `274 passed, 15 xfailed` en ~20 s, sin red ni credenciales.
+Mergeado en `claude/admiring-lovelace-3oh7g0` (rama `claude/e2c-harness`). Verificado en la rama del harness: `pytest -q` da `274 passed, 15 xfailed` en ~20 s, sin red ni credenciales.
 
 # Cómo correr
 
@@ -35,7 +35,12 @@ Detalle en `tests/README.md` de la rama.
 
 Regex `\a` (4: aviso/avisos × Danone/Penafiel); NaN en `send_email_coolers` (3); `insert_update_cooler` sin `RETURNING` (2); Danone `bot.cancelar`; `detect_direccion` None (2); `bot.estatus` `UnboundLocalError` (2); stopwords antes del regex (1).
 
-**Aviso para la integración**: el harness se basó en la rama base, que no incluye los arreglos de las otras ramas. Al integrar `claude/e2c-fix-mecanicos` (regex), `claude/e2c-fix-parsers` (NaN, Danone `bot.cancelar`) y `claude/e2c-fix-orquestador` (`detect_direccion`), esos `xfail` estrictos pasarán a XPASS y fallarán. Hay que quitarles la marca `xfail` en el mismo merge. Inferido de los diffs, no probado con las ramas combinadas.
+**Aviso para la integración**: el harness se basó en la base sin los arreglos de las otras ramas. Al integrar `claude/e2c-fix-mecanicos` (regex), `claude/e2c-fix-parsers` (NaN, Danone `bot.cancelar`) y `claude/e2c-fix-orquestador` (`detect_direccion`), esos `xfail` estrictos pasarán a XPASS y fallarán. Hay que quitarles la marca `xfail` en el mismo merge. Inferido de los diffs, no probado con las ramas combinadas.
+
+# Estado tras los fixes
+
+* `claude/e2c-fix-parsers` (merge de la base + commit `23d6e31`) convirtió en pruebas normales los xfail de NaN, `bot.cancelar` (Danone y Penafiel) y `bot.estatus`, y actualizó los goldens `*_hilo_bot_cancelar` con la llamada a `cancel_pending_coolers`. Verificado: 281 passed, 9 xfailed. Los 9 restantes: regex `\a` (4, aún sin retirar en esa rama), stopwords (1), `insert_update_cooler` (2), `detect_direccion` None (2).
+* La base ya trae `a936571`: bug de `detect_direccion` del orquestador pasó a test normal y hay tests de `CORS_ALLOW_ORIGINS` y `GRAPH_CLIENT_STATE`.
 
 # Sin cubrir
 

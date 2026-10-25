@@ -47,6 +47,12 @@
 * Hallazgos nuevos en `bugs.md`: `bot.global` con `tzinfo`, `bot.*` desconocido en Danone, rechazada por SERIE vacía en Penafiel, rechazadas como PENDING, `DISTINCT` sin `ORDER BY`.
 * Aviso: al integrar las ramas de fix, los `xfail` estrictos de bugs ya corregidos pasarán a XPASS y fallarán; hay que quitarles la marca.
 
+## 2026-10-25 · fix-parsers cierre; estado de integración
+
+* `claude/e2c-fix-parsers`, todo pusheado, sin mergear: `bot.estatus` corregido en Danone y Penafiel (`2ab001b`); xfail de NaN, `bot.cancelar` y `bot.estatus` convertidos a tests normales (`23d6e31`). Verificado: 281 passed, 9 xfailed.
+* Integración en `claude/admiring-lovelace-3oh7g0` (verificado con `git log`): ya incluye harness, fix-mecanicos y fix-orquestador (merge `16c251a`). Fix-parsers aún no. Estados de esas tres ramas actualizados a "mergeado" en el bundle. fix-orquestador tiene un commit posterior (`efb8ccb`, test) que no vi en la base.
+* `msj_fail` duplicada (`messages.py:287` y `:331`) sigue sin corregir; el fix de `bot.estatus` depende de la segunda.
+
 ## 2026-10-24
 
 * Creación del bundle OKF del repositorio `e2c` (rama `claude/admiring-lovelace-3oh7g0`).
