@@ -49,3 +49,36 @@ def test_update_cooler(llamadas):
     df = pd.DataFrame([{"status": "ACCEPTED", "os": "403111", "serial_number": "FAB-0001", "serial_dnn": ""}])
     db.update_cooler("REPARE_000001", df)
     assert_params_cuadran(calls, 1)
+
+
+# review/ (Fase 3): consulta de contexto y UPDATE por fila.
+def test_get_cooler_rows(llamadas):
+    db, calls = llamadas
+    db.get_cooler_rows("REPARE_000001")
+    assert_params_cuadran(calls, 1)
+
+
+def test_update_pending_cooler_row(llamadas):
+    db, calls = llamadas
+    db.update_pending_cooler_row("REPARE_000001", 1, {"modelo": "VR-17"})
+    assert_params_cuadran(calls, 1)
+
+
+def test_cancel_pending_cooler_row(llamadas):
+    db, calls = llamadas
+    db.cancel_pending_cooler_row("REPARE_000001", 1)
+    assert_params_cuadran(calls, 1)
+
+
+@pytest.mark.parametrize("fn, args", [
+    ("get_cooler_rows", ("REPARE_000001",)),
+    ("update_pending_cooler_row", ("REPARE_000001", 1, {})),
+    ("cancel_pending_cooler_row", ("REPARE_000001", 1)),
+])
+def test_review_usa_la_tabla_del_modulo(llamadas, monkeypatch, fn, args):
+    # DEBUG elige cooler_request_qa en COOLER_REQUEST: el SQL usa esa constante.
+    db, calls = llamadas
+    monkeypatch.setattr(importlib.import_module(db.__module__), "COOLER_REQUEST", "repare_email_parse.cooler_request_qa")
+    getattr(db, fn)(*args)
+    assert "repare_email_parse.cooler_request_qa" in calls[0][0]
+

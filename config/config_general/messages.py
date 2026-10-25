@@ -846,3 +846,155 @@ class MENSAJES_REPARE:
 
         </div>
         """
+
+
+    # ------------------------------------------------ revisión de cambios por hilo
+    # Filas: dicts con row_number, serie, accion y motivo (ver review/).
+
+    @staticmethod
+    def _tabla_filas_hilo(filas, con_motivo: bool):
+        from html import escape
+
+        celdas = "".join(
+            "<tr>"
+            f"<td style='padding:4px 10px;border-top:1px solid #d0d7de;'>{escape(str(f.get('row_number') or '-'))}</td>"
+            f"<td style='padding:4px 10px;border-top:1px solid #d0d7de;'>{escape(str(f.get('serie') or '-'))}</td>"
+            f"<td style='padding:4px 10px;border-top:1px solid #d0d7de;'>{escape(str(f.get('accion') or '-'))}</td>"
+            + (
+                f"<td style='padding:4px 10px;border-top:1px solid #d0d7de;'>{escape(str(f.get('motivo') or '-'))}</td>"
+                if con_motivo else ""
+            )
+            + "</tr>"
+            for f in filas
+        )
+        encabezado = (
+            "<th style='padding:4px 10px;text-align:left;'>Fila</th>"
+            "<th style='padding:4px 10px;text-align:left;'>Serie</th>"
+            "<th style='padding:4px 10px;text-align:left;'>Acción</th>"
+            + ("<th style='padding:4px 10px;text-align:left;'>Motivo</th>" if con_motivo else "")
+        )
+        return f"""
+            <table style="border-collapse:collapse;margin-top:10px;font-size:13px;">
+                <tr style="color:#57606a;">{encabezado}</tr>
+                {celdas}
+            </table>
+        """
+
+    def msj_revision_repare(self, request_code: str, filas):
+        """Aviso a REPARE: filas de un mensaje de hilo que NO se aplicaron
+        y requieren revisión humana."""
+        from html import escape
+
+        tabla = self._tabla_filas_hilo(filas, con_motivo=True)
+
+        return f"""
+        <div style="
+            font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Monaco,
+                        Consolas, 'Liberation Mono', 'Courier New', monospace;
+            max-width: 680px;
+            color: #24292f;
+            font-size: 14px;
+            line-height: 1.6;
+        ">
+
+            <p style="font-size: 15px; margin-bottom: 20px;">
+                🤖 Estimado usuario REPARE,
+            </p>
+
+            <div style="
+                border: 1px solid #d0d7de;
+                border-radius: 6px;
+                padding: 20px;
+                background: #f6f8fa;
+            ">
+
+                <div style="
+                    font-size: 14px;
+                    font-weight: bold;
+                    margin-bottom: 12px;
+                ">
+                    REVIEW REQUIRED · {escape(str(request_code))}
+                </div>
+
+                <div style="color: #57606a;">
+                    Este mensaje pide cambios sobre filas que no están
+                    pendientes. No se aplicaron: cada fila <b>requiere revisión</b>.
+                </div>
+
+                {tabla}
+
+            </div>
+
+        </div>
+        """
+
+    def msj_cambios_hilo(self, request_code: str, aplicadas, revision, sin_cambios=()):
+        """Respuesta al mensaje del hilo: qué se aplicó y qué quedó en revisión."""
+        from html import escape
+
+        if aplicadas:
+            bloque_aplicadas = (
+                "<div style='margin-top:12px;'><b>Aplicado</b></div>"
+                + self._tabla_filas_hilo(aplicadas, con_motivo=False)
+            )
+        else:
+            bloque_aplicadas = "<div style='margin-top:12px;color:#57606a;'>No se aplicó ningún cambio.</div>"
+
+        if revision:
+            bloque_revision = (
+                "<div style='margin-top:16px;'><b>En revisión</b> (requiere revisión de REPARE)</div>"
+                + self._tabla_filas_hilo(revision, con_motivo=True)
+            )
+        else:
+            bloque_revision = ""
+
+        if sin_cambios:
+            bloque_sin_cambios = (
+                "<div style='margin-top:16px;'><b>Sin cambios</b></div>"
+                + self._tabla_filas_hilo(sin_cambios, con_motivo=True)
+            )
+        else:
+            bloque_sin_cambios = ""
+
+        return f"""
+        <div style="
+            font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Monaco,
+                        Consolas, 'Liberation Mono', 'Courier New', monospace;
+            max-width: 680px;
+            color: #24292f;
+            font-size: 14px;
+            line-height: 1.6;
+        ">
+
+            <p style="font-size: 15px; margin-bottom: 20px;">
+                🤖 Estimado usuario REPARE,
+            </p>
+
+            <div style="
+                border: 1px solid #d0d7de;
+                border-radius: 6px;
+                padding: 20px;
+                background: #f6f8fa;
+            ">
+
+                <div style="
+                    font-size: 14px;
+                    font-weight: bold;
+                    margin-bottom: 12px;
+                ">
+                    REQUEST UPDATED · {escape(str(request_code))}
+                </div>
+
+                <div style="color: #57606a;">
+                    Se procesaron los cambios de este mensaje.
+                </div>
+
+                {bloque_aplicadas}
+                {bloque_revision}
+                {bloque_sin_cambios}
+
+            </div>
+
+        </div>
+        """
+
