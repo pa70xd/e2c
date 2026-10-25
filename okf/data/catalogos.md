@@ -23,9 +23,9 @@ tags: [catalogos, datos]
 | `dfs_pto_venta.csv` | 19 puntos de venta | 7 filas con caracteres corruptos (U+FFFD) |
 | `tabla_con_distribuidora.csv` | 8 filas de solicitud | Contiene teléfonos, direcciones y coordenadas reales |
 | `solicitudes_rechazadas.csv` | 8 filas de rechazadas | Encabezado con typo `FECHA SOLCITUD`. No coincide con el SQL. |
-| `email.json` | Volcado de un mensaje Graph | Versionado. Contiene datos personales de terceros. Ver [seguridad](../riesgos/seguridad.md). |
-| `email_model.json` | Ejemplo de `email_request` | Incluye cuerpo de correo real. |
-| `mail.json` | Volcado `__dict__` de kiota | No es JSON válido de Graph. |
+| `email.json` | Volcado de un mensaje Graph | Versionado en la base; en rama `claude/e2c-fix-mecanicos` (sin mergear) se quita del índice. Contiene datos personales de terceros. Ver [seguridad](../riesgos/seguridad.md). |
+| `email_model.json` | Ejemplo de `email_request` | Incluye cuerpo de correo real. En rama `claude/e2c-fix-mecanicos` se quita del índice. |
+| `mail.json` | Volcado `__dict__` de kiota | No es JSON válido de Graph. En rama `claude/e2c-fix-mecanicos` se quita del índice. |
 | `emails pruebas` | Archivo vacío | Sin uso |
 
 # Excel de plantilla

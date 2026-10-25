@@ -8,6 +8,7 @@ tags: [bugs, riesgos]
 # Verificados en código
 
 1. **Regex con `\a`**: `movimientos_danone.py:164-165` y `movimientos_penafiel.py:317-318` usan `\avisos` y `\aviso`. `\a` es BEL en `re`. Nunca matchean.
+   * **Estado**: corregido en rama `claude/e2c-fix-mecanicos`, sin mergear. Ahora `\bavisos\b` y `\baviso\b` en ambos archivos.
 2. **`calcula_modelo` es stub**: `danone_parse/catalog.py:388-401` solo agrega columnas. Modelo, categoría y línea quedan NULL. Las sábanas leen `*_GEN` vacío. <a id="modelo-categoria-y-linea-no-se-llenan"></a>
 3. **`insert_update_cooler` nunca detecta cambios**: `email_update_cooler.sql` no tiene `RETURNING`, así que `execute_query` devuelve `None` y `if updated:` nunca se cumple. Siempre inserta, y puede duplicar `row_number`.
 4. **`update_cooler` no cuenta**: `update_cooler.sql` no tiene `RETURNING`. El contador no sube.
@@ -18,6 +19,7 @@ tags: [bugs, riesgos]
 8. **Penafiel `DEBUG == "True"`**: `penafiel.py:230` compara bool con string. Nunca se cumple.
 9. **`msj_fail` duplicada**: `messages.py:287` y `messages.py:331`. La segunda sobrescribe.
 10. **`form_solicitud.sql` con coma final**: línea 24, antes de `);`. Verificar si se ejecuta.
+    * **Estado**: corregido en rama `claude/e2c-fix-mecanicos`, sin mergear. Coma quitada de `"OS"`; era la única.
 
 # Reportados, no reproducidos
 

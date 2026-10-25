@@ -22,6 +22,12 @@
 * Variables nuevas opcionales: `CORS_ALLOW_ORIGINS`, `GRAPH_CLIENT_STATE`.
 * Pendientes: `PARSERS_REPLY[customer]` puede dar `KeyError`; `/lifecyclenotif` sin validar; `subscriptions.py` sin `clientState`.
 
+## 2026-10-25 · fix-mecanicos: Fase 0 lista
+
+* Rama `claude/e2c-fix-mecanicos`, push hecho, sin PR ni merge. Verificado contra el diff.
+* Regex `\a` → `\b` en Danone y Penafiel (bugs.md #1); coma final de `form_solicitud.sql` (bugs.md #10); JSON con datos personales fuera del índice y en `.gitignore` (seguridad #3). La numeración 2/7/9 de la orquestadora no coincide con `bugs.md`.
+* Pendiente: el historial conserva los JSON; decidir purga. No se revisó el contenido de los JSON.
+
 ## 2026-10-24
 
 * Creación del bundle OKF del repositorio `e2c` (rama `claude/admiring-lovelace-3oh7g0`).

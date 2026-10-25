@@ -29,5 +29,5 @@ tags: [danone, bonafont, piloto]
 * `convertir_html_a_texto` quita stopwords antes de evaluar regex de propósito. Si los patrones contienen stopwords, no matchean. Impacto por probar con correos reales.
 * `bot.cancelar` no cancela coolers. Un outbound posterior reabre la solicitud.
 * `TRASLADO` aparece en `movimientos_danone.py` pero no en `DIC_SABANAS_MOV`. Probable rechazo de traslados.
-* Regex `\avisos` y `\aviso` (líneas 164-165) con `\a` que es BEL. Nunca coinciden. Verificado.
+* Regex `\avisos` y `\aviso` (líneas 164-165) con `\a` que es BEL. Nunca coinciden. Verificado. Corregido en rama `claude/e2c-fix-mecanicos` (sin mergear), también en Penafiel.
 * `failed_coolers` siempre 0.

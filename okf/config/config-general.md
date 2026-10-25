@@ -25,5 +25,5 @@ tags: [config, mensajes]
 * Métodos de mensaje sin llamadas: `msj_apertura`, `msj_respuesta`, `msj_reply_update_coolers`, `msj_reply_add_customer_cooler`, `msj_solicitud_completa`.
 * Datos interpolados en HTML sin escapar.
 * "Estimado usuario REPARE" literal en código compartido.
-* `form_solicitud.sql` tiene una coma final antes de `);`. Invalida el DDL. Verificar.
+* `form_solicitud.sql` tiene una coma final antes de `);`. Invalida el DDL. Corregido en rama `claude/e2c-fix-mecanicos` (sin mergear).
 * Tres versiones de `solicitudes_rechazadas` con esquemas distintos.
