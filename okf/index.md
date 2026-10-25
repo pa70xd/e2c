@@ -58,6 +58,10 @@ Bundle OKF del repositorio `e2c`: backend FastAPI que recibe correos de clientes
 
 * [config_general](config/config-general.md) - mensajes, palabras reservadas, stopwords.
 
+## Clasificador (Fase 3)
+
+* [Redacción de PII](classifier/redact.md) - `redact()`, obligatoria antes de cualquier proveedor externo (rama `claude/e2c-redact`, sin mergear).
+
 ## Pruebas
 
 * [Harness de pruebas offline](pruebas/harness.md) - pytest sin red, goldens y xfail de bugs conocidos (mergeado en `claude/admiring-lovelace-3oh7g0`).

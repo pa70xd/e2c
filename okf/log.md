@@ -159,6 +159,12 @@
 
 * El proveedor `jev` queda fuera hasta que haya acceso.
 
+## 2026-10-25 · redact: resumen (Fase 3)
+
+* Rama `claude/e2c-redact` (`0d8fc00`), sin mergear. Verificado: `classifier/redact.py` y `tests/unit_classifier/test_redact.py`; `pytest -q` → 562 passed, 24 skipped, 1 xfailed; prueba mía con texto sintético (correo, teléfono, firma redactados; serie, modelo y folio intactos; idempotente).
+* Nuevo concepto [classifier/redact.md](classifier/redact.md), enlazado en el índice.
+* Límite anotado: con 10 dígitos sin contexto se redacta como teléfono (privacidad primero); impacto en precisión sin medir.
+
 ## 2026-10-24
 
 * Creación del bundle OKF del repositorio `e2c` (rama `claude/admiring-lovelace-3oh7g0`).
