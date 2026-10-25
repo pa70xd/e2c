@@ -26,7 +26,7 @@ pip install -r requirements.txt -r requirements-dev.txt
 python -m pytest -q
 ```
 
-Usa `python -m pytest`, no el binario `pytest`: puede ser de otro intérprete. Esperado en la base con la Fase 3 parcial (`6d0f897`): **710 passed, 24 skipped, 1 xfailed** (448/24/1 en `9564d90`, antes de la Fase 3) (el xfail es "stopwords antes del regex" en Danone; los 24 skip son el SQL contra Postgres de abajo). La suite no usa red, credenciales ni producción. Detalle en [pruebas/harness.md](../pruebas/harness.md).
+Usa `python -m pytest`, no el binario `pytest`: puede ser de otro intérprete. Esperado en la base con la Fase 3 (`29881a7`): **768 passed, 48 skipped, 1 xfailed** (448/24/1 en `9564d90`, antes de la Fase 3) (el xfail es "stopwords antes del regex" en Danone; los 48 skip son el SQL contra Postgres de abajo). La suite no usa red, credenciales ni producción. Detalle en [pruebas/harness.md](../pruebas/harness.md).
 
 # 2. Pruebas SQL opcionales (Postgres local desechable)
 
@@ -75,7 +75,11 @@ Todo mergeado en `claude/admiring-lovelace-3oh7g0`. Detalle en [bugs](../riesgos
 
 Además, la Fase 2 (refactor sin cambio de comportamiento, goldens sin diff) está mergeada: `parsers/core/`, `repository/core/`, `bot/commands.py`, `config/data/*.json` y limpieza de código muerto. Ver [deuda técnica](../riesgos/deuda-tecnica.md).
 
-Fase 3 (clasificador): ya mergeados redact, núcleo y haiku (`revision` aún no). Por defecto todo usa `regex` y el comportamiento no cambia. `tests/conftest.py` limpia `CLASSIFIER_*` y `ANTHROPIC_API_KEY`, así que exportarlas no altera la suite. Ver [núcleo del clasificador](../classifier/core.md).
+Fase 3 (clasificador, mergeada): `classifier/`, `review/` y el proveedor haiku. Por defecto todo usa `regex` y el comportamiento no cambia. `tests/conftest.py` limpia `CLASSIFIER_*` y `ANTHROPIC_API_KEY`, así que exportarlas no altera la suite. Ver [núcleo del clasificador](../classifier/core.md) y [revisión por hilo](../flows/revision-por-hilo.md).
+
+**ADVERTENCIA: no actives haiku** (`CLASSIFIER_GATE=haiku` o `CLASSIFIER_EXTRACT=haiku`) **sin antes** correr `eval/smoke_haiku.py` con una key real y sin que la evaluación supere **precisión >= 0.95 en gate** (umbral de [decisiones](../riesgos/decisiones.md)). La evaluación (sesión eval) aún no existe: espera los correos de ejemplo. Además, `review` solo corre con un proveedor externo y manda avisos reales a REPARE.
+
+Variables nuevas, todas opcionales y sin valores en el repo: `CLASSIFIER_GATE`, `CLASSIFIER_EXTRACT` (default `regex`), `CLASSIFIER_MIN_CONFIDENCE` (default 0.7), `ANTHROPIC_API_KEY` (solo para haiku). Nota: `requirements.txt` es UTF-16 LE con CRLF (ahí está `anthropic==2.3.0`): conserva esa codificación si lo editas.
 
 # 6. Sigue abierto
 

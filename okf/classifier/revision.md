@@ -1,13 +1,13 @@
 ---
 type: Module
 title: Revisión por hilo (review/)
-description: Aplica en cooler_request los cambios pedidos en un hilo (solo filas PENDING) y manda a revisión humana, por correo a REPARE, todo lo demás. Rama claude/e2c-revision, sin mergear.
+description: Aplica en cooler_request los cambios pedidos en un hilo (solo filas PENDING) y manda a revisión humana, por correo a REPARE, todo lo demás. Mergeado en claude/admiring-lovelace-3oh7g0.
 tags: [classifier, review, hilo, fase-3]
 ---
 
 # Estado
 
-Rama `claude/e2c-revision` (commits `e872203`, `2358cd5`, `4292106`; la base ya estaba mergeada en la rama), **sin mergear**. Verificado en la rama: existen `review/{contexto,aplicador,canal}.py`, los tres SQL nuevos, `get_cooler_rows`, `update_pending_cooler_row`, `cancel_pending_cooler_row` en `repository/core/consultas_postgre.py` (`DBPostgreBase`) y los mensajes `msj_revision_repare` y `msj_cambios_hilo`. En el estado `4292106` (verificado por mí): `python -m pytest -q` → **740 passed, 48 skipped, 1 xfailed**. Los 48 skip son los tests contra PostgreSQL local; **no los ejecuté**. La sesión reporta 788 passed, 1 xfailed con `E2C_TEST_PG_DSN` local y que los goldens no cambiaron.
+Rama `claude/e2c-revision` (commits `e872203`, `2358cd5`, `4292106`), **mergeada en la base** `claude/admiring-lovelace-3oh7g0` (`29881a7`). Las reglas por fila y el aviso están en el flujo [revisión por hilo](../flows/revision-por-hilo.md); esta página describe los módulos. Verificado en la rama: existen `review/{contexto,aplicador,canal}.py`, los tres SQL nuevos, `get_cooler_rows`, `update_pending_cooler_row`, `cancel_pending_cooler_row` en `repository/core/consultas_postgre.py` (`DBPostgreBase`) y los mensajes `msj_revision_repare` y `msj_cambios_hilo`. Base verificada: `python -m pytest -q` → **768 passed, 48 skipped, 1 xfailed**. Los 48 skip son los tests contra PostgreSQL local; **no los ejecuté**. La sesión reporta 788 passed, 1 xfailed con `E2C_TEST_PG_DSN` local y que los goldens no cambiaron.
 
 # Cuándo actúa
 

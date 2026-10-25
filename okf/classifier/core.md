@@ -45,7 +45,7 @@ El gate se aplica a **todos** los mensajes de hilo (antes del parser REPLY) y al
 
 # Huecos (reportados por la sesión)
 
-1. No hay función en `repository/**` que lea las filas de `cooler_request` por `request_code`. El enchufe es `classifier.registrar_cargador_contexto(fn)`; sin él, toda modificación o cancelación por fila de un proveedor externo cae a regex. El cargador lo agrega la rama `revision` (aún sin mergear): ver [revisión](revision.md).
+1. No hay función en `repository/**` que lea las filas de `cooler_request` por `request_code`. El enchufe es `classifier.registrar_cargador_contexto(fn)`; sin él, toda modificación o cancelación por fila de un proveedor externo cae a regex. El cargador lo agrega `revision` (ya mergeada): ver [revisión](revision.md).
 2. Las decisiones previas del hilo no se persisten (`ThreadCtx.decisiones` queda vacío).
 3. ~~`tests/conftest.py` no limpia `CLASSIFIER_*`~~ Resuelto en `281fa4a`: `tests/conftest.py` limpia `CLASSIFIER_*` y `ANTHROPIC_API_KEY`.
 4. ~~`ultima_decision()` es un `ContextVar`~~ Resuelto en `281fa4a`: `ultima_decision` ya no existe; `decidir` devuelve la `Decision` y `service.py` la deja en `parser.classifier_decision`.

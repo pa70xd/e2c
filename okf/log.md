@@ -205,6 +205,13 @@
 * Resueltos y reflejados en `core.md` y `provider-haiku.md`: `ultima_decision` (ContextVar) eliminada, `extract` recibe el gate, `tests/conftest.py` limpia `CLASSIFIER_*`, `redact` acepta `conservar`.
 * Preguntas abiertas de la Fase 3 reducidas a cuatro en `riesgos/preguntas-abiertas.md`.
 
+## 2026-10-25 · Código de la Fase 3 mergeado (base 29881a7)
+
+* Base `claude/admiring-lovelace-3oh7g0` en `29881a7`: verifiqué `python -m pytest -q` → 768 passed, 48 skipped, 1 xfailed. Merges: redact `1e87314`, classifier-core `ece68b5`, provider-haiku `6d0f897`, revision `29881a7`. Las 4 sesiones (classifier-core, redact, provider-haiku, revision) terminaron. Mergeada en mi rama.
+* Nuevo flujo [flows/revision-por-hilo.md](flows/revision-por-hilo.md); conceptos de `classifier/` (core, haiku, redact, revision) pasan a "mergeado".
+* Runbook: cifras 768/48/1, variables nuevas, advertencia de no activar haiku sin `eval/smoke_haiku.py` con key real y sin precisión >= 0.95 en gate, y `requirements.txt` UTF-16 LE.
+* Sigue pendiente: sesión eval (esperan los correos de ejemplo) y las preguntas abiertas de la Fase 3.
+
 ## 2026-10-24
 
 * Creación del bundle OKF del repositorio `e2c` (rama `claude/admiring-lovelace-3oh7g0`).
