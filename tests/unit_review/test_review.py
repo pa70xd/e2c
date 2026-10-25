@@ -118,11 +118,11 @@ def proveedor(monkeypatch):
     modulo = SimpleNamespace(
         NAME="fake",
         gate=lambda subject, body, ctx: salida.gate,
-        extract=lambda body, ctx: list(salida.rows),
+        extract=lambda body, ctx, gate=None: list(salida.rows),
     )
     real_cargar = registry.cargar
     monkeypatch.setattr(registry, "cargar", lambda n: modulo if n == "fake" else real_cargar(n))
-    monkeypatch.setattr(registry, "get_redactor", lambda: (lambda t: t))
+    monkeypatch.setattr(registry, "get_redactor", lambda: (lambda t, conservar=(): t))
     monkeypatch.setenv("CLASSIFIER_GATE", "fake")
     monkeypatch.setenv("CLASSIFIER_EXTRACT", "fake")
     return salida
@@ -473,4 +473,5 @@ def test_service_registra_el_cargador_y_entrega_la_decision(monkeypatch):
     permite, decision, ctx = service.classifier_evaluar(correo(), "danone", ETAPA_REPLY, "inbound")
     assert permite is True
     assert isinstance(decision, Decision) and isinstance(ctx, ThreadCtx)
-    assert service.classifier_permite(correo(), "danone", ETAPA_REPLY, "inbound") is True
+    continuar, decision2 = service.classifier_gate(correo(), "danone", ETAPA_REPLY, "inbound")
+    assert continuar is True and isinstance(decision2, Decision)

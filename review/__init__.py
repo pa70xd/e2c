@@ -1,8 +1,7 @@
 """Revisión humana y aplicación de cambios pedidos en un mensaje de hilo.
 
 Recibe la ``Decision`` y el ``ThreadCtx`` que devuelve
-``classifier.decidir_correo`` (viajan por la llamada; no se usa
-``classifier.ultima_decision()``).
+``classifier.decidir_correo`` (viajan por la llamada; no hay estado global).
 
 * ``cargador(repo)``: cargador del contexto del hilo para
   ``classifier.registrar_cargador_contexto`` (filas de ``cooler_request`` por

@@ -23,11 +23,11 @@ def externo(monkeypatch):
     modulo = SimpleNamespace(
         NAME="fake",
         gate=lambda s, b, ctx: GateResult(es_os=True, tipo_evento=CANCELAR_FILAS, confidence=0.9),
-        extract=lambda b, ctx: [RowExtraida(accion=CANCELAR, row_number=1), RowExtraida(accion=CANCELAR, row_number=3)],
+        extract=lambda b, ctx, gate=None: [RowExtraida(accion=CANCELAR, row_number=1), RowExtraida(accion=CANCELAR, row_number=3)],
     )
     real = registry.cargar
     monkeypatch.setattr(registry, "cargar", lambda n: modulo if n == "fake" else real(n))
-    monkeypatch.setattr(registry, "get_redactor", lambda: (lambda t: t))
+    monkeypatch.setattr(registry, "get_redactor", lambda: (lambda t, conservar=(): t))
     monkeypatch.setenv("CLASSIFIER_GATE", "fake")
     monkeypatch.setenv("CLASSIFIER_EXTRACT", "fake")
 

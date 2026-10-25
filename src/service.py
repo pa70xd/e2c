@@ -107,9 +107,10 @@ GATE_EN_PARSER_INIT = {"danone", "penafiel", "test_danone", "test_penafiel"}
 
 
 def classifier_evaluar(email, customer, etapa, direccion=None):
-    """Gate del clasificador: ``(permite, decision, ctx)``. Con el proveedor
+    """Gate del clasificador: ``(continuar, decision, ctx)``. Con el proveedor
     por defecto (regex) siempre deja pasar lo que antes pasaba. Si el
-    clasificador falla, el flujo sigue como antes (sin decisión)."""
+    clasificador falla, el flujo sigue como antes (sin decisión). El reply
+    usa ``ctx`` (filas del hilo) para el canal de revisión."""
     try:
         decision, ctx = classifier.decidir_correo(email, customer, etapa, direccion)
     except Exception as e:
@@ -121,8 +122,9 @@ def classifier_evaluar(email, customer, etapa, direccion=None):
     return False, decision, ctx
 
 
-def classifier_permite(email, customer, etapa, direccion=None) -> bool:
-    return classifier_evaluar(email, customer, etapa, direccion)[0]
+def classifier_gate(email, customer, etapa, direccion=None):
+    """Gate del clasificador: (continuar, Decision o None)."""
+    return classifier_evaluar(email, customer, etapa, direccion)[:2]
 
 
 # SABANA = Template_Sabana()
@@ -295,12 +297,14 @@ async def processMail(data):
 
             # Todo mensaje de hilo pasa por el gate (agrega, cambia o cancela filas).
             # La decisión viaja por la llamada (no por estado global).
-            permite, decision, thread_ctx = classifier_evaluar(email, customer, ETAPA_REPLY, direccion)
-            if not permite:
+            continuar, decision, thread_ctx = classifier_evaluar(email, customer, ETAPA_REPLY, direccion)
+            if not continuar:
                 duckConn.close()
                 return None
 
             parser = PARSERS_REPLY[customer](duckConn)
+            # La decisión viaja con el procesamiento de este correo.
+            parser.classifier_decision = decision
 
             try :
                 # Solo con CLASSIFIER_EXTRACT distinto de regex: cambios de
@@ -375,11 +379,15 @@ async def processMail(data):
                             duckConn.close()
                             return "EMAIL_DUPLICADO"
 
-            if customer not in GATE_EN_PARSER_INIT and not classifier_permite(email, customer, ETAPA_INIT):
-                duckConn.close()
-                return None
+            decision = None
+            if customer not in GATE_EN_PARSER_INIT:
+                continuar, decision = classifier_gate(email, customer, ETAPA_INIT)
+                if not continuar:
+                    duckConn.close()
+                    return None
 
             parser = PARSERS_INIT[customer](duckConn)
+            parser.classifier_decision = decision
 
             try:
                 result = await parser.parse(
