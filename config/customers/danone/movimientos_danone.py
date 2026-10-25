@@ -161,8 +161,8 @@ MOVEMENTS = [
     r"\balta(?:s)?\b",
     r"\borden(?:es)? de servicio\b",
     r"\bservicios\b",
-    r"\avisos\b",
-    r"\aviso\b",
+    r"\bavisos\b",
+    r"\baviso\b",
     r"\bmueva(?:n)?(?: los)? siguientes equipos\b",
 ]
 
