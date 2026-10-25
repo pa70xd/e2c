@@ -13,6 +13,7 @@ tags: [bugs, riesgos]
 3. **`insert_update_cooler` nunca detecta cambios**: `email_update_cooler.sql` no tiene `RETURNING`, así que `execute_query` devuelve `None` y `if updated:` nunca se cumple. Siempre inserta, y puede duplicar `row_number`.
 4. **`update_cooler` no cuenta**: `update_cooler.sql` no tiene `RETURNING`. El contador no sube.
 5. **Danone `bot.cancelar` no cancela coolers**: `parsers/danone.py:476-484` solo llama `cancel_email_request`. Un outbound posterior reabre la solicitud porque `email_request_update.sql` no excluye CANCELLED.
+   * **Estado**: corregido en rama `claude/e2c-fix-parsers`, sin mergear. `bot.cancelar` llama a `db.cancel_pending_coolers(request_code)` antes de `cancel_email_request`, igual que Heineken y Holanda. Si la primera falla, la segunda no corre (mismo `try`). **Penafiel tiene el mismo defecto** (`parsers/penafiel.py:468-472`, solo `cancel_email_request`) y sigue sin corregir; su repositorio ya tiene `cancel_pending_coolers`.
 6. **`detect_direccion` puede ser `None`**: `src/service.py:245` desempaqueta el resultado; `src/email_type.py:215` puede devolver `None`. Revienta sin capturar.
    * **Estado**: corregido en rama `claude/e2c-fix-orquestador`, sin mergear. `service.py` loguea sin PII, cierra `duckConn` y retorna `None`. `email_type.py` no se tocó.
 7. **`bot.estatus` de Danone**: `data` queda sin asignar si la consulta falla. Lanza `UnboundLocalError`.
@@ -25,6 +26,7 @@ tags: [bugs, riesgos]
 
 * **Stopwords antes del regex** (Danone): `convertir_html_a_texto` quita stopwords antes de evaluar patrones. Algunos patrones obligatorios contienen stopwords. Falsos negativos de propósito. Probar con correos reales.
 * **NaN a PostgreSQL**: `send_email_coolers` usa valores crudos en vez de los limpios (`danone.py:248-249`). Mismo patrón en gen y penafiel.
+  * **Estado**: verificado y corregido en rama `claude/e2c-fix-parsers`, sin mergear. La causa estaba en el repositorio: `send_email_coolers` limpiaba `serie_fabricante` y `serie_dnn_bnf` en variables locales pero pasaba `parametros[...]` crudos al INSERT y al `WHERE NOT EXISTS`. Ahora usa las limpias en `repository/{danone,gen,penafiel}/consultas_postgre.py`. El parser ya limpiaba con `clean_value`.
 * **`consulta_link_email`**: 22 placeholders y 21 parámetros. Fallaría con `IndexError`. Sin llamadores.
 * **`get_total_coolers`**: devuelve lista pero está anotado como int. Con request inexistente, `TypeError`.
 * **Contadores de `email_request_update.sql`**: REJECTED cuenta en total pero no en completed ni failed. Una solicitud puede pasar a COMPLETED con rechazados.
@@ -56,4 +58,10 @@ tags: [bugs, riesgos]
 * **Rutas relativas al cwd**: `config/email_index.json` y "Documentos_Adjuntos".
 * **Holanda `pd.read_excel`**: toma primera hoja aunque esté oculta.
 * **Heineken `MAX(row_number)`**: sin transacción. Concurrencia puede repetir.
+* **Hallazgos nuevos de fix-parsers** (sin corregir):
+  * Penafiel `bot.cancelar` no cancela coolers pendientes (ver verificado 5).
+  * `bot.estatus` de Danone y Penafiel: el `print` de error dice "No se logro cancelar" (copy-paste).
+  * Una serie numérica leída como float se guarda como `'123.0'` y puede romper el dedupe con `COALESCE` contra la misma serie guardada como `'123'`.
+  * `gen` `send_email_coolers` y `gen_parse/process_data.prepare_data_cooler` no tienen llamadores.
+  * Al importar `main`, la conexión apunta a PRODUCCIÓN por defecto (log `[BASEDATOS] dirigido a -> PRODUCCIÓN`).
 * **Outbound de Danone `bot.cancelar`**: ver verificado 5.

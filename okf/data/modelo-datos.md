@@ -35,7 +35,7 @@ Prioridad: HIGH en Danone; MEDIUM en Heineken y Holanda (SQL dice MEDIA).
 # Transiciones
 
 * Outbound: cooler → ACCEPTED, PENDING o REJECTED; luego `update_email_request` recalcula.
-* `bot.cancelar`: request → CANCELLED. Heineken y Holanda también pasan coolers PENDING → CANCELLED. Danone no.
+* `bot.cancelar`: request → CANCELLED. Heineken y Holanda también pasan coolers PENDING → CANCELLED. Danone no (corregido en rama `claude/e2c-fix-parsers`, sin mergear). Penafiel tampoco.
 * `bot.finalizar`: request → COMPLETED desde cualquier estado, incluido CANCELLED. Ver [bugs](../riesgos/bugs.md).
 * Un outbound posterior puede revivir un CANCELLED en Danone.
 
