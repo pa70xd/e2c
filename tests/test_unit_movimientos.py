@@ -205,19 +205,10 @@ CORREO_SIN_SOLICITUD_CON_AVISO_DE_PRIVACIDAD = (
 )
 
 
-def test_pie_de_aviso_de_privacidad_hoy_no_convierte_el_correo_en_movimiento(cliente):
-    """Documenta el resultado ACTUAL (a petición de la orquestadora).
+def test_pie_de_aviso_de_privacidad_no_convierte_el_correo_en_movimiento(cliente):
+    """El correo no pide ningún servicio; solo trae un pie «Aviso de privacidad».
 
-    El correo no pide ningún servicio; solo trae un pie «Aviso de privacidad».
-    Hoy NO es un propósito válido porque los patrones ``\\avisos`` / ``\\aviso``
-    usan ``\\a`` (BEL) y nunca matchean (bug 1 de okf/riesgos/bugs.md).
-
-    ATENCIÓN: al corregir ese bug (``\\b`` en lugar de ``\\a``), ``\\baviso\\b``
-    sí matchea «aviso de privacidad» y este correo pasaría a ser un movimiento
-    (se verificó con el parche hipotético). Cuando eso ocurra este test se
-    pondrá rojo junto con ``test_movements_reconoce_aviso`` (xfail strict): hay
-    que decidir si el patrón debe excluir el pie de firma antes de actualizar
-    ambos.
+    El patrón de aviso excluye «aviso/avisos de privacidad», así que no es un propósito válido.
     """
     nombre, _ = cliente
     assert PROPOSITO[nombre](CORREO_SIN_SOLICITUD_CON_AVISO_DE_PRIVACIDAD, asunto="Re: Hola") is False
