@@ -76,3 +76,50 @@ Todo lo que incumple se mueve a `solicitudes_rechazadas` con su motivo.
 - **D5 puede truncar el proceso:** `CAST(LATITUD AS DOUBLE)` falla con texto no numérico (p. ej. "N/A") en vez de rechazar la fila.
 - **Rechazadas se borran si el lote queda limpio:** si no hubo rechazos en esta corrida, `solicitudes_rechazadas` se vacía.
 - **Peñafiel/Danone repiten ~270 líneas casi idénticas** de reglas; cualquier cambio de regla hay que hacerlo dos veces.
+
+## 6. Cruce contra la wiki (Solkos Wiki → `data/email-to-case/`)
+
+Fuente de verdad del negocio, leída vía el MCP de Emerald (`danone-bonafont.md`, `heineken.md`, `holanda.md`, `penafiel.md`, `kof.md`). Corte de la wiki: 2026-10-15. Aclaración: la wiki tampoco es infalible (varias reglas vienen de sesiones habladas); donde difiere del código, hay que confirmar con REPARE, no asumir que el código está mal.
+
+### Coincide
+
+| Regla | Dónde |
+|-------|-------|
+| Holanda: espejo de merma con sufijo `M`, canal "sin canal", activo vacío, `CASO2` → folio y ticket | L6, L7 |
+| Holanda: duplicado = equipo con caso abierto | L4, L5 |
+| Peñafiel sin CBU → se asigna `PENAFIEL` por defecto | `penafiel_parse/reader.py:49` |
+| Heineken: precarga D2D = solo movimientos; rutas por el layout Repare ("mantenimiento férguez") | F1 |
+| Heineken: series genéricas se generan en Postgres, no en código | `heineken_generar_serie_generica.sql` |
+| Canal por defecto `SC \| Sin Canal` (Danone, Peñafiel) | `sabana.py` / `process_data.py` |
+
+### Falta en el código
+
+| Regla de la wiki | Qué encontré |
+|------------------|--------------|
+| Ruta sin falla → agregar **"no enfría"** (Danone, Heineken, Be-Aware) | Cero ocurrencias en el repo |
+| Reubicación: si el cliente manda el par RETIRO+REUBICACION con la misma serie, se toma tal cual; si manda solo la REUBICACION, se generan **dos OS** (serie con `R`) | Solo existe la palabra en listas de tipos; no hay desdoblado ni detección de par |
+| Danone: todos los retiros van a `3002 \| RETIRO DE EQUIPO` (`3012` es solo de OXO) | `3002` solo aparece en Heineken |
+| Danone y Peñafiel: el **cliente detallista** es obligatorio | Danone solo exige que exista la *columna* `ID CLIENTE`, no que la fila venga llena (Peñafiel sí lo valida, D6) |
+| Holanda: el **número de cliente SAP** es obligatorio | Solo se validan `CASO2` y `SERIE` |
+| Holanda: excepción de remitente autorizado sin CASO/SAP | `REMITENTES_SIN_DATOS_OBLIGATORIOS` está vacío (falta el correo real) |
+| Heineken: "instalación de mobiliario" se crea como **retiro** con serie genérica `MOB…` | `SERVICIOS_D2D` no tiene esa clave: esas filas se rechazan como "FALLA no reconocida" |
+| Heineken: número de cliente siempre `5785` | Cero ocurrencias |
+| Heineken Ruta: `REPARACION MERCADO` no basta, hay que mirar la falla (Julio, 15-oct) | H2 rechaza todo lo que no diga `REPARACION MERCADO` |
+| Almacenes 15/20/21, nunca 44 (todas las instalaciones) | Sin validación; la propia wiki la marca como "todavía no implementable" |
+| KOF completo: ~10 formatos, archivos multi-hoja, texto plano en el cuerpo, concatenado de distribuidor (≤18 dígitos), venta de material por palabras clave, "áreas generales" para proyectos especiales | `parsers/kof.py` es un stub |
+| Grupo Modelo (pidió Julio pasarlo antes que KOF, 2026-09-29) | No existe en `config/customers/` |
+
+### Contradice
+
+| Wiki | Código |
+|------|--------|
+| El **CBU de Danone no es confiable**: llega como `BNF`/`BONAFONT` (alias), vacío en 2 de 13 filas, y en un layout la columna no existe | `EXPECTED_COLUMNS` exige la columna `CBU` (archivo completo rechazado si falta) y D3 rechaza cada fila con CBU vacío o fuera de la lista |
+| Peñafiel: el CBU vacío no importa, se deja `PENAFIEL` por defecto | El default solo se aplica si la **columna** falta; si existe y viene vacía, D3 rechaza la fila |
+| Heineken: prefijo de serie genérica `ENF`/`MOB` + `ORI`/`NRT` + fecha + consecutivo | El código usa prefijo `HEI` para enfriadores (la transcripción del 15-oct habla de "mobiliario y Heineken", así que puede ser intencional) |
+
+### Pendientes abiertos en la wiki (sin respuesta)
+
+- Danone: la distribuidora "toma la primera de la lista" cuando hay varias candidatas; REPARE lo dejó como hueco marcado hasta que los clientes manden anexo/puesto de trabajo.
+- Peñafiel: "hay que respetar mucho la columna canal" — la regla concreta está en conversación con Julio y no se registró.
+- Peñafiel: regla de series genéricas sin documentar (la wiki dice que aplica igual que Heineken, sin detalle).
+- Heineken: rutas y movimientos llegan en dos hilos distintos; falta el visto bueno de REPARE.
