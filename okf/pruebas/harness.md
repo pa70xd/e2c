@@ -40,7 +40,7 @@ Regex `\a` (4: aviso/avisos × Danone/Penafiel); NaN en `send_email_coolers` (3)
 # Estado tras los fixes
 
 * `claude/e2c-fix-parsers` (commit `23d6e31`, ya mergeado en la base) convirtió en pruebas normales los xfail de NaN, `bot.cancelar` (Danone y Penafiel) y `bot.estatus`, y actualizó los goldens `*_hilo_bot_cancelar` con la llamada a `cancel_pending_coolers`. Verificado: 281 passed, 9 xfailed. Los 9 restantes: regex `\a` (4, aún sin retirar en esa rama), stopwords (1), `insert_update_cooler` (2), `detect_direccion` None (2).
-* Base `c981a79` (con la Fase 2 mergeada): verificado `448 passed, 24 skipped, 1 xfailed`.
+* Base `9564d90` (Fase 2 completa, incluida limpieza): verificado `448 passed, 24 skipped, 1 xfailed`.
 * Base `04f1ebe` (con las cuatro ramas mergeadas): verificado `292 passed, 3 xfailed`. Los 3 xfail: stopwords (1) e `insert_update_cooler` (2, bug 3, a cargo de fix-returning).
 * La base ya trae `a936571`: bug de `detect_direccion` del orquestador pasó a test normal y hay tests de `CORS_ALLOW_ORIGINS` y `GRAPH_CLIENT_STATE`.
 

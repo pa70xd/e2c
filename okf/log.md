@@ -139,6 +139,12 @@
 * No borrado y por qué: `get_categoria_linea` y `fill_movimiento`/`fill_ruta` de Danone (pendientes de confirmar), `src/service.py::flujo` (sí se usa), `src/attachments.py` "debuger". Typos visibles a clientes sin corregir: `FECHA SOLCITUD`, `DIREECIÓN`, `Ocurrio`.
 * Sin `Co-Authored-By` en sus commits por regla de su sistema; llevan `Claude-Session`.
 
+## 2026-10-25 · Fase 2 cerrada
+
+* Base `claude/admiring-lovelace-3oh7g0` en `9564d90` (merge de limpieza): verifiqué `python -m pytest -q` → 448 passed, 24 skipped, 1 xfailed. Mergeada en mi rama.
+* limpieza (session_01KH6MyNGZBXmdsy9TTGyijF) terminada. Las 5 sesiones de la Fase 2 terminaron.
+* Consolidado en los conceptos: `parsers/gen-base.md`, `data/capa-repositorio.md`, `flows/respuesta-y-comandos.md`, `data/catalogos.md`, `riesgos/deuda-tecnica.md` y `services/codigo-muerto.md`. Runbook actualizado a 448/24/1.
+
 ## 2026-10-24
 
 * Creación del bundle OKF del repositorio `e2c` (rama `claude/admiring-lovelace-3oh7g0`).

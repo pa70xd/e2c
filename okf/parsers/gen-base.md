@@ -15,7 +15,7 @@ tags: [parsers, base]
 
 # Problemas
 
-* `fill_movimiento` y `fill_ruta` de `gen_parse/process_data.py` (sin importar `DIC_SABANAS_MOV`, `NameError`) se borraron en la rama `claude/e2c-limpieza` (sin mergear).
+* `fill_movimiento` y `fill_ruta` de `gen_parse/process_data.py` (sin importar `DIC_SABANAS_MOV`, `NameError`) se borraron en la rama `claude/e2c-limpieza` (mergeada).
 * `calcula_modelo`, `union_cap_tables` y `get_address` están comentados en `catalog.py`.
 * `unir_tablas` descarta silenciosamente adjuntos cuando la estructura cambia.
 * Imprime el texto completo del correo en logs. Ver [seguridad](../riesgos/seguridad.md).

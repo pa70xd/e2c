@@ -26,7 +26,7 @@ pip install -r requirements.txt -r requirements-dev.txt
 python -m pytest -q
 ```
 
-Usa `python -m pytest`, no el binario `pytest`: puede ser de otro intérprete. Esperado en la base `ef1ebb9`: **303 passed, 24 skipped, 1 xfailed** (el xfail es "stopwords antes del regex" en Danone; los 24 skip son el SQL contra Postgres de abajo). La suite no usa red, credenciales ni producción. Detalle en [pruebas/harness.md](../pruebas/harness.md).
+Usa `python -m pytest`, no el binario `pytest`: puede ser de otro intérprete. Esperado en la base `9564d90`: **448 passed, 24 skipped, 1 xfailed** (el xfail es "stopwords antes del regex" en Danone; los 24 skip son el SQL contra Postgres de abajo). La suite no usa red, credenciales ni producción. Detalle en [pruebas/harness.md](../pruebas/harness.md).
 
 # 2. Pruebas SQL opcionales (Postgres local desechable)
 
@@ -73,12 +73,14 @@ Todo mergeado en `claude/admiring-lovelace-3oh7g0`. Detalle en [bugs](../riesgos
 * `insert_update_cooler` y `update_cooler` usan `RETURNING`; una fila ACCEPTED reenviada **no se aplica** y sale el log `[BASEDATOS] cooler reenviado no aplicado ... requiere revisión`. Una serie vacía ya no actualiza filas.
 * `form_solicitud.sql` sin coma final. `email.json`, `mail.json` y `email_model.json` fuera del índice (siguen en el historial de git).
 
+Además, la Fase 2 (refactor sin cambio de comportamiento, goldens sin diff) está mergeada: `parsers/core/`, `repository/core/`, `bot/commands.py`, `config/data/*.json` y limpieza de código muerto. Ver [deuda técnica](../riesgos/deuda-tecnica.md).
+
 # 6. Sigue abierto
 
 * Stopwords antes del regex en Danone (reproducido).
-* `msj_fail` duplicada en `messages.py`: hay que conservar la versión sin argumentos (la usa `bot.estatus`).
 * `/lifecyclenotif` sin `clientState`; `subscriptions.py` no envía `clientState`.
 * `PARSERS_REPLY[customer]` puede dar `KeyError`.
+* Typos visibles a clientes sin corregir: `FECHA SOLCITUD`, `DIREECIÓN`, `Ocurrio`.
 * `bot.global` revienta si `created_at` trae `tzinfo` (no verificado con datos reales).
 * Un `bot.*` desconocido en Danone no se detecta ni se responde.
 * El aviso de "requiere revisión" vive solo en logs; no hay cola de revisión (ticket de la Fase 3). Sigue abierto si un hilo puede cancelar filas ya aceptadas.

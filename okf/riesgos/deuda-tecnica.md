@@ -28,7 +28,7 @@ Ver [código muerto del orquestador](../services/codigo-muerto.md) y las listas 
 * `messages.py`: `msj_apertura`, `msj_respuesta`, `msj_reply_update_coolers`, `msj_reply_add_customer_cooler`, `msj_solicitud_completa` **borrados en la rama `claude/e2c-limpieza`** (se conserva `msj_solicitud_completa_esc1`).
 * Código comentado en `graphapi.py` (`reply_mail` y `reply_mail_v4`): **borrado en la rama `claude/e2c-limpieza`**.
 * `src/attachments.py` sin importadores (carpeta de salida literal "debuger"; no tocado). `src/email_type.py::_is_auto_submitted` (stub + sobrescritura, líneas ~217/220): no tocado.
-* Rama `claude/e2c-limpieza` sin mergear: 3 commits (`fa37826`, `085c4b3`, `259aa74`); `tests/golden` sin diff. Lo que se borró: 715 líneas.
+* Rama `claude/e2c-limpieza` mergeada en la base (`9564d90`): 3 commits (`fa37826`, `085c4b3`, `259aa74`); `tests/golden` sin diff. Lo que se borró: 715 líneas.
 
 # Configuración que debería ser datos
 
