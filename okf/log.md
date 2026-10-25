@@ -212,6 +212,21 @@
 * Runbook: cifras 768/48/1, variables nuevas, advertencia de no activar haiku sin `eval/smoke_haiku.py` con key real y sin precisión >= 0.95 en gate, y `requirements.txt` UTF-16 LE.
 * Sigue pendiente: sesión eval (esperan los correos de ejemplo) y las preguntas abiertas de la Fase 3.
 
+## 2026-10-25 · eval: resumen (Fase 3)
+
+* Rama `claude/e2c-eval` (`80fef31`), sin mergear. Verificado: archivos, 67 casos, `pytest -q` → 792 passed, 48 skipped, 1 xfailed; corrí `run_eval.py --provider regex` sobre el set sintético y reproduje la línea base: gate precisión 0.7419 (no cumple 0.95).
+* Nuevo concepto [classifier/eval.md](pruebas/evaluacion.md). `decisiones.md` y runbook actualizados: haiku sin medir; set real pendiente.
+
+## 2026-10-25 · eval: documentación movida a pruebas/
+
+* A pedido de la orquestadora, el evaluador se documenta en [pruebas/evaluacion.md](pruebas/evaluacion.md) (antes `classifier/eval.md`), con `EVAL_PRICE_IN` y `EVAL_PRICE_OUT` (verificadas en `eval/run_eval.py`) y la aclaración de que el set sintético no basta para activar. Rama `claude/e2c-eval` aún no está en la base (verificado con `git merge-base`); espero la confirmación de Git del merge 18 antes de mergear la base en mi rama.
+
+## 2026-10-25 · Fase 3 completa en la base (003853d)
+
+* Base `claude/admiring-lovelace-3oh7g0` en `003853d` (merge 18, eval): verifiqué `python -m pytest -q` → 794 passed, 48 skipped, 1 xfailed, y `run_eval.py --provider regex` → precisión de gate 0.7419, NO CUMPLE (sale con código 1). Mergeada en mi rama.
+* Estado a "mergeado" en `pruebas/evaluacion.md`, `deploy/despliegue.md`, runbook (cifras 794/48/1, comando de línea base) e índice.
+* Abierto: haiku sin medir (no hay key); falta el set real de correos redactados; preguntas de la Fase 3 sin responder.
+
 ## 2026-10-24
 
 * Creación del bundle OKF del repositorio `e2c` (rama `claude/admiring-lovelace-3oh7g0`).
