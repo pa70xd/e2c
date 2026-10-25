@@ -57,6 +57,10 @@ Bundle OKF del repositorio `e2c`: backend FastAPI que recibe correos de clientes
 
 * [config_general](config/config-general.md) - mensajes, palabras reservadas, stopwords.
 
+## Pruebas
+
+* [Harness de pruebas offline](pruebas/harness.md) - pytest sin red, goldens y xfail de bugs conocidos (rama `claude/e2c-harness`, sin mergear).
+
 ## Riesgos y pendientes
 
 * [Bugs verificados y reportados](riesgos/bugs.md)

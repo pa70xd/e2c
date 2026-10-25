@@ -24,7 +24,7 @@ tags: [bugs, riesgos]
 
 # Reportados, no reproducidos
 
-* **Stopwords antes del regex** (Danone): `convertir_html_a_texto` quita stopwords antes de evaluar patrones. Algunos patrones obligatorios contienen stopwords. Falsos negativos de propósito. Probar con correos reales.
+* **Stopwords antes del regex** (Danone): `convertir_html_a_texto` quita stopwords antes de evaluar patrones. **Reproducido** por el harness (rama `claude/e2c-harness`): "Se realizó la instalación" pasa como propósito válido porque se quita "se" antes de evaluar `IGNORE_REQUESTS`. Falta probar con correos reales.
 * **NaN a PostgreSQL**: `send_email_coolers` usa valores crudos en vez de los limpios (`danone.py:248-249`). Mismo patrón en gen y penafiel.
   * **Estado**: verificado y corregido en rama `claude/e2c-fix-parsers`, sin mergear. La causa estaba en el repositorio: `send_email_coolers` limpiaba `serie_fabricante` y `serie_dnn_bnf` en variables locales pero pasaba `parametros[...]` crudos al INSERT y al `WHERE NOT EXISTS`. Ahora usa las limpias en `repository/{danone,gen,penafiel}/consultas_postgre.py`. El parser ya limpiaba con `clean_value`.
 * **`consulta_link_email`**: 22 placeholders y 21 parámetros. Fallaría con `IndexError`. Sin llamadores.
@@ -59,6 +59,13 @@ tags: [bugs, riesgos]
 * **Holanda `pd.read_excel`**: toma primera hoja aunque esté oculta.
 * **Heineken `MAX(row_number)`**: sin transacción. Concurrencia puede repetir.
 * **Riesgo de la corrección de `\a`→`\b`** (rama `claude/e2c-fix-mecanicos`): `\baviso\b` y `\bavisos\b` ahora sí pueden coincidir en `MOVEMENTS`, y podrían activarse con pies de correo como "Aviso de privacidad". Hipótesis sin medir; el harness lo va a medir.
+* **Hallazgos del harness** (rama `claude/e2c-harness`, sin corregir; ver [harness](../pruebas/harness.md)):
+  * Corrobora el riesgo de `\baviso\b`: con el parche hipotético, un pie "Aviso de privacidad" convierte correos sin solicitud en movimientos. Un test documenta el estado actual.
+  * `bot.global`: `process_email_request_global` revienta si `created_at` trae `tzinfo` (openpyxl no admite datetimes con zona). Si Postgres devuelve `timestamptz`, en producción cae al `except` y responde sin archivo. No verificado con datos reales.
+  * Danone: un `bot.*` desconocido (p. ej. `bot.inexistente`) no se detecta como comando; el `case _` de `parse` es inalcanzable y no se responde.
+  * Penafiel: una fila rechazada por SERIE vacía queda en `cooler_request` con OS "[RECHAZADO]..." pero no se pinta en el Excel devuelto (la de ID vacío sí). Observado, no investigado.
+  * Las rechazadas se persisten como coolers PENDING con OS "[RECHAZADO] ..." y `total_coolers` también las cuenta.
+  * Listas `DISTINCT` sin `ORDER BY` (llaves de Holanda, series de Heineken) cambian de orden entre corridas.
 * **Hallazgos nuevos de fix-parsers** (sin corregir):
   * `bot.estatus` de Danone y Penafiel: el `print` de error dice "No se logro cancelar" (copy-paste).
   * Una serie numérica leída como float se guarda como `'123.0'` y puede romper el dedupe con `COALESCE` contra la misma serie guardada como `'123'`.

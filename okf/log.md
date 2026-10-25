@@ -40,6 +40,13 @@
 * `DEBUG` no definido = tablas de PRODUCCIÓN (verificado en `repository/danone/consultas_postgre.py:11-16`). Documentado en `deploy/despliegue.md`. El dev debe poner `DEBUG=true` para usar `*_qa`.
 * Riesgo anotado en `bugs.md`: el arreglo `\a`→`\b` puede hacer matchear "Aviso de privacidad" en `MOVEMENTS`. Hipótesis; la mide el harness.
 
+## 2026-10-25 · harness: Fase 1 lista
+
+* Rama `claude/e2c-harness`, sin PR ni merge. Reproduje `pytest -q` en un worktree de la rama: 274 passed, 15 xfailed. Documentado en [pruebas/harness.md](pruebas/harness.md) y enlazado en el índice.
+* "Stopwords antes del regex" pasa de reportado a reproducido.
+* Hallazgos nuevos en `bugs.md`: `bot.global` con `tzinfo`, `bot.*` desconocido en Danone, rechazada por SERIE vacía en Penafiel, rechazadas como PENDING, `DISTINCT` sin `ORDER BY`.
+* Aviso: al integrar las ramas de fix, los `xfail` estrictos de bugs ya corregidos pasarán a XPASS y fallarán; hay que quitarles la marca.
+
 ## 2026-10-24
 
 * Creación del bundle OKF del repositorio `e2c` (rama `claude/admiring-lovelace-3oh7g0`).
