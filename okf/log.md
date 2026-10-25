@@ -165,6 +165,20 @@
 * Nuevo concepto [classifier/redact.md](classifier/redact.md), enlazado en el índice.
 * Límite anotado: con 10 dígitos sin contexto se redacta como teléfono (privacidad primero); impacto en precisión sin medir.
 
+## 2026-10-25 · Fase 3: más sesiones
+
+* Nuevas, ambas desde `claude/e2c-classifier-core` (`926d693`):
+
+| Sesión | Modelo | Rama | ID |
+|---|---|---|---|
+| provider-haiku | sonnet | `claude/e2c-provider-haiku` | session_01AAwN4LQL6wjzvahTn2iCMk (en curso) |
+| revision | opus | `claude/e2c-revision` | session_0113agkPSN7r2SH56gk1jwWN (en curso) |
+
+* `revision`: canal de revisión (respuesta en el hilo a REPARE por Graph); también agrega el cargador de filas de `cooler_request` para `thread_ctx`. Según la orquestadora.
+* Variables opcionales nuevas: `CLASSIFIER_GATE`, `CLASSIFIER_EXTRACT`, `CLASSIFIER_MIN_CONFIDENCE` (las tres verificadas en `classifier/registry.py`; defaults `regex`, `regex`, 0.7) y `ANTHROPIC_API_KEY` (sin verificar). Documentadas en `deploy/despliegue.md`.
+* Nota: el registro da `regex` como default del **gate** también; la orquestadora solo mencionó el default de `CLASSIFIER_EXTRACT`.
+* Pendiente: eval (sonnet), cuando el usuario mande los correos de ejemplo.
+
 ## 2026-10-24
 
 * Creación del bundle OKF del repositorio `e2c` (rama `claude/admiring-lovelace-3oh7g0`).

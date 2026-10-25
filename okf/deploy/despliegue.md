@@ -28,6 +28,10 @@ tags: [docker, cloud-run, env]
 | `FILE_ID`, `DRIVE_ID` | graphapi (getTemplate) | Sin uso activo |
 | `CORS_ALLOW_ORIGINS` | main | Opcional. Mergeado en `claude/admiring-lovelace-3oh7g0` (rama `claude/e2c-fix-orquestador`). Orígenes separados por comas. Sin ella: `"*"` sin credenciales. |
 | `GRAPH_CLIENT_STATE` | handler | Opcional. Mergeado en `claude/admiring-lovelace-3oh7g0` (rama `claude/e2c-fix-orquestador`). Debe coincidir con el `clientState` de la suscripción; `subscriptions.py` aún no lo envía. |
+| `CLASSIFIER_GATE` | classifier (Fase 3) | Opcional. Proveedor del gate; default `regex`. Verificado en `classifier/registry.py` de la rama `claude/e2c-classifier-core` (`926d693`, sin mergear). |
+| `CLASSIFIER_EXTRACT` | classifier (Fase 3) | Opcional. Proveedor de la extracción; default `regex`. Misma rama. |
+| `CLASSIFIER_MIN_CONFIDENCE` | classifier (Fase 3) | Opcional. Confianza mínima del gate externo; default 0.7. Misma rama. |
+| `ANTHROPIC_API_KEY` | provider-haiku (Fase 3) | Opcional. Reportada por la orquestadora; no la he visto en el código (rama `claude/e2c-provider-haiku`, sin verificar). No pegues su valor en el repo. |
 
 Sin uso: `MAIL`, `NOTIFICATIONS_TOPIC_ID`, `NOTIFY_ERROR_MAILS`, `SECRET_ID`, `GOOGLE_MAPS_API_KEY` (catálogos muertos).
 
