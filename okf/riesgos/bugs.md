@@ -13,6 +13,7 @@ tags: [bugs, riesgos]
 4. **`update_cooler` no cuenta**: `update_cooler.sql` no tiene `RETURNING`. El contador no sube.
 5. **Danone `bot.cancelar` no cancela coolers**: `parsers/danone.py:476-484` solo llama `cancel_email_request`. Un outbound posterior reabre la solicitud porque `email_request_update.sql` no excluye CANCELLED.
 6. **`detect_direccion` puede ser `None`**: `src/service.py:245` desempaqueta el resultado; `src/email_type.py:215` puede devolver `None`. Revienta sin capturar.
+   * **Estado**: corregido en rama `claude/e2c-fix-orquestador`, sin mergear. `service.py` loguea sin PII, cierra `duckConn` y retorna `None`. `email_type.py` no se tocó.
 7. **`bot.estatus` de Danone**: `data` queda sin asignar si la consulta falla. Lanza `UnboundLocalError`.
 8. **Penafiel `DEBUG == "True"`**: `penafiel.py:230` compara bool con string. Nunca se cumple.
 9. **`msj_fail` duplicada**: `messages.py:287` y `messages.py:331`. La segunda sobrescribe.

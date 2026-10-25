@@ -9,7 +9,7 @@ tags: [fastapi, endpoints]
 # main.py
 
 * `app = FastAPI(version="0.33")`.
-* CORS: `allow_origins=["*"]` con `allow_credentials=True`. Ver [seguridad](../riesgos/seguridad.md).
+* CORS: `allow_origins=["*"]` con `allow_credentials=True` (en rama `claude/e2c-fix-orquestador`, sin mergear: configurable con `CORS_ALLOW_ORIGINS`, sin credenciales por defecto). Ver [seguridad](../riesgos/seguridad.md).
 * Monta el router de `src/handler.py`.
 
 # Endpoints
@@ -26,6 +26,6 @@ tags: [fastapi, endpoints]
 
 # Problemas
 
-* No valida `clientState` en `/receive_mail`. Ver [bugs](../riesgos/bugs.md).
+* No valida `clientState` en `/receive_mail`. En rama `claude/e2c-fix-orquestador` (sin mergear) lo valida si `GRAPH_CLIENT_STATE` está definida; `/lifecyclenotif` sigue sin validar. Ver [seguridad](../riesgos/seguridad.md).
 * `ReuthorizeWebhook` llama a MSAL de forma síncrona dentro de un handler async.
 * Imports duplicados y `pubsub_v1` importado sin uso: no hay Pub/Sub en el flujo.

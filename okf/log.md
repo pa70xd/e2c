@@ -15,6 +15,13 @@
 | harness | sonnet | `claude/e2c-harness` | Fase 1 | session_01555AgNz2xRd76uNN5h4J3D (en curso) |
 | fix-returning | opus | `claude/e2c-fix-returning` | bug 3 (+ contador `update_cooler`); diagnostica ahora, push después del harness | session_01HapgSRT5RT1R1LKpbsEQSg (en curso) |
 
+## 2026-10-25 · fix-orquestador: Fase 0 lista
+
+* Rama `claude/e2c-fix-orquestador`, sin PR ni merge. Verificado contra el diff (`main.py`, `src/handler.py`, `src/service.py`).
+* `detect_direccion` None (bugs.md #6), CORS y `clientState` (seguridad #4 y #1). La numeración 1/6/8 de la orquestadora no coincide con `bugs.md`.
+* Variables nuevas opcionales: `CORS_ALLOW_ORIGINS`, `GRAPH_CLIENT_STATE`.
+* Pendientes: `PARSERS_REPLY[customer]` puede dar `KeyError`; `/lifecyclenotif` sin validar; `subscriptions.py` sin `clientState`.
+
 ## 2026-10-24
 
 * Creación del bundle OKF del repositorio `e2c` (rama `claude/admiring-lovelace-3oh7g0`).

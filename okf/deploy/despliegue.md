@@ -26,6 +26,8 @@ tags: [docker, cloud-run, env]
 | `REPARE_BUCKET` | excel_ingestion | Bucket (subida comentada) |
 | `TOKEN_NAME`, `TOKEN_SECRET` | tableau | Login VizQL |
 | `FILE_ID`, `DRIVE_ID` | graphapi (getTemplate) | Sin uso activo |
+| `CORS_ALLOW_ORIGINS` | main | Opcional, solo en rama `claude/e2c-fix-orquestador` (sin mergear). Orígenes separados por comas. Sin ella: `"*"` sin credenciales. |
+| `GRAPH_CLIENT_STATE` | handler | Opcional, solo en rama `claude/e2c-fix-orquestador` (sin mergear). Debe coincidir con el `clientState` de la suscripción; `subscriptions.py` aún no lo envía. |
 
 Sin uso: `MAIL`, `NOTIFICATIONS_TOPIC_ID`, `NOTIFY_ERROR_MAILS`, `SECRET_ID`, `GOOGLE_MAPS_API_KEY` (catálogos muertos).
 
