@@ -49,6 +49,6 @@ Un comando desconocido responde `msj_comando_no_reconocido`.
 
 # Riesgos
 
-* Danone `bot.cancelar` no cancela coolers. Un outbound posterior reabre la solicitud, porque `email_request_update.sql` no excluye CANCELLED. Corregido en rama `claude/e2c-fix-parsers`, sin mergear; Penafiel conserva el defecto. Ver [bugs](../riesgos/bugs.md).
+* Danone `bot.cancelar` no cancela coolers. Un outbound posterior reabre la solicitud, porque `email_request_update.sql` no excluye CANCELLED. Corregido en rama `claude/e2c-fix-parsers`, sin mergear; Penafiel también (commit `a5bd0fc`). Ver [bugs](../riesgos/bugs.md).
 * `bot.estatus` de Danone puede lanzar `UnboundLocalError` si la consulta falla.
 * Los comandos responden éxito aunque el UPDATE no haya afectado filas.

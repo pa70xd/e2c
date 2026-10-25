@@ -32,7 +32,8 @@
 
 * Rama `claude/e2c-fix-parsers`, sin PR ni merge. Verificado contra el diff (`parsers/danone.py`, `repository/{danone,gen,penafiel}/consultas_postgre.py`).
 * Danone `bot.cancelar` ahora cancela coolers pendientes (bugs.md #5). NaN a PostgreSQL pasa de "reportado" a verificado y corregido (causa en el repositorio).
-* Pendientes nuevos: Penafiel `bot.cancelar`, print de `bot.estatus`, serie float `'123.0'`, `gen` sin llamadores, default a PRODUCCIÓN al importar.
+* Actualización: Penafiel `bot.cancelar` también corregido (commit `a5bd0fc`, verificado en la rama).
+* Pendientes nuevos: print de `bot.estatus`, serie float `'123.0'`, `gen` sin llamadores, default a PRODUCCIÓN al importar.
 
 ## 2026-10-25 · Notas de la orquestadora
 
