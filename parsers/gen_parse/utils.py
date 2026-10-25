@@ -1,3 +1,7 @@
+from parsers.core.tablas import unir_tablas as core_unir_tablas
+from parsers.core.texto import normalizar_texto as core_normalizar_texto
+from parsers.core.texto import eliminar_stopwords as core_eliminar_stopwords
+from parsers.core.texto import convertir_html_a_texto as core_convertir_html_a_texto
 from config.config_general.stopwords import STOPWORDS
 from openpyxl.styles import PatternFill
 # from config.customers.penafiel.movimientos_penafiel import MOVEMENTS,CREATE_REQUESTS,IGNORE_REQUESTS
@@ -52,82 +56,13 @@ class GEN_UTILS:
 
         return result
 
-    @staticmethod
-    def convertir_html_a_texto(html: str) -> str:
-        texto = BeautifulSoup(html, "html.parser").get_text(separator="\n")
-        texto = GEN_UTILS.normalizar_texto(texto)
-        texto = GEN_UTILS.eliminar_stopwords(texto)
-        return texto
+    convertir_html_a_texto = staticmethod(core_convertir_html_a_texto)
 
-    @staticmethod
-    def eliminar_stopwords(texto: str) -> str:
-        texto = texto.lower()
-        texto = re.sub(r"[^\w\s]", " ", texto)
-        palabras = texto.split()
-        palabras = [p for p in palabras if p not in STOPWORDS]
-        return " ".join(palabras)
+    eliminar_stopwords = staticmethod(core_eliminar_stopwords)
 
-    @staticmethod
-    def normalizar_texto(texto: str) -> str:
-        if not texto:
-            return ""
+    normalizar_texto = staticmethod(core_normalizar_texto)
 
-        texto = texto.lower()
-        texto = unicodedata.normalize("NFD", texto)
-        texto = "".join(
-            c for c in texto
-            if unicodedata.category(c) != "Mn"
-        )
-        texto = re.sub(r"[^\w\s]", " ", texto)
-        texto = re.sub(r"\s+", " ", texto)
-
-        return texto.strip()
-
-    @staticmethod
-    def unir_tablas(tables: list[dict], duck_conn) -> str:
-        if not tables:
-            return None
-
-        tabla_destino = tables[0]["table"]
-
-        # Obtener columnas de la primera tabla
-        columnas = duck_conn.execute(f"""
-            SELECT column_name
-            FROM information_schema.columns
-            WHERE table_name = '{tabla_destino}'
-            ORDER BY ordinal_position
-        """).fetchall()
-
-        columnas = [c[0] for c in columnas]
-
-        selects = [f'SELECT * FROM "{tabla_destino}"']
-
-        for tabla in tables[1:]:
-            nombre = tabla["table"]
-
-            cols = duck_conn.execute(f"""
-                SELECT column_name
-                FROM information_schema.columns
-                WHERE table_name = '{nombre}'
-                ORDER BY ordinal_position
-            """).fetchall()
-
-            cols = [c[0] for c in cols]
-
-            # Si la estructura cambia, regresar la primera tabla sin modificar
-            if cols != columnas:
-                return tabla_destino
-
-            selects.append(f'SELECT * FROM "{nombre}"')
-
-        union_sql = "\nUNION ALL\n".join(selects)
-
-        duck_conn.execute(f"""
-            CREATE OR REPLACE TABLE "{tabla_destino}" AS
-            {union_sql}
-        """)
-
-        return tabla_destino
+    unir_tablas = staticmethod(core_unir_tablas)
 
     @staticmethod
     def sql_list(values):
