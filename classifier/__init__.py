@@ -109,6 +109,7 @@ def decidir(subject, body, thread_ctx: ThreadCtx) -> Decision:
         gate = regex_provider.gate(subject, body, thread_ctx)
 
     rows = None
+    invalidas: tuple = ()
     proveedor_extract = PROVEEDOR_REGEX
     if gate.es_os and nombre_extract != PROVEEDOR_REGEX:
         try:
@@ -116,17 +117,19 @@ def decidir(subject, body, thread_ctx: ThreadCtx) -> Decision:
             _, b = texto_redactado()
             salida = proveedor.extract(b, thread_ctx, gate=gate)
             salida = list(salida) if isinstance(salida, (list, tuple)) else salida
-            errores = validate.validar_rows(salida, gate, thread_ctx)
+            # Las filas inválidas van a revisión; el resto se aplica.
+            errores, validas, invalidas = validate.separar_invalidas(salida, gate, thread_ctx)
             if errores:
                 fallbacks.append(f"extract:{nombre_extract}:{','.join(errores[:10])}")
             else:
-                rows, proveedor_extract = tuple(salida), nombre_extract
+                rows, proveedor_extract = validas, nombre_extract
         except Exception as e:
             fallbacks.append(f"extract:{nombre_extract}:{_codigo_error(e)}")
     if rows is None:
         rows = tuple(regex_provider.extract(body, thread_ctx, gate=gate)) if gate.es_os else ()
 
     aplicables, revision = validate.separar_revision(rows, gate, thread_ctx)
+    revision = invalidas + revision
     decision = Decision(
         gate=gate,
         proveedor_gate=proveedor_gate,
