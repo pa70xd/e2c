@@ -273,16 +273,20 @@ def test_cancelar_solicitud_solo_pending_cancela_la_solicitud(proveedor, monkeyp
 
 
 # ------------------------------------------------------------ fila inexistente
-def test_fila_inexistente_el_clasificador_descarta_y_no_se_atiende(proveedor, repo):
+def test_fila_inexistente_va_a_revision_y_el_resto_se_aplica(proveedor, repo):
     proveedor.rows = [modificar(1, modelo="VR-17"), modificar(99, modelo="X")]
     out, decision, enviados = procesar(repo)
 
-    # validate rechaza la extracción entera y cae a regex: nada que aplicar.
-    assert decision.proveedor_extract == "regex"
-    assert any("fila_inexistente" in f for f in decision.fallbacks)
-    assert out is None
-    assert repo.escrituras() == []
-    assert enviados == []
+    # classifier.validate.separar_invalidas: la fila 99 no tira el correo.
+    assert decision.proveedor_extract == "fake"
+    assert decision.fallbacks == ()
+    assert [r.row_number for r in decision.rows] == [1]
+    assert decision.filas_revision == (FilaRevision(99, MODIFICAR, None, "fila_inexistente"),)
+    resultado = out["resultado"]
+    assert [f.row_number for f in resultado.aplicadas] == [1]
+    assert [(f.row_number, f.motivo) for f in resultado.revision] == [(99, "fila_inexistente")]
+    assert repo.filas[1]["modelo"] == "VR-17"
+    assert len(enviados) == 1 and ">99<" in enviados[0]
 
 
 def test_fila_inexistente_en_el_aplicador_va_a_revision():
