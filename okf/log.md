@@ -119,6 +119,12 @@
 * Se confirma que `msj_comando_no_reconocido` es inalcanzable (el lector solo detecta palabras reservadas).
 * Que el comportamiento es idéntico (matriz antes/después) es afirmación de la sesión; yo solo verifiqué suite y goldens.
 
+## 2026-10-25 · core-repository: resumen (Fase 2)
+
+* Rama `claude/e2c-core-repository`, sin mergear (`351ee40`, `ecaae40`). Verificado: `repository/core/consultas_postgre.py` y los módulos de cliente reducidos; `pytest -q` → 350 passed, 24 skipped, 1 xfailed.
+* Documentado en `data/capa-repositorio.md` y `riesgos/deuda-tecnica.md`, con la tabla de diferencias entre Danone, Gen y Penafiel (las diferencias de comportamiento sobreviven como overrides, no se unificaron).
+* El diff AST y el mecanismo `__init_subclass__` son afirmación de la sesión; yo verifiqué estructura y suite.
+
 ## 2026-10-24
 
 * Creación del bundle OKF del repositorio `e2c` (rama `claude/admiring-lovelace-3oh7g0`).

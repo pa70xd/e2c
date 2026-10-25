@@ -7,7 +7,7 @@ tags: [deuda-tecnica, mantenibilidad]
 
 # Duplicación
 
-* Clase `DB_POSTGRE` idéntica en Danone, Penafiel y Gen. ~650 líneas cada una.
+* Clase `DB_POSTGRE` idéntica en Danone, Penafiel y Gen. ~650 líneas cada una. **En la rama `claude/e2c-core-repository` (Fase 2, sin mergear) queda una base común `DBPostgreBase` en `repository/core/` y cada cliente solo conserva sus overrides.** Ver [capa de repositorio](../data/capa-repositorio.md).
 * `unir_tablas`, `normalizar_texto`, `eliminar_stopwords`, `convertir_html_a_texto` y `detectar_tipo_correo` copiados en 3 utilidades. **En la rama `claude/e2c-core-parsers` (Fase 2, sin mergear) quedan unificados en `parsers/core/`**; sigue duplicado `process_data` (más `safe_filename`, `sql_list`, `normalize` de los readers).
 * Comandos bot implementados 4 veces: Danone, Penafiel, Holanda, Heineken. **En la rama `claude/e2c-bot-commands` (Fase 2, sin mergear) quedan unificados en `bot/commands.py` con un `PerfilBot` por cliente.** Ver [respuesta y comandos](../flows/respuesta-y-comandos.md).
 * INSERT de `cooler_request` en 5 variantes de SQL.
