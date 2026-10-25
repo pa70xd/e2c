@@ -32,6 +32,7 @@ tags: [docker, cloud-run, env]
 | `CLASSIFIER_EXTRACT` | classifier (Fase 3) | Opcional. Proveedor de la extracción; default `regex`. Misma rama. |
 | `CLASSIFIER_MIN_CONFIDENCE` | classifier (Fase 3) | Opcional. Confianza mínima del gate externo; default 0.7. Misma rama. |
 | `ANTHROPIC_API_KEY` | provider-haiku (Fase 3) | Opcional. Verificada en `classifier/providers/haiku.py`, mergeado en la base. Sin ella, el proveedor haiku cae a regex. No pegues su valor en el repo. |
+| `EVAL_PRICE_IN`, `EVAL_PRICE_OUT` | eval (Fase 3) | Opcionales. USD por millón de tokens para calcular el costo de haiku en el evaluador. Rama `claude/e2c-eval`, sin mergear. |
 
 Sin uso: `MAIL`, `NOTIFICATIONS_TOPIC_ID`, `NOTIFY_ERROR_MAILS`, `SECRET_ID`, `GOOGLE_MAPS_API_KEY` (catálogos muertos).
 

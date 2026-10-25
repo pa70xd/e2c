@@ -61,7 +61,6 @@ Bundle OKF del repositorio `e2c`: backend FastAPI que recibe correos de clientes
 
 ## Clasificador (Fase 3)
 
-* [Evaluador](classifier/eval.md) - mide gate y extract por proveedor contra el umbral 0.95 (rama `claude/e2c-eval`, sin mergear).
 * [Revisión por hilo](classifier/revision.md) - aplica cambios en filas PENDING y manda el resto a revisión humana por correo (mergeado en la base).
 * [Núcleo del clasificador](classifier/core.md) - contratos, validación, registro, proveedor regex y gate en el flujo (mergeado en la base).
 * [Proveedor Haiku](classifier/provider-haiku.md) - `gate()` y `extract()` con Claude Haiku 5.5, opcional (mergeado en la base).
@@ -69,6 +68,7 @@ Bundle OKF del repositorio `e2c`: backend FastAPI que recibe correos de clientes
 
 ## Pruebas
 
+* [Evaluación del clasificador](pruebas/evaluacion.md) - gate y extract por proveedor contra el umbral 0.95; regex 0.7419, haiku sin medir (rama `claude/e2c-eval`, sin mergear).
 * [Harness de pruebas offline](pruebas/harness.md) - pytest sin red, goldens y xfail de bugs conocidos (mergeado en `claude/admiring-lovelace-3oh7g0`).
 
 ## Riesgos y pendientes

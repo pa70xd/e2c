@@ -215,7 +215,11 @@
 ## 2026-10-25 · eval: resumen (Fase 3)
 
 * Rama `claude/e2c-eval` (`80fef31`), sin mergear. Verificado: archivos, 67 casos, `pytest -q` → 792 passed, 48 skipped, 1 xfailed; corrí `run_eval.py --provider regex` sobre el set sintético y reproduje la línea base: gate precisión 0.7419 (no cumple 0.95).
-* Nuevo concepto [classifier/eval.md](classifier/eval.md). `decisiones.md` y runbook actualizados: haiku sin medir; set real pendiente.
+* Nuevo concepto [classifier/eval.md](pruebas/evaluacion.md). `decisiones.md` y runbook actualizados: haiku sin medir; set real pendiente.
+
+## 2026-10-25 · eval: documentación movida a pruebas/
+
+* A pedido de la orquestadora, el evaluador se documenta en [pruebas/evaluacion.md](pruebas/evaluacion.md) (antes `classifier/eval.md`), con `EVAL_PRICE_IN` y `EVAL_PRICE_OUT` (verificadas en `eval/run_eval.py`) y la aclaración de que el set sintético no basta para activar. Rama `claude/e2c-eval` aún no está en la base (verificado con `git merge-base`); espero la confirmación de Git del merge 18 antes de mergear la base en mi rama.
 
 ## 2026-10-24
 

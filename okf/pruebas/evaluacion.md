@@ -16,7 +16,7 @@ python eval/run_eval.py --provider regex --set eval/sets/sintetico.jsonl
 ANTHROPIC_API_KEY=... python eval/run_eval.py --provider haiku --set <ruta>
 ```
 
-Opciones: `--umbral`, `--json <ruta>`. Cada caso pasa por `classifier.redact` y luego por `classifier.decidir` (la ruta de producción, con validación y caída a regex). Los reportes imprimen solo ids de caso. Si la precisión de gate queda bajo el umbral, el script sale con código 1 (lo comprobé con `--provider regex`: salió 1). Sin key, `haiku` avisa "ANTHROPIC_API_KEY no está definida" y no hace llamadas (comprobado; el código de salida de 0 lo reporta la sesión).
+Opciones: `--umbral`, `--json <ruta>`. Costo de haiku: define `EVAL_PRICE_IN` y `EVAL_PRICE_OUT` (USD por millón de tokens, solo nombres; verificado en `eval/run_eval.py`); sin ellas el reporte no calcula costo (según `eval/README.md`). Cada caso pasa por `classifier.redact` y luego por `classifier.decidir` (la ruta de producción, con validación y caída a regex). Los reportes imprimen solo ids de caso. Si la precisión de gate queda bajo el umbral, el script sale con código 1 (lo comprobé con `--provider regex`: salió 1). Sin key, `haiku` avisa "ANTHROPIC_API_KEY no está definida" y no hace llamadas (comprobado; el código de salida de 0 lo reporta la sesión).
 
 # Formato del set (`eval/schema.md`)
 
@@ -31,6 +31,10 @@ Corrí el evaluador sobre el set sintético en la rama:
 * Gate (regex): **precisión 0.7419, recall 1.0000, F1 0.8519** (TP 46, FP 16, FN 0, TN 5). **No cumple** el umbral de 0.95 ([decisiones](../riesgos/decisiones.md)). Los 16 falsos positivos son `no_os` y `duplicado` que regex marca como OS: en hilos todo cae a `modificar_filas`, y en init de Holanda y Heineken el gate delega al parser.
 * Extract (regex): exactitud por fila 0.0 (0 de 41), porque regex devuelve `[]` y las filas salen del Excel.
 * Latencia: media 11.2 ms, p95 0.7 ms.
+
+# Por qué el set sintético no basta para activar
+
+Activar un proveedor externo exige correos reales redactados (set real fuera del repo) y una corrida con key real. El set sintético sirve para regresión y para comparar proveedores, no para decidir la activación (lo señala también la orquestadora).
 
 # Lo que NO está medido
 
