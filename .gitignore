@@ -191,3 +191,7 @@ debug/
 email.json
 .vscode/
 settings.json
+
+# Datos personales en la raiz (no versionar)
+mail.json
+email_model.json

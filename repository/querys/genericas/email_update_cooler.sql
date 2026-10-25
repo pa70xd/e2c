@@ -39,4 +39,5 @@ SET
 
 WHERE request_code = %s
   AND row_number = %s
-  AND status = 'PENDING';
+  AND status = 'PENDING'
+RETURNING request_code, row_number;

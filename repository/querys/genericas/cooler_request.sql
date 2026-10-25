@@ -86,7 +86,14 @@ SELECT
 WHERE NOT EXISTS (
     SELECT 1
     FROM {cooler_request_table} c
-    WHERE request_code = %s
-      AND COALESCE(c.serie_fabricante, '') = COALESCE(%s, '')
-      AND COALESCE(c.serie_dnn_bnf, '') = COALESCE(%s, '')
-);
+    WHERE c.request_code = %s
+      AND (
+          c.row_number = %s
+          OR (
+              COALESCE(c.serie_fabricante, '') = COALESCE(%s, '')
+              AND COALESCE(c.serie_dnn_bnf, '') = COALESCE(%s, '')
+              AND COALESCE(c.serie_fabricante, '') || COALESCE(c.serie_dnn_bnf, '') <> ''
+          )
+      )
+)
+RETURNING request_code, row_number;
