@@ -148,37 +148,6 @@ class PENAFIEL_CATALOG:
     #             LTRIM(m.SERIE, '0')
     # """)
 
-    def complet_catalog_line(self, table):
-
-        df = self.duckConn.execute(f"""
-            SELECT rowid, MODELO_GEN
-            FROM {table}
-            WHERE CATEGORIA_GEN IS NULL
-            OR CATEGORIA_GEN = ''
-            OR LINEA_GEN IS NULL
-            OR LINEA_GEN = ''
-        """).fetchdf()
-
-        for _, row in df.iterrows():
-
-            modelo = row["MODELO_GEN"]
-
-            if pd.isna(modelo):
-                continue
-
-            modelo = str(modelo).strip().upper().split()[0]
-
-            categoria, linea = PENAFIEL_CATALOG.get_categoria_linea(modelo)
-
-            if categoria is not None:
-                self.duckConn.execute("""
-                    UPDATE {table}
-                    SET
-                        CATEGORIA_GEN = ?,
-                        LINEA_GEN = ?
-                    WHERE rowid = ?
-                """.format(table=table), [categoria, linea, row["rowid"]])
-
 
 
 
