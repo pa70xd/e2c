@@ -11,7 +11,8 @@ Uso:
 * ``decidir_correo(email, customer, etapa, direccion)``: decisión desde
   ``src/service.py`` (mensajes de hilo y ``init`` de Holanda y Heineken).
 * ``debe_continuar(decision, thread_ctx)``: si el correo sigue al parser.
-* ``ultima_decision()``: la última ``Decision`` del contexto actual (para el
+* ``ultima_decision()``: la última ``Decision`` del contexto actual (la misma
+  tarea async de ``processMail``; para el
   canal de revisión: ``Decision.filas_revision``).
 """
 
