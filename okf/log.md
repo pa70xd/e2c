@@ -77,6 +77,12 @@
 * Implementación actual: solo un `print` `[BASEDATOS]` en `insert_update_cooler` (rama `claude/e2c-fix-returning`, sin mergear). No hay cola de revisión persistida; ticket para la Fase 3.
 * Sigue abierto: si un hilo puede cancelar filas ya aceptadas.
 
+## 2026-10-25 · Fase 0 y Fase 1 cerradas; runbook del lunes
+
+* Base `claude/admiring-lovelace-3oh7g0` en `ef1ebb9`: 303 passed, 24 skipped (SQL sin Postgres), 1 xfailed (stopwords). Mergeado en mi rama.
+* Sesiones de código terminadas: git, fix-parsers, fix-orquestador, fix-mecanicos, harness y fix-returning (todas mergeadas en la base; fix-returning por `ef1ebb9`).
+* Nuevo [deploy/runbook-lunes.md](deploy/runbook-lunes.md), enlazado en el índice y en `despliegue.md`. Verificado en el código: efectos de `DEBUG`, variables, formato de `E2C_TEST_PG_DSN`. Los comandos de comprobación de Graph y PostgreSQL están escritos a partir del código y no los ejecuté (requieren credenciales).
+
 ## 2026-10-24
 
 * Creación del bundle OKF del repositorio `e2c` (rama `claude/admiring-lovelace-3oh7g0`).

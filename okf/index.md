@@ -10,6 +10,7 @@ Bundle OKF del repositorio `e2c`: backend FastAPI que recibe correos de clientes
 
 * [Visión general](overview.md) - qué hace el repo, stack y mapa de carpetas.
 * [Despliegue y variables de entorno](deploy/despliegue.md) - Docker, Cloud Run, env vars.
+* [Runbook del lunes](deploy/runbook-lunes.md) - pruebas del dev con sus credenciales: DEBUG, pytest, Graph y PostgreSQL.
 
 ## Flujos
 
