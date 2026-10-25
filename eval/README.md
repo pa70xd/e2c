@@ -11,6 +11,7 @@ ANTHROPIC_API_KEY=... python eval/run_eval.py --provider haiku --set eval/sets/s
 * Sale con código 1 si la precisión del gate es menor que `--umbral` (default **0.95**, fijado por el usuario).
 * `--json ruta` guarda el resumen completo.
 * Cada caso pasa siempre por `classifier.redact` y luego por `classifier.decidir` (misma ruta que producción, con validación y caída a regex).
+* Costo de haiku: define `EVAL_PRICE_IN` y `EVAL_PRICE_OUT` (USD por millón de tokens). Sin ellas el reporte dice "costo: no configurado"; no hay precios fijos en el código.
 * Los reportes solo imprimen ids de caso, nunca texto de correos.
 
 Formato del set: [`schema.md`](schema.md). Set inventado: `sets/sintetico.jsonl`.

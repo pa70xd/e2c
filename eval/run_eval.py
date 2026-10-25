@@ -30,9 +30,10 @@ from eval import metrics  # noqa: E402
 
 UMBRAL_PRECISION_GATE = 0.95
 PROVEEDORES = ("regex", "haiku")
-# USD por millón de tokens de claude-haiku-5-5 (prompts de hasta 100K tokens).
-PRECIO_IN_HAIKU = 0.10
-PRECIO_OUT_HAIKU = 0.50
+# Precios en USD por millón de tokens, de variables opcionales. Sin ellas no
+# se estima costo (no hay precios fijos en el código).
+ENV_PRECIO_IN = "EVAL_PRICE_IN"
+ENV_PRECIO_OUT = "EVAL_PRICE_OUT"
 CHARS_POR_TOKEN = 3.5
 # Salida típica de haiku, solo para la estimación de costo.
 TOKENS_OUT_GATE = 60
@@ -152,6 +153,16 @@ def tokens_haiku(ctx, asunto, cuerpo, decision) -> tuple[float, float]:
     return t_in, t_out
 
 
+def precios_configurados() -> tuple[float, float] | None:
+    """(entrada, salida) por millón de tokens, o None si falta alguno o no es un número."""
+    try:
+        p_in = float(os.environ[ENV_PRECIO_IN])
+        p_out = float(os.environ[ENV_PRECIO_OUT])
+    except (KeyError, ValueError):
+        return None
+    return p_in, p_out
+
+
 def correr_caso(caso: dict, proveedor: str) -> dict:
     import classifier
 
@@ -218,10 +229,11 @@ def resumir(resultados: list[dict], errores: list[tuple[str, str]], proveedor: s
     if proveedor == "haiku":
         t_in = sum(r["tokens"][0] for r in resultados)
         t_out = sum(r["tokens"][1] for r in resultados)
+        precios = precios_configurados()
         resumen["costo"] = {
             "tokens_in": t_in,
             "tokens_out": t_out,
-            "usd": metrics.costo_usd(t_in, t_out, PRECIO_IN_HAIKU, PRECIO_OUT_HAIKU),
+            "usd": metrics.costo_usd(t_in, t_out, *precios) if precios else None,
         }
     return resumen
 
@@ -259,10 +271,13 @@ def imprimir(r: dict, ruta: str) -> None:
     print(f"\n-- Latencia por caso --\nmedia {lat['media']:.1f} ms · p50 {lat['p50']:.1f} ms · p95 {lat['p95']:.1f} ms")
     if "costo" in r:
         c = r["costo"]
+        usd = "costo: no configurado" if c["usd"] is None else f"~USD {c['usd']:.4f} sin caché"
         print(
-            f"\n-- Costo estimado (haiku) --\n~{c['tokens_in']:.0f} tokens de entrada, ~{c['tokens_out']:.0f} de salida "
-            f"(estimación por caracteres) · ~USD {c['usd']:.4f} sin caché"
+            f"\n-- Costo (haiku) --\n~{c['tokens_in']:.0f} tokens de entrada, ~{c['tokens_out']:.0f} de salida "
+            f"(estimación por caracteres) · {usd}"
         )
+        if c["usd"] is None:
+            print(f"   (define {ENV_PRECIO_IN} y {ENV_PRECIO_OUT}, USD por millón de tokens)")
     print("\n-- Veredicto --")
     estado = "CUMPLE" if r["cumple"] else "NO CUMPLE"
     print(f"precisión de gate {g['precision']:.4f} vs umbral {r['umbral']:.2f}: {estado}")

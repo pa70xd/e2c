@@ -105,3 +105,31 @@ def test_resumen_json(tmp_path):
     run_eval.main(["--provider", "regex", "--set", str(SINTETICO), "--json", str(salida)])
     datos = json.loads(salida.read_text(encoding="utf-8"))
     assert datos["proveedor"] == "regex" and "confusion" in datos
+
+
+def test_precios_solo_de_variables_de_entorno(monkeypatch):
+    monkeypatch.delenv("EVAL_PRICE_IN", raising=False)
+    monkeypatch.delenv("EVAL_PRICE_OUT", raising=False)
+    assert run_eval.precios_configurados() is None
+    monkeypatch.setenv("EVAL_PRICE_IN", "1.5")
+    assert run_eval.precios_configurados() is None  # falta la de salida
+    monkeypatch.setenv("EVAL_PRICE_OUT", "x")
+    assert run_eval.precios_configurados() is None  # no es número
+    monkeypatch.setenv("EVAL_PRICE_OUT", "7")
+    assert run_eval.precios_configurados() == (1.5, 7.0)
+
+
+def test_reporte_de_costo_no_configurado(capsys):
+    from classifier.contracts import GateResult  # noqa: F401  (el import valida el entorno)
+
+    resumen = {
+        "proveedor": "haiku", "casos": 0, "errores": [], "umbral": 0.95, "cumple": True,
+        "gate": {"precision": 1.0, "recall": 1.0, "f1": 1.0, "tp": 0, "fp": 0, "fn": 0, "tn": 0},
+        "confusion": {"no_os": {"no_os": 0}}, "falsos_positivos": [],
+        "extract": {"exactitud": 0.0, "tp": 0, "fn": 0, "precision": 0.0, "fp": 0, "casos_exactos": 0, "casos": 0},
+        "caida_regex_gate": 0.0, "caida_regex_extract": 0.0,
+        "latencia_ms": {"media": 0.0, "p50": 0.0, "p95": 0.0},
+        "costo": {"tokens_in": 100.0, "tokens_out": 10.0, "usd": None},
+    }
+    run_eval.imprimir(resumen, "x.jsonl")
+    assert "costo: no configurado" in capsys.readouterr().out
