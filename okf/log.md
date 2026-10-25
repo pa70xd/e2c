@@ -192,6 +192,12 @@
 * **Decisión no tomada por el usuario:** CANCELLED/REJECTED a revisión (motivo `estado_no_pending`). Anotada en `riesgos/decisiones.md` como pendiente de confirmación.
 * Huecos: sin lector de filas de `cooler_request` (lo agrega `revision`), decisiones del hilo no persistidas, `tests/conftest.py` no limpia `CLASSIFIER_*`, `ultima_decision()` es `ContextVar`. Runbook avisa del tercero.
 
+## 2026-10-25 · revision: resumen (Fase 3)
+
+* Rama `claude/e2c-revision` (`e872203`), sin mergear. Verificado: `review/`, los tres SQL, los métodos de `DBPostgreBase` y los mensajes; `pytest -q` → 492 passed, 48 skipped, 1 xfailed. **No ejecuté** los 48 tests contra Postgres local (540 passed con `E2C_TEST_PG_DSN`, según la sesión).
+* Nuevo concepto [classifier/revision.md](classifier/revision.md). Cuatro puntos abiertos de la sesión más dos preguntas a ti, en `riesgos/preguntas-abiertas.md`.
+* Solo actúa con `CLASSIFIER_EXTRACT` distinto de `regex`; con el default no corre.
+
 ## 2026-10-24
 
 * Creación del bundle OKF del repositorio `e2c` (rama `claude/admiring-lovelace-3oh7g0`).

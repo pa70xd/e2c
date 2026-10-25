@@ -60,6 +60,7 @@ Bundle OKF del repositorio `e2c`: backend FastAPI que recibe correos de clientes
 
 ## Clasificador (Fase 3)
 
+* [Revisión por hilo](classifier/revision.md) - aplica cambios en filas PENDING y manda el resto a revisión humana por correo (rama `claude/e2c-revision`, sin mergear).
 * [Núcleo del clasificador](classifier/core.md) - contratos, validación, registro, proveedor regex y gate en el flujo (rama `claude/e2c-classifier-core`, sin mergear).
 * [Proveedor Haiku](classifier/provider-haiku.md) - `gate()` y `extract()` con Claude Haiku 5.5, opcional (rama `claude/e2c-provider-haiku`, sin mergear).
 * [Redacción de PII](classifier/redact.md) - `redact()`, obligatoria antes de cualquier proveedor externo (rama `claude/e2c-redact`, sin mergear).

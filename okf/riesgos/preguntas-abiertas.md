@@ -26,6 +26,15 @@ tags: [pendientes, negocio]
 # Repo
 
 * ¿KOF se habilita? Requiere reglas, buzón y registro en los mapas de parsers.
+# Clasificador y revisión por hilo (Fase 3)
+
+* Si un proveedor externo refiere una fila inexistente, `classifier.validate` descarta toda la extracción y cae a regex: esas filas no se aplican, no van a revisión y nadie avisa. ¿Debe avisarse?
+* ¿Se vuelve a avisar a REPARE cuando se pide cancelar una fila que ya está CANCELLED? Hoy sí (regla estricta).
+* Un alta pedida por texto crea una fila mínima, sin geocodificación ni distribuidora. ¿Es aceptable?
+* Con Excel adjunto no se atiende lo que pida el texto del correo. ¿Debe atenderse?
+* ¿Confirmas que las filas CANCELLED y REJECTED también van a revisión (hoy decisión de la sesión, no tuya)?
+* ¿La cola de revisión debe persistirse? Hoy solo hay correo a REPARE. Ver [revisión](../classifier/revision.md).
+
 # Respondidas
 
 Ver también [decisiones](decisiones.md).
