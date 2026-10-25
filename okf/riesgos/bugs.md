@@ -58,10 +58,11 @@ tags: [bugs, riesgos]
 * **Rutas relativas al cwd**: `config/email_index.json` y "Documentos_Adjuntos".
 * **Holanda `pd.read_excel`**: toma primera hoja aunque esté oculta.
 * **Heineken `MAX(row_number)`**: sin transacción. Concurrencia puede repetir.
+* **Riesgo de la corrección de `\a`→`\b`** (rama `claude/e2c-fix-mecanicos`): `\baviso\b` y `\bavisos\b` ahora sí pueden coincidir en `MOVEMENTS`, y podrían activarse con pies de correo como "Aviso de privacidad". Hipótesis sin medir; el harness lo va a medir.
 * **Hallazgos nuevos de fix-parsers** (sin corregir):
   * Penafiel `bot.cancelar` no cancela coolers pendientes (ver verificado 5).
   * `bot.estatus` de Danone y Penafiel: el `print` de error dice "No se logro cancelar" (copy-paste).
   * Una serie numérica leída como float se guarda como `'123.0'` y puede romper el dedupe con `COALESCE` contra la misma serie guardada como `'123'`.
   * `gen` `send_email_coolers` y `gen_parse/process_data.prepare_data_cooler` no tienen llamadores.
-  * Al importar `main`, la conexión apunta a PRODUCCIÓN por defecto (log `[BASEDATOS] dirigido a -> PRODUCCIÓN`).
+  * Al importar `main`, la conexión apunta a PRODUCCIÓN por defecto (log `[BASEDATOS] dirigido a -> PRODUCCIÓN`). Verificado: sin `DEBUG=true` usa PRODUCCIÓN. Ver [despliegue](../deploy/despliegue.md).
 * **Outbound de Danone `bot.cancelar`**: ver verificado 5.

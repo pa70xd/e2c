@@ -18,7 +18,7 @@ tags: [docker, cloud-run, env]
 | Variable | Quién la lee | Uso |
 |---|---|---|
 | `CLIENT_ID`, `CLIENT_SECRET`, `TENANT_ID` | handler, subscriptions, graphapi | MSAL y Graph |
-| `DEBUG` | service, email_type | Modo depuración. Escribe `email.json`. |
+| `DEBUG` | service, email_type, repository | Modo depuración. Escribe `email.json`. **Si no está definida, el código apunta a las tablas de PRODUCCIÓN**: `repository/*/consultas_postgre.py:11-16` compara `DEBUG` con `"true"` y, si no, usa producción (el import imprime `[BASEDATOS] dirigido a -> PRODUCCIÓN`). Para usar las tablas `*_qa` hay que definir `DEBUG=true`. |
 | `MAPS_KEY` | process_data, geocoding | Google Geocoding |
 | `SECRET_PG_ACC` | postgres | Nombre del secreto de PostgreSQL |
 | `DB_HOST`, `DB_NAME`, `DB_PORT` | postgres | Conexión |
