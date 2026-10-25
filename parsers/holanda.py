@@ -31,6 +31,8 @@ from msgraph.generated.users.item.messages.item.message_item_request_builder imp
 
 from repository.danone.consultas_postgre import DB_POSTGRE
 from repository.holanda.consultas_postgre import DB_HOLANDA
+from bot import commands as bot_commands
+from bot.perfiles import perfil_holanda
 
 from config.config_general.messages import MENSAJES_REPARE
 from config.config_general.fails_response import get_fail_response as libreria_errores
@@ -274,67 +276,19 @@ class HOLANDA_REPLY:
         return _respuesta(msj.msj_cambios(folio, mail.web_link, total, total, 0, 0))
 
     async def _comando_bot(self, client, user_id, mail_id, mail, result_type):
-        """Mismos comandos que Danone. La diferencia: la solicitud se
-        resuelve por folio (el hilo de Holanda mezcla muchas), ver
-        _resolver_folio. Si no hay folio, se pide -- no se adivina."""
+        """Mismos comandos que Danone (bot/commands.py). La diferencia: la
+        solicitud se resuelve por folio (el hilo de Holanda mezcla muchas),
+        ver _resolver_folio. Si no hay folio, se pide -- no se adivina."""
 
-        if not result_type.get("tiene_palabra_reservada"):
-            return None
-
-        palabra = (result_type.get("palabra") or "").lower()
-
-        if palabra in ("bot.help", "bot.ayuda"):
-            return _respuesta(msj.msj_ayuda())
-
-        if palabra == "bot.global":
-            file = None
-            try:
-                data = db_holanda.global_status()
-                if data:
-                    file = self.process.process_email_request_global(data)
-            except Exception as e:
-                print(f"[HOLANDA][BOT][ERROR] No se logró generar el estado global: {e}")
-            return _respuesta(msj.msj_global(), [file] if file else None)
-
-        if palabra not in ("bot.estatus", "bot.status", "bot.cancelar", "bot.finalizar", "bot.cerrar"):
-            return _respuesta(msj.msj_comando_no_reconocido())
-
-        folio = await self._resolver_folio(client, user_id, mail_id, mail)
-        if not folio:
-            return _respuesta(msj.msj_folio_requerido())
-
-        solicitud = db_holanda.get_request(folio)
-        if not solicitud:
-            return _respuesta(msj.msj_folio_requerido(folio))
-
-        request_code = solicitud["request_code"]
-
-        if palabra in ("bot.estatus", "bot.status"):
-            try:
-                data = db_holanda.bot_status(request_code)
-            except Exception as e:
-                print(f"[HOLANDA][BOT][ERROR] No se logró consultar el estatus de {request_code}: {e}")
-                data = None
-            if not data:
-                return _respuesta(msj.msj_folio_requerido(folio))
-            return _respuesta(msj.msj_status_solicitud(data))
-
-        if palabra == "bot.cancelar":
-            # También se cancelan sus casos PENDING, para que un outbound
-            # posterior no reviva la solicitud.
-            try:
-                db.cancel_pending_coolers(request_code)
-                db.cancel_email_request(request_code)
-            except Exception as e:
-                print(f"[HOLANDA][BOT][ERROR] No se logró cancelar {request_code}: {e}")
-            return _respuesta(msj.msj_cancelar(request_code))
-
-        # bot.finalizar / bot.cerrar
-        try:
-            db.complete_email_request(request_code)
-        except Exception as e:
-            print(f"[HOLANDA][BOT][ERROR] No se logró finalizar {request_code}: {e}")
-        return _respuesta(msj.msj_finalizar(request_code))
+        return await bot_commands.ejecutar(
+            perfil_holanda(db, db_holanda, msj, self.process),
+            result_type,
+            bot_commands.resolver_por_folio(
+                lambda: self._resolver_folio(client, user_id, mail_id, mail),
+                lambda folio: db_holanda.get_request(folio),
+                msj,
+            ),
+        )
 
     async def _resolver_folio(self, client, user_id, mail_id, mail):
         """Folio sobre el que actúa un comando del bot:
