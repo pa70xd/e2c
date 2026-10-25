@@ -2,6 +2,7 @@
 
 import pytest
 
+import classifier
 from classifier import validate
 from classifier.contracts import (
     ACCEPTED,
@@ -151,3 +152,63 @@ def test_cancelar_solicitud_marca_las_accepted_del_hilo():
     assert [(r.row_number, r.status) for r in revision] == [(2, ACCEPTED), (4, REJECTED)]
     _, revision = validate.separar_revision((), g("cancelar_solicitud"), REPLY)
     assert revision == ()
+
+
+# ------------------------------------------------------------------ filas inválidas a revisión
+def test_separar_invalidas_manda_la_fila_mala_a_revision():
+    rows = [RowExtraida("cancelar", row_number=1), RowExtraida("cancelar", row_number=99),
+            RowExtraida("cancelar"), RowExtraida("cancelar", row_number=1)]
+    errores, validas, invalidas = validate.separar_invalidas(rows, g("cancelar_filas"), FILAS)
+    assert errores == []
+    assert validas == (rows[0],)
+    assert [(f.row_number, f.accion, f.motivo) for f in invalidas] == [
+        (99, "cancelar", "fila_inexistente"),
+        (None, "cancelar", "row_number_requerido"),
+        (1, "cancelar", "fila_repetida"),
+    ]
+    assert all(f.comentario == "requiere revisión" for f in invalidas)
+
+
+def test_separar_invalidas_campo_invalido_y_accion_incoherente():
+    rows = [RowExtraida("agregar", modelo="x" * 301), RowExtraida("cancelar", row_number=1),
+            RowExtraida("agregar", modelo="M")]
+    errores, validas, invalidas = validate.separar_invalidas(rows, g("agregar_filas"), FILAS)
+    assert errores == [] and validas == (rows[2],)
+    assert [f.motivo for f in invalidas] == ["modelo_invalido", "accion_incoherente_con_evento"]
+
+
+def test_separar_invalidas_row_number_no_entero_queda_sin_numero():
+    errores, validas, invalidas = validate.separar_invalidas(
+        [RowExtraida("modificar", row_number="1")], g("modificar_filas"), FILAS
+    )
+    assert errores == [] and validas == ()
+    assert [(f.row_number, f.motivo) for f in invalidas] == [(None, "row_number_invalido")]
+
+
+@pytest.mark.parametrize(
+    "rows, tipo, ctx, error",
+    [
+        ("nada", "modificar_filas", FILAS, "rows:tipo_invalido"),
+        ([RowExtraida("cancelar", row_number=1)], "cancelar_solicitud", FILAS, "rows:evento_sin_filas"),
+        ([RowExtraida("cancelar", row_number=1), {"accion": "x"}], "cancelar_filas", FILAS, "rows[1]:tipo_invalido"),
+        ([RowExtraida("borrar", row_number=1)], "modificar_filas", FILAS, "rows[0]:accion_invalida"),
+        ([RowExtraida("modificar", row_number=1)], "modificar_filas", REPLY, "rows[0]:filas_no_cargadas"),
+    ],
+)
+def test_separar_invalidas_errores_globales_caen_a_regex(rows, tipo, ctx, error):
+    errores, validas, invalidas = validate.separar_invalidas(rows, g(tipo), ctx)
+    assert error in errores and validas == () and invalidas == ()
+
+
+def test_decidir_aplica_validas_y_revisa_invalidas(proveedores):
+    proveedores.registrar(
+        "fake",
+        gate=lambda s, b, c: GateResult(True, "cancelar_filas", 0.9),
+        extract=lambda b, c, gate=None: [RowExtraida("cancelar", row_number=1), RowExtraida("cancelar", row_number=99)],
+    )
+    proveedores.redactor()
+    proveedores.usar(gate="fake", extract="fake")
+    d = classifier.decidir("RE: x", "cancelen 1 y 99", FILAS)
+    assert d.proveedor_extract == "fake" and d.fallbacks == ()
+    assert [r.row_number for r in d.filas_aplicables] == [1]
+    assert [(f.row_number, f.motivo) for f in d.filas_revision] == [(99, "fila_inexistente")]

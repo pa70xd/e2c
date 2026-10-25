@@ -71,57 +71,108 @@ def _texto_ok(valor) -> bool:
     return valor is None or (isinstance(valor, str) and len(valor) <= MAX_LARGO_CAMPO)
 
 
-def validar_rows(rows, gate: GateResult, thread_ctx: ThreadCtx) -> list[str]:
+def _revisar_rows(rows, gate: GateResult, thread_ctx: ThreadCtx):
+    """(errores globales, [(i, row, códigos)] de las filas con errores).
+
+    Un error global invalida la salida entera del proveedor. Un error de
+    fila (códigos sin el prefijo ``rows[i]:``) solo afecta a esa fila."""
     if not isinstance(rows, (list, tuple)):
-        return ["rows:tipo_invalido"]
+        return ["rows:tipo_invalido"], []
     if len(rows) > MAX_FILAS:
-        return ["rows:demasiadas"]
+        return ["rows:demasiadas"], []
     if rows and not gate.es_os:
-        return ["rows:sin_os"]
+        return ["rows:sin_os"], []
 
     accion_esperada = ACCION_POR_TIPO.get(gate.tipo_evento)
     if rows and accion_esperada is None:
         # cancelar_solicitud, estatus: el evento no lleva filas.
-        return ["rows:evento_sin_filas"]
+        return ["rows:evento_sin_filas"], []
 
-    errores = []
+    por_fila = []
     vistos = set()
     for i, row in enumerate(rows):
+        codigos = []
+        por_fila.append((i, row, codigos))
         if not isinstance(row, RowExtraida):
-            errores.append(f"rows[{i}]:tipo_invalido")
+            codigos.append("tipo_invalido")
             continue
         if row.accion not in ACCIONES:
-            errores.append(f"rows[{i}]:accion_invalida")
+            codigos.append("accion_invalida")
             continue
         if row.accion != accion_esperada:
-            errores.append(f"rows[{i}]:accion_incoherente_con_evento")
+            codigos.append("accion_incoherente_con_evento")
         for campo in CAMPOS_FILA:
             if not _texto_ok(getattr(row, campo)):
-                errores.append(f"rows[{i}]:{campo}_invalido")
+                codigos.append(f"{campo}_invalido")
 
         rn = row.row_number
         if rn is not None and (isinstance(rn, bool) or not isinstance(rn, int) or rn < 1):
-            errores.append(f"rows[{i}]:row_number_invalido")
+            codigos.append("row_number_invalido")
             continue
 
         if row.accion == AGREGAR:
             if rn is not None:
-                errores.append(f"rows[{i}]:agregar_con_row_number")
+                codigos.append("agregar_con_row_number")
             continue
 
         # modificar / cancelar: la fila referida debe existir en el hilo.
         if rn is None:
-            errores.append(f"rows[{i}]:row_number_requerido")
+            codigos.append("row_number_requerido")
         elif thread_ctx.filas is None:
-            errores.append(f"rows[{i}]:filas_no_cargadas")
+            codigos.append("filas_no_cargadas")
         elif thread_ctx.fila(rn) is None:
-            errores.append(f"rows[{i}]:fila_inexistente")
+            codigos.append("fila_inexistente")
         elif rn in vistos:
-            errores.append(f"rows[{i}]:fila_repetida")
+            codigos.append("fila_repetida")
         if rn is not None:
             vistos.add(rn)
 
-    return errores
+    return [], [(i, row, c) for i, row, c in por_fila if c]
+
+
+def validar_rows(rows, gate: GateResult, thread_ctx: ThreadCtx) -> list[str]:
+    globales, por_fila = _revisar_rows(rows, gate, thread_ctx)
+    if globales:
+        return globales
+    return [f"rows[{i}]:{c}" for i, _, codigos in por_fila for c in codigos]
+
+
+# Errores de fila que invalidan la salida entera: la fila no es un
+# RowExtraida o su acción no existe (no se puede ni describir a REPARE), o
+# el contexto del hilo no se cargó (``filas=None``: cae a regex, ver
+# ``classifier.contracts``).
+ERRORES_FILA_GLOBALES = frozenset({"tipo_invalido", "accion_invalida", "filas_no_cargadas"})
+
+
+def separar_invalidas(rows, gate: GateResult, thread_ctx: ThreadCtx):
+    """(errores globales, filas válidas, filas inválidas a revisión).
+
+    Decisión de la orquestadora (2026-10-25): una fila inválida o que se
+    refiere a una fila inexistente no tira el correo entero; va a revisión
+    con su código como ``motivo`` y el resto se aplica. Solo los errores
+    globales (y ``ERRORES_FILA_GLOBALES``) hacen caer a ``regex``."""
+    globales, por_fila = _revisar_rows(rows, gate, thread_ctx)
+    if globales:
+        return globales, (), ()
+    graves = [f"rows[{i}]:{c}" for i, _, codigos in por_fila for c in codigos if c in ERRORES_FILA_GLOBALES]
+    if graves:
+        return graves, (), ()
+
+    malas = {i for i, _, _ in por_fila}
+    validas = tuple(row for i, row in enumerate(rows) if i not in malas)
+    invalidas = []
+    for _, row, codigos in por_fila:
+        rn = row.row_number
+        if isinstance(rn, bool) or not isinstance(rn, int):
+            rn = None
+        fila = thread_ctx.fila(rn) if rn is not None else None
+        invalidas.append(FilaRevision(
+            row_number=rn,
+            accion=row.accion,
+            status=fila.status if fila else None,
+            motivo=codigos[0],
+        ))
+    return [], validas, tuple(invalidas)
 
 
 def _revision(row_number, accion, status) -> FilaRevision:

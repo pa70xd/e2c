@@ -27,6 +27,7 @@ from infrastructure.graphapi.graphapi import reply_mail_onl_text, reply_mail_ini
 from parsers.gen_parse.reader import GEN_READER
 import classifier
 from classifier.contracts import ETAPA_INIT, ETAPA_REPLY
+import review
 
 from datetime import datetime
 from zoneinfo import ZoneInfo
@@ -105,25 +106,35 @@ PARSERS_REPLY = {
 GATE_EN_PARSER_INIT = {"danone", "penafiel", "test_danone", "test_penafiel"}
 
 
-def classifier_gate(email, customer, etapa, direccion=None):
-    """Gate del clasificador: (continuar, Decision o None). Con el proveedor
+def classifier_evaluar(email, customer, etapa, direccion=None):
+    """Gate del clasificador: ``(continuar, decision, ctx)``. Con el proveedor
     por defecto (regex) siempre deja pasar lo que antes pasaba. Si el
-    clasificador falla, el flujo sigue como antes (Decision None)."""
+    clasificador falla, el flujo sigue como antes (sin decisión). El reply
+    usa ``ctx`` (filas del hilo) para el canal de revisión."""
     try:
         decision, ctx = classifier.decidir_correo(email, customer, etapa, direccion)
     except Exception as e:
         print(f"[CLASSIFIER][ERROR] {type(e).__name__}; se sigue sin gate")
-        return True, None
+        return True, None, None
     if classifier.debe_continuar(decision, ctx):
-        return True, decision
+        return True, decision, ctx
     print(f"[CLASSIFIER][INFO] {etapa} descartado: tipo={decision.tipo_evento}")
-    return False, decision
+    return False, decision, ctx
+
+
+def classifier_gate(email, customer, etapa, direccion=None):
+    """Gate del clasificador: (continuar, Decision o None)."""
+    return classifier_evaluar(email, customer, etapa, direccion)[:2]
 
 
 # SABANA = Template_Sabana()
 excel_ingestion = Excel_Ingestion()
 validator = EMAIL_TYPE()
 db = DB_POSTGRE()
+
+# Contexto del hilo (filas de cooler_request) para el clasificador. Solo se
+# consulta con un proveedor externo; con regex no se llama.
+classifier.registrar_cargador_contexto(review.cargador(db))
 
 async def processMail(data):
     
@@ -285,7 +296,8 @@ async def processMail(data):
             # print(f"{flujo}DIRECCIO: {direccion}")
 
             # Todo mensaje de hilo pasa por el gate (agrega, cambia o cancela filas).
-            continuar, decision = classifier_gate(email, customer, ETAPA_REPLY, direccion)
+            # La decisión viaja por la llamada (no por estado global).
+            continuar, decision, thread_ctx = classifier_evaluar(email, customer, ETAPA_REPLY, direccion)
             if not continuar:
                 duckConn.close()
                 return None
@@ -295,15 +307,31 @@ async def processMail(data):
             parser.classifier_decision = decision
 
             try :
-                result = await parser.parse(
-                    client,
-                    user_id,
-                    mail_id,
-                    email,
-                    direccion,
-                    customer,
-                    customer_email
-                )
+                # Solo con CLASSIFIER_EXTRACT distinto de regex: cambios de
+                # filas pedidos en el texto (PENDING se aplica, el resto va a
+                # revisión de REPARE en el mismo hilo).
+                if review.debe_atender(decision, thread_ctx, email):
+
+                    async def enviar_a_repare(mensaje_revision):
+                        await reply_mail_onl_text(
+                            host_email = customer_email,
+                            client=client,
+                            user_id=user_id,
+                            mail_id=email.id,
+                            mensaje=mensaje_revision,
+                        )
+
+                    result = await review.atender(decision, thread_ctx, db, enviar_a_repare)
+                else:
+                    result = await parser.parse(
+                        client,
+                        user_id,
+                        mail_id,
+                        email,
+                        direccion,
+                        customer,
+                        customer_email
+                    )
 
                 if result is None:
                     return

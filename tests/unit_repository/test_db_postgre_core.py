@@ -39,6 +39,10 @@ METODOS = {
     "get_email_request_global": "()",
     "get_distribuidora_mov": "(cp: str, distribuidora: str) -> dict | None",
     "get_distribuidora_ruta": "(cp: str, distribuidora: str) -> dict | None",
+    # Fase 3, revisión por hilo (review/).
+    "get_cooler_rows": "(request_code: str) -> list[dict]",
+    "update_pending_cooler_row": "(request_code: str, row_number: int, cambios: dict)",
+    "cancel_pending_cooler_row": "(request_code: str, row_number: int)",
 }
 
 CONSTANTES = {

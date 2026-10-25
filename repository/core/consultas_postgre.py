@@ -65,6 +65,9 @@ SQL_FILE_INIT_EXIST = (Path(__file__).resolve().parent.parent/ "querys"/ "generi
 SQL_FILE_UPDATE_EMAIL_COOLER = (Path(__file__).resolve().parent.parent/ "querys"/ "genericas"/ "email_update_cooler.sql")
 SQL_FILE_DISTRIBUIDORA_MOV = (Path(__file__).resolve().parent.parent/ "querys"/ "genericas"/ "get_distribuidora_mov.sql")
 SQL_FILE_DISTRIBUIDORA_RUTA = (Path(__file__).resolve().parent.parent/ "querys"/ "genericas"/ "get_distribuidora_ruta.sql")
+SQL_FILE_COOLER_ROWS = (Path(__file__).resolve().parent.parent/ "querys"/ "genericas"/ "cooler_rows_by_request.sql")
+SQL_FILE_UPDATE_PENDING_ROW = (Path(__file__).resolve().parent.parent/ "querys"/ "genericas"/ "update_pending_cooler_row.sql")
+SQL_FILE_CANCEL_PENDING_ROW = (Path(__file__).resolve().parent.parent/ "querys"/ "genericas"/ "cancel_pending_cooler_row.sql")
 
 # Lo que cada módulo de cliente re-exporta con ``import *``: los mismos
 # nombres de módulo que tenía cuando era una copia completa.
@@ -80,6 +83,7 @@ __all__ = [
     "SQL_FILE_EMAIL_REQUEST_BOT_GLOBAL", "SQL_FILE_TOTAL_COOLERS", "SQL_FILE_EXIST_EMAIL",
     "SQL_FILE_INIT_EXIST", "SQL_FILE_UPDATE_EMAIL_COOLER", "SQL_FILE_DISTRIBUIDORA_MOV",
     "SQL_FILE_DISTRIBUIDORA_RUTA",
+    "SQL_FILE_COOLER_ROWS", "SQL_FILE_UPDATE_PENDING_ROW", "SQL_FILE_CANCEL_PENDING_ROW",
     "DBPostgreBase", "anunciar_destino",
 ]
 
@@ -750,3 +754,63 @@ class DBPostgreBase:
             return None
 
         return resultado[0]
+
+    @staticmethod
+    def get_cooler_rows(request_code: str) -> list[dict]:
+        """Filas de la solicitud para el contexto del hilo (sin PII):
+        row_number, serie_fabricante, serie_dnn_bnf y status."""
+        sql = SQL_FILE_COOLER_ROWS.read_text(
+            encoding="utf-8"
+        ).format(
+            cooler_request_table = COOLER_REQUEST
+        )
+
+        result = execute_query(
+            query=sql,
+            params=(request_code,),
+        )
+
+        return result or []
+
+    @staticmethod
+    def update_pending_cooler_row(request_code: str, row_number: int, cambios: dict):
+        """Cambia los campos no vacíos de ``cambios`` en UNA fila PENDING.
+        Devuelve las filas tocadas (vacío si la fila no existe o ya no es
+        PENDING)."""
+        sql = SQL_FILE_UPDATE_PENDING_ROW.read_text(
+            encoding="utf-8"
+        ).format(
+            cooler_request_table = COOLER_REQUEST
+        )
+
+        result = execute_query(
+            query=sql,
+            params=(
+                cambios.get("folio"),
+                cambios.get("serie_fabricante"),
+                cambios.get("serie_dnn_bnf"),
+                cambios.get("modelo"),
+                cambios.get("tipo_servicio"),
+                cambios.get("direccion"),
+                request_code,
+                row_number,
+            ),
+        )
+
+        return result or []
+
+    @staticmethod
+    def cancel_pending_cooler_row(request_code: str, row_number: int):
+        """Cancela UNA fila PENDING. Vacío si no existe o ya no es PENDING."""
+        sql = SQL_FILE_CANCEL_PENDING_ROW.read_text(
+            encoding="utf-8"
+        ).format(
+            cooler_request_table = COOLER_REQUEST
+        )
+
+        result = execute_query(
+            query=sql,
+            params=(request_code, row_number),
+        )
+
+        return result or []
