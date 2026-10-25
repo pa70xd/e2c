@@ -1,0 +1,105 @@
+{
+  "deliveries": [
+    {
+      "message": {
+        "id": "msg-hnk-d2d-out-completa",
+        "subject": "RE: Precarga D2D 02/03/2026",
+        "from": "cliente.heineken@repare.example.com",
+        "to": [
+          "contacto@heineken-cliente.example.com"
+        ],
+        "attachments": [
+          "respuesta_d2d.xlsx"
+        ]
+      },
+      "result": "recibido",
+      "error": null,
+      "replies_sent": 1
+    }
+  ],
+  "repo_calls": [
+    {
+      "module": "danone.DB_POSTGRE",
+      "fn": "email_reply_validate",
+      "params": {
+        "conversation_id": "conv-heineken-d2d-001",
+        "subject": "RE: Precarga D2D 02/03/2026"
+      }
+    },
+    {
+      "module": "heineken.DB_HEINEKEN",
+      "fn": "conciliar",
+      "params": {
+        "fila": {
+          "serie": "HNK-D-0002",
+          "os": "4030000301",
+          "cliente": "3000002",
+          "activo": null,
+          "falla": "RETIRO DE ENF",
+          "orden": null,
+          "status": "ACCEPTED",
+          "motivo": null
+        },
+        "flujo": "D2D",
+        "request_code": "REPARE_000042"
+      }
+    },
+    {
+      "module": "heineken.DB_HEINEKEN",
+      "fn": "conciliar",
+      "params": {
+        "fila": {
+          "serie": "HEI2026010100001",
+          "os": "PENDIENTE DE CITA",
+          "cliente": "3000001",
+          "activo": null,
+          "falla": "ENTREGA DE ENF",
+          "orden": null,
+          "status": "PENDING",
+          "motivo": "PENDIENTE DE CITA"
+        },
+        "flujo": "D2D",
+        "request_code": "REPARE_000042"
+      }
+    },
+    {
+      "module": "danone.DB_POSTGRE",
+      "fn": "get_email_request_status",
+      "params": {
+        "request_code": "REPARE_000042"
+      }
+    },
+    {
+      "module": "danone.DB_POSTGRE",
+      "fn": "update_email_request",
+      "params": {
+        "request_code": "REPARE_000042"
+      }
+    },
+    {
+      "module": "danone.DB_POSTGRE",
+      "fn": "get_total_coolers",
+      "params": {
+        "request_code": "REPARE_000042"
+      }
+    },
+    {
+      "module": "danone.DB_POSTGRE",
+      "fn": "get_email_request_status",
+      "params": {
+        "request_code": "REPARE_000042"
+      }
+    }
+  ],
+  "external_calls": [],
+  "replies": [
+    {
+      "in_reply_to": "msg-hnk-d2d-out-completa",
+      "to": [
+        "cliente.heineken@repare.example.com"
+      ],
+      "body": "<div style=\" font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; max-width: 680px; color: #24292f; font-size: 14px; line-height: 1.6; \"> <p style=\"font-size: 15px; margin-bottom: 20px;\"> 🤖 Estimado usuario REPARE, </p> <div style=\" border: 1px solid #d0d7de; border-radius: 6px; padding: 20px; background: #f6f8fa; \"> <div style=\" font-size: 14px; font-weight: bold; margin-bottom: 12px; \"> REQUEST COMPLETED </div> <div style=\"color: #57606a;\"> La solicitud <b>REPARE_000042</b> ha sido <b>finalizada correctamente</b>. </div> </div> <div style=\" margin-top: 18px; border: 1px solid #d0d7de; border-radius: 6px; padding: 14px 16px; background: #ffffff; \"> <div style=\" font-size: 12px; color: #57606a; margin-bottom: 8px; \"> RESUMEN </div> <div style=\"color: #57606a;\"> <b>3</b> equipos procesados<br> <b>2</b> equipos con OS asignada<br> <b>1</b> equipos sin OS asignada </div> </div> </div>",
+      "attachments": []
+    }
+  ]
+}

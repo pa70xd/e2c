@@ -1,0 +1,110 @@
+{
+  "deliveries": [
+    {
+      "message": {
+        "id": "msg-danone-out-en_proceso",
+        "subject": "RE: Solicitud de servicios REPARE 02/03/2026",
+        "from": "cliente.danone@repare.example.com",
+        "to": [
+          "contacto@danone-cliente.example.com"
+        ],
+        "attachments": [
+          "respuesta_os.xlsx"
+        ]
+      },
+      "result": "recibido",
+      "error": null,
+      "replies_sent": 1
+    }
+  ],
+  "repo_calls": [
+    {
+      "module": "danone.DB_POSTGRE",
+      "fn": "email_reply_validate",
+      "params": {
+        "conversation_id": "conv-danone-001",
+        "subject": "RE: Solicitud de servicios REPARE 02/03/2026"
+      }
+    },
+    {
+      "module": "danone.DB_POSTGRE",
+      "fn": "update_cooler",
+      "params": {
+        "request_code": "REPARE_000042",
+        "df": {
+          "__dataframe__": {
+            "columns": [
+              "customer_id",
+              "serial_number",
+              "serial_dnn",
+              "os",
+              "status"
+            ],
+            "rows": [
+              [
+                "1000001",
+                "FAB-D-0001",
+                "DNN-D-0001",
+                "4030000001",
+                "ACCEPTED"
+              ],
+              [
+                "1000002",
+                "FAB-D-0002",
+                "DNN-D-0002",
+                "EN REVISION",
+                "PENDING"
+              ],
+              [
+                "1000003",
+                "FAB-D-0003",
+                "DNN-D-0003",
+                "",
+                "REJECTED"
+              ],
+              [
+                "1000004",
+                "FAB-D-0004",
+                "DNN-D-0004",
+                "[RECHAZADO] Sin cobertura",
+                "PENDING"
+              ]
+            ]
+          }
+        }
+      }
+    },
+    {
+      "module": "danone.DB_POSTGRE",
+      "fn": "update_email_request",
+      "params": {
+        "request_code": "REPARE_000042"
+      }
+    },
+    {
+      "module": "danone.DB_POSTGRE",
+      "fn": "get_email_request_status",
+      "params": {
+        "request_code": "REPARE_000042"
+      }
+    },
+    {
+      "module": "danone.DB_POSTGRE",
+      "fn": "get_total_coolers",
+      "params": {
+        "request_code": "REPARE_000042"
+      }
+    }
+  ],
+  "external_calls": [],
+  "replies": [
+    {
+      "in_reply_to": "msg-danone-out-en_proceso",
+      "to": [
+        "cliente.danone@repare.example.com"
+      ],
+      "body": "<div style=\" font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; max-width: 680px; color: #24292f; font-size: 14px; line-height: 1.6; \"> <p style=\"font-size: 15px; margin-bottom: 20px;\"> 🤖 Estimado usuario REPARE, </p> <div style=\" border: 1px solid #d0d7de; border-radius: 6px; padding: 20px; background: #f6f8fa; \"> <div style=\" font-size: 14px; font-weight: bold; margin-bottom: 12px; \"> CHANGES APPLIED </div> <div style=\"color: #57606a;\"> Los cambios de la solicitud <b>REPARE_000042</b> han sido aplicados correctamente. </div> </div> <div style=\" margin-top: 18px; border: 1px solid #d0d7de; border-radius: 6px; padding: 14px 16px; background: #ffffff; \"> <div style=\" font-size: 12px; color: #57606a; margin-bottom: 8px; \"> RESUMEN </div> <div style=\"color: #57606a;\"> <b>3</b> equipos procesados<br> <b>2</b> equipos con OS (ACEPTADOS)<br> <b>1</b> equipos sin OS (PENDIENTES)<br> <b>0</b> equipos sin OS (RECHAZADOS) </div> </div> </div>",
+      "attachments": []
+    }
+  ]
+}

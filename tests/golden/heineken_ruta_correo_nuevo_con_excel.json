@@ -1,0 +1,585 @@
+{
+  "deliveries": [
+    {
+      "message": {
+        "id": "msg-hnk-ruta-init",
+        "subject": "Mantenimiento Ferguez",
+        "from": "contacto@heineken-cliente.example.com",
+        "to": [
+          "cliente.heineken@repare.example.com"
+        ],
+        "attachments": [
+          "mantenimiento_ferguez.xlsx"
+        ]
+      },
+      "result": "recibido",
+      "error": null,
+      "replies_sent": 1
+    }
+  ],
+  "repo_calls": [
+    {
+      "module": "danone.DB_POSTGRE",
+      "fn": "conversation_exists",
+      "params": {
+        "conversation_id": "conv-heineken-ruta-001"
+      }
+    },
+    {
+      "module": "danone.DB_POSTGRE",
+      "fn": "email_init_exist",
+      "params": {
+        "mail_id": "msg-hnk-ruta-init"
+      }
+    },
+    {
+      "module": "heineken.DB_HEINEKEN",
+      "fn": "get_series_con_caso_abierto",
+      "params": {
+        "series": [
+          "HNK-R-0001",
+          "HNK-R-0002"
+        ]
+      }
+    },
+    {
+      "module": "danone.DB_POSTGRE",
+      "fn": "save_email_log_init",
+      "params": {
+        "email_model": {
+          "id": null,
+          "request_code": null,
+          "graph_message_id": "msg-hnk-ruta-init",
+          "internet_message_id": "<msg-hnk-ruta-init@mail.example.com>",
+          "conversation_id": "conv-heineken-ruta-001",
+          "conversation_index": "idx-msg-hnk-ruta-init",
+          "parent_message_id": null,
+          "change_key": "ck-msg-hnk-ruta-init",
+          "link_email": "https://mail.example.com/owa/?ItemID=msg-hnk-ruta-init",
+          "direction": "INBOUND",
+          "sender_name": "Contacto Heineken Ejemplo",
+          "sender_email": "contacto@heineken-cliente.example.com",
+          "recipients_to": [
+            {
+              "name": null,
+              "email": "cliente.heineken@repare.example.com"
+            }
+          ],
+          "recipients_cc": [],
+          "recipients_bcc": [],
+          "subject": "Mantenimiento Ferguez",
+          "body": "Buen dia.\nAdjunto los equipos para reparacion.\nSaludos,\nContacto Heineken Ejemplo",
+          "has_attachments": true,
+          "attachment_count": 0,
+          "processing_status": "RECEIVED",
+          "processing_message": null,
+          "received_at": "2026-03-02T15:30:00+00:00",
+          "sent_at": "2026-03-02T15:30:00+00:00",
+          "created_at": "<now>",
+          "updated_at": "<now>",
+          "customer": "heineken"
+        }
+      }
+    },
+    {
+      "module": "danone.DB_POSTGRE",
+      "fn": "send_email_request",
+      "params": {
+        "parametros": {
+          "request_code": "REPARE_000101",
+          "customer": "heineken",
+          "status": "IN_PROGRESS",
+          "priority": "MEDIUM",
+          "total_coolers": 2,
+          "pending_coolers": 2,
+          "completed_coolers": 0,
+          "failed_coolers": 0,
+          "assigned_to": "NA"
+        }
+      }
+    },
+    {
+      "module": "heineken.DB_HEINEKEN",
+      "fn": "guardar_casos",
+      "params": {
+        "request_code": "REPARE_000101",
+        "filas": [
+          {
+            "id_cliente": "4000001",
+            "modelo": "MODELO-K400",
+            "serie_fabricante": "HNK-R-0001",
+            "serie_dnn_bnf": null,
+            "tipo_servicio": "REPARACION MERCADO",
+            "canal": "TRADICIONAL",
+            "region": "ORIENTE",
+            "plaza": null,
+            "razon_social": "Cantina Ejemplo 1",
+            "direccion": "Calle Imaginaria 501 1",
+            "cp": "06400",
+            "ciudad": "Municipio Ejemplo",
+            "colonia": "Colonia Muestra",
+            "latitud": "19.4604",
+            "longitud": "-99.1604",
+            "telefono_1": "5550100301",
+            "comentarios": "No enfria sintetico 1",
+            "cbu": null,
+            "os": null,
+            "folio": "ORD-00001",
+            "ticket_solicitud": "AVI-00001",
+            "gestion_observaciones": "Contacto: Contacto 1 | Horario: 10:00 | Entre calles: Calle A y Calle B | Notas: SUC 01 | Cliente: Cliente Ruta 1",
+            "fecha_solicitud": "2026-03-02T09:30:00-06:00"
+          },
+          {
+            "id_cliente": "4000002",
+            "modelo": "MODELO-K400",
+            "serie_fabricante": "HNK-R-0002",
+            "serie_dnn_bnf": null,
+            "tipo_servicio": "REPARACION MERCADO",
+            "canal": "TRADICIONAL",
+            "region": "ORIENTE",
+            "plaza": null,
+            "razon_social": "Cantina Ejemplo 2",
+            "direccion": "Calle Imaginaria 502 2",
+            "cp": "06400",
+            "ciudad": "Municipio Ejemplo",
+            "colonia": "Colonia Muestra",
+            "latitud": "19.4604",
+            "longitud": "-99.1604",
+            "telefono_1": "5550100302",
+            "comentarios": "No enfria sintetico 2",
+            "cbu": null,
+            "os": null,
+            "folio": "ORD-00002",
+            "ticket_solicitud": "AVI-00002",
+            "gestion_observaciones": "Contacto: Contacto 2 | Horario: 10:00 | Entre calles: Calle A y Calle B | Notas: SUC 01 | Cliente: Cliente Ruta 2",
+            "fecha_solicitud": "2026-03-02T09:30:00-06:00"
+          }
+        ],
+        "flujo": "RUTA"
+      }
+    },
+    {
+      "module": "danone.DB_POSTGRE",
+      "fn": "update_email_request",
+      "params": {
+        "request_code": "REPARE_000101"
+      }
+    }
+  ],
+  "external_calls": [
+    {
+      "service": "google_geocoding",
+      "latlng": "19.4604,-99.1604"
+    },
+    {
+      "service": "google_geocoding",
+      "latlng": "19.4604,-99.1604"
+    }
+  ],
+  "replies": [
+    {
+      "in_reply_to": "msg-hnk-ruta-init",
+      "to": [
+        "cliente.heineken@repare.example.com"
+      ],
+      "body": "<div style=\" font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; max-width: 680px; color: #24292f; font-size: 14px; line-height: 1.6; \"> <p style=\"font-size: 15px; margin-bottom: 20px;\"> 🤖 Estimado usuario REPARE, </p> <div style=\" border: 1px solid #d0d7de; border-radius: 6px; padding: 20px; background: #f6f8fa; \"> <div style=\" font-size: 14px; font-weight: bold; margin-bottom: 12px; \"> REQUEST RECEIVED </div> <div style=\"color: #57606a;\"> Hemos recibido su solicitud y ha iniciado el <b>proceso de validación</b>. </div> </div> <div style=\" margin-top: 18px; padding: 14px 16px; border: 1px solid #d0d7de; border-radius: 6px; background: #ffffff; \"> <div style=\" font-size: 12px; color: #57606a; margin-bottom: 5px; \"> FOLIO </div> <div style=\" font-size: 18px; font-weight: bold; letter-spacing: 1px; \"> REPARE_000101 </div> </div> <p style=\" color: #57606a; margin-top: 18px; \"> Se adjunta la <b>pre-sábana</b> correspondiente a su solicitud. </p> </div>",
+      "attachments": [
+        {
+          "name": "mantenimiento_ferguez.xlsx",
+          "sheets": [
+            {
+              "title": "Hoja1",
+              "state": "visible",
+              "rows": [
+                [
+                  "Mantenimiento Ferguez - formato sintetico",
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null
+                ],
+                [
+                  "MODELO",
+                  "SERIE",
+                  "FALLA REPORTADA & NOTAS ADICIONALES",
+                  "HORA ATENCION",
+                  "NUMERO DE CASO/FOLIO",
+                  "N° DE CLIENTE",
+                  "NOMBRE PUNTO DE VENTA",
+                  "CALLE",
+                  "NUMERO",
+                  "ENTRE CALLE",
+                  "Y CALLE",
+                  "COLONIA",
+                  "MUNICIPIO",
+                  "CODIGO POSTAL",
+                  "LATITUD",
+                  "LONGITUD(-)",
+                  "TELEFONO Y/O FAX",
+                  "NOMBRE CONTACTO PUNTO DE VENTA",
+                  "TIPO DE MOVIMIENTO",
+                  "CANAL",
+                  "REGION",
+                  "SUCURSAL",
+                  "CLIENTE",
+                  "ORDEN",
+                  "AVISO",
+                  "OS"
+                ],
+                [
+                  "MODELO-K400",
+                  "HNK-R-0001",
+                  "No enfria sintetico 1",
+                  "10:00",
+                  null,
+                  "4000001",
+                  "Cantina Ejemplo 1",
+                  "Calle Imaginaria 501",
+                  "1",
+                  "Calle A",
+                  "Calle B",
+                  "Colonia Muestra",
+                  "Municipio Ejemplo",
+                  "06400",
+                  "19.4604",
+                  "-99.1604",
+                  "5550100301",
+                  "Contacto 1",
+                  "REPARACION MERCADO",
+                  "TRADICIONAL",
+                  "ORIENTE",
+                  "SUC 01",
+                  "Cliente Ruta 1",
+                  "ORD-00001",
+                  "AVI-00001",
+                  null
+                ],
+                [
+                  "MODELO-K400",
+                  "HNK-R-0002",
+                  "No enfria sintetico 2",
+                  "10:00",
+                  null,
+                  "4000002",
+                  "Cantina Ejemplo 2",
+                  "Calle Imaginaria 502",
+                  "2",
+                  "Calle A",
+                  "Calle B",
+                  "Colonia Muestra",
+                  "Municipio Ejemplo",
+                  "06400",
+                  "19.4604",
+                  "-99.1604",
+                  "5550100302",
+                  "Contacto 2",
+                  "REPARACION MERCADO",
+                  "TRADICIONAL",
+                  "ORIENTE",
+                  "SUC 01",
+                  "Cliente Ruta 2",
+                  "ORD-00002",
+                  "AVI-00002",
+                  null
+                ],
+                [
+                  "MODELO-K400",
+                  "HNK-R-0003",
+                  "No enfria sintetico 3",
+                  "10:00",
+                  null,
+                  "4000003",
+                  "Cantina Ejemplo 3",
+                  "Calle Imaginaria 503",
+                  "3",
+                  "Calle A",
+                  "Calle B",
+                  "Colonia Muestra",
+                  "Municipio Ejemplo",
+                  "06400",
+                  "19.4604",
+                  "-99.1604",
+                  "5550100303",
+                  "Contacto 3",
+                  "INSTALACION",
+                  "TRADICIONAL",
+                  "ORIENTE",
+                  "SUC 01",
+                  "Cliente Ruta 3",
+                  "ORD-00003",
+                  "AVI-00003",
+                  "[RECHAZADO] Tipo de movimiento no soportado (solo REPARACION MERCADO)"
+                ],
+                [
+                  "MODELO-K400",
+                  "HNK-R-0004",
+                  "No enfria sintetico 4",
+                  "10:00",
+                  null,
+                  "4000004",
+                  "Cantina Ejemplo 4",
+                  "Calle Imaginaria 504",
+                  "4",
+                  "Calle A",
+                  "Calle B",
+                  "Colonia Muestra",
+                  "Municipio Ejemplo",
+                  null,
+                  "19.4604",
+                  "-99.1604",
+                  "5550100304",
+                  "Contacto 4",
+                  "REPARACION MERCADO",
+                  "TRADICIONAL",
+                  "ORIENTE",
+                  "SUC 01",
+                  "Cliente Ruta 4",
+                  "ORD-00004",
+                  "AVI-00004",
+                  "[RECHAZADO] Sin código postal"
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "name": "REPARE_000101|SABANA_RUTA.xlsx",
+          "sheets": [
+            {
+              "title": "Ordenes",
+              "state": "visible",
+              "rows": [
+                [
+                  "Distribuidora",
+                  "Categoría",
+                  "Linea",
+                  "Modelo ",
+                  "N° de activo",
+                  "Serie",
+                  "Comentarios Cliente",
+                  "Hora Atención",
+                  "Prioridad",
+                  "Folio",
+                  "Ticket de solicitud",
+                  "Canal",
+                  "Correo electrónico solicitante",
+                  "N° de Cliente",
+                  "Nombre punto de venta",
+                  "Calle",
+                  "Número",
+                  "Entre calle",
+                  "y calle",
+                  "Colonia",
+                  "Municipio",
+                  "Código Postal",
+                  "Latitud",
+                  "Longitud",
+                  "Telefono y/o fax",
+                  "Teléfono adicional",
+                  "Correo electrónico",
+                  "Nombre contacto punto de venta",
+                  "Código Postal Generado",
+                  "Colonia Generado",
+                  "Ciudad Generado",
+                  "Estado Generado",
+                  "Pais Generado"
+                ],
+                [
+                  "500166 | D1604 | DIST. CM VALLEJO REHAB. - COACALCO",
+                  null,
+                  null,
+                  "MODELO-K400",
+                  null,
+                  "HNK-R-0001",
+                  "Falla: No enfria sintetico 1 | Notas: SUC 01 | Region: ORIENTE",
+                  "10:00",
+                  null,
+                  "ORD-00001",
+                  "AVI-00001",
+                  "SC | Sin Canal",
+                  null,
+                  "4000001",
+                  "Cantina Ejemplo 1",
+                  "Calle Imaginaria 501",
+                  "1",
+                  "Calle A",
+                  "Calle B",
+                  "Colonia Muestra",
+                  "Municipio Ejemplo",
+                  "06400",
+                  "19.4604",
+                  "-99.1604",
+                  "5550100301",
+                  null,
+                  null,
+                  "Contacto 1",
+                  "06000",
+                  "Colonia Ejemplo",
+                  "Ciudad Ejemplo",
+                  "Estado Ejemplo",
+                  "México"
+                ],
+                [
+                  "500166 | D1604 | DIST. CM VALLEJO REHAB. - COACALCO",
+                  null,
+                  null,
+                  "MODELO-K400",
+                  null,
+                  "HNK-R-0002",
+                  "Falla: No enfria sintetico 2 | Notas: SUC 01 | Region: ORIENTE",
+                  "10:00",
+                  null,
+                  "ORD-00002",
+                  "AVI-00002",
+                  "SC | Sin Canal",
+                  null,
+                  "4000002",
+                  "Cantina Ejemplo 2",
+                  "Calle Imaginaria 502",
+                  "2",
+                  "Calle A",
+                  "Calle B",
+                  "Colonia Muestra",
+                  "Municipio Ejemplo",
+                  "06400",
+                  "19.4604",
+                  "-99.1604",
+                  "5550100302",
+                  null,
+                  null,
+                  "Contacto 2",
+                  "06000",
+                  "Colonia Ejemplo",
+                  "Ciudad Ejemplo",
+                  "Estado Ejemplo",
+                  "México"
+                ],
+                [
+                  "500166 | D1604 | DIST. CM VALLEJO REHAB. - COACALCO",
+                  null,
+                  null,
+                  "MODELO-K400",
+                  null,
+                  "HNK-R-0003",
+                  "[RECHAZADO] Tipo de movimiento no soportado (solo REPARACION MERCADO) | Falla: No enfria sintetico 3 | Notas: SUC 01 | Region: ORIENTE",
+                  "10:00",
+                  null,
+                  "ORD-00003",
+                  "AVI-00003",
+                  "SC | Sin Canal",
+                  null,
+                  "4000003",
+                  "Cantina Ejemplo 3",
+                  "Calle Imaginaria 503",
+                  "3",
+                  "Calle A",
+                  "Calle B",
+                  "Colonia Muestra",
+                  "Municipio Ejemplo",
+                  "06400",
+                  "19.4604",
+                  "-99.1604",
+                  "5550100303",
+                  null,
+                  null,
+                  "Contacto 3",
+                  null,
+                  null,
+                  null,
+                  null,
+                  null
+                ],
+                [
+                  "500166 | D1604 | DIST. CM VALLEJO REHAB. - COACALCO",
+                  null,
+                  null,
+                  "MODELO-K400",
+                  null,
+                  "HNK-R-0004",
+                  "[RECHAZADO] Sin código postal | Falla: No enfria sintetico 4 | Notas: SUC 01 | Region: ORIENTE",
+                  "10:00",
+                  null,
+                  "ORD-00004",
+                  "AVI-00004",
+                  "SC | Sin Canal",
+                  null,
+                  "4000004",
+                  "Cantina Ejemplo 4",
+                  "Calle Imaginaria 504",
+                  "4",
+                  "Calle A",
+                  "Calle B",
+                  "Colonia Muestra",
+                  "Municipio Ejemplo",
+                  null,
+                  "19.4604",
+                  "-99.1604",
+                  "5550100304",
+                  null,
+                  null,
+                  "Contacto 4",
+                  null,
+                  null,
+                  null,
+                  null,
+                  null
+                ]
+              ]
+            },
+            {
+              "title": "LinesByCategories",
+              "state": "hidden",
+              "max_row": 12
+            },
+            {
+              "title": "ModelsByLines",
+              "state": "hidden",
+              "max_row": 544
+            },
+            {
+              "title": "CustomerDistributors",
+              "state": "hidden",
+              "max_row": 3473
+            },
+            {
+              "title": "Categories",
+              "state": "hidden",
+              "max_row": 21
+            },
+            {
+              "title": "CommercialChannels",
+              "state": "hidden",
+              "max_row": 8
+            },
+            {
+              "title": "Priority",
+              "state": "hidden",
+              "max_row": 4
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

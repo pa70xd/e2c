@@ -1,0 +1,21 @@
+{
+  "init": {
+    "subject": "Solicitud de servicio Penafiel 02/03/2026",
+    "body": "Buen dia.\nSolicito la atencion de los siguientes servicios: instalaciones y retiros. Adjunto el formato.\nSaludos,\nContacto Penafiel Ejemplo"
+  },
+  "inbound": {
+    "subject": "RE: Solicitud de servicio Penafiel 02/03/2026",
+    "body": "Buen dia.\nAdjunto dos equipos adicionales.\nSaludos,\nContacto Penafiel Ejemplo"
+  },
+  "outbound": {
+    "subject": "RE: Solicitud de servicio Penafiel 02/03/2026",
+    "body": "Hola. Adjunto las OS generadas.\nSaludos,\nOperador REPARE Ejemplo"
+  },
+  "comandos": {
+    "ayuda": "bot.help",
+    "estatus": "bot.status",
+    "cancelar": "bot.cancelar",
+    "finalizar": "bot.cerrar",
+    "global": "bot.global"
+  }
+}
