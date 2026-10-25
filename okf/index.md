@@ -68,6 +68,7 @@ Bundle OKF del repositorio `e2c`: backend FastAPI que recibe correos de clientes
 * [Seguridad](riesgos/seguridad.md)
 * [Deuda técnica](riesgos/deuda-tecnica.md)
 * [Preguntas abiertas de negocio](riesgos/preguntas-abiertas.md)
+* [Decisiones del proyecto](riesgos/decisiones.md) - umbral de la Fase 3, filas ACCEPTED, reglas de fase.
 
 ## Historial
 

@@ -145,6 +145,20 @@
 * limpieza (session_01KH6MyNGZBXmdsy9TTGyijF) terminada. Las 5 sesiones de la Fase 2 terminaron.
 * Consolidado en los conceptos: `parsers/gen-base.md`, `data/capa-repositorio.md`, `flows/respuesta-y-comandos.md`, `data/catalogos.md`, `riesgos/deuda-tecnica.md` y `services/codigo-muerto.md`. Runbook actualizado a 448/24/1.
 
+## 2026-10-25 · Fase 3 iniciada
+
+* Aprobada por el usuario el 2026-10-25 (según la orquestadora). **Umbral de activación decidido antes de evaluar: precisión >= 0.95 en gate.** Registrado en el concepto nuevo [riesgos/decisiones.md](riesgos/decisiones.md).
+
+| Sesión | Modelo | Rama | ID |
+|---|---|---|---|
+| classifier-core | opus | `claude/e2c-classifier-core` | session_01MjCtnSt5V8AtZX5biRwjqa (en curso) |
+| redact | sonnet | `claude/e2c-redact` | session_014K2t9mPLbMU47mUSfoU7xY (en curso) |
+| provider-haiku | sonnet | pendiente | pendiente: arranca cuando los contratos estén estables |
+| revision | opus | pendiente | pendiente: ídem |
+| eval | sonnet | pendiente | pendiente: ídem |
+
+* El proveedor `jev` queda fuera hasta que haya acceso.
+
 ## 2026-10-24
 
 * Creación del bundle OKF del repositorio `e2c` (rama `claude/admiring-lovelace-3oh7g0`).
