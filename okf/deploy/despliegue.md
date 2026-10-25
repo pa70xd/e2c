@@ -18,7 +18,7 @@ tags: [docker, cloud-run, env]
 | Variable | Quién la lee | Uso |
 |---|---|---|
 | `CLIENT_ID`, `CLIENT_SECRET`, `TENANT_ID` | handler, subscriptions, graphapi | MSAL y Graph |
-| `DEBUG` | service, email_type | Modo depuración. Escribe `email.json`. |
+| `DEBUG` | service, email_type, repository | Modo depuración. Escribe `email.json`. **Si no está definida, el código apunta a las tablas de PRODUCCIÓN**: `repository/*/consultas_postgre.py:11-16` compara `DEBUG` con `"true"` y, si no, usa producción (el import imprime `[BASEDATOS] dirigido a -> PRODUCCIÓN`). Para usar las tablas `*_qa` hay que definir `DEBUG=true`. |
 | `MAPS_KEY` | process_data, geocoding | Google Geocoding |
 | `SECRET_PG_ACC` | postgres | Nombre del secreto de PostgreSQL |
 | `DB_HOST`, `DB_NAME`, `DB_PORT` | postgres | Conexión |
@@ -26,8 +26,12 @@ tags: [docker, cloud-run, env]
 | `REPARE_BUCKET` | excel_ingestion | Bucket (subida comentada) |
 | `TOKEN_NAME`, `TOKEN_SECRET` | tableau | Login VizQL |
 | `FILE_ID`, `DRIVE_ID` | graphapi (getTemplate) | Sin uso activo |
+| `CORS_ALLOW_ORIGINS` | main | Opcional. Mergeado en `claude/admiring-lovelace-3oh7g0` (rama `claude/e2c-fix-orquestador`). Orígenes separados por comas. Sin ella: `"*"` sin credenciales. |
+| `GRAPH_CLIENT_STATE` | handler | Opcional. Mergeado en `claude/admiring-lovelace-3oh7g0` (rama `claude/e2c-fix-orquestador`). Debe coincidir con el `clientState` de la suscripción; `subscriptions.py` aún no lo envía. |
 
 Sin uso: `MAIL`, `NOTIFICATIONS_TOPIC_ID`, `NOTIFY_ERROR_MAILS`, `SECRET_ID`, `GOOGLE_MAPS_API_KEY` (catálogos muertos).
+
+Para pruebas, ver el [runbook del lunes](runbook-lunes.md).
 
 # Problemas
 

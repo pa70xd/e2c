@@ -29,9 +29,11 @@ tags: [postgres, sql, repositorio]
 * `save_email_log_init`: insert en `emails_log` con `ON CONFLICT (graph_message_id)`.
 * `send_email_request`: insert en `email_request`.
 * `send_email_coolers`: insert en `cooler_request` con `WHERE NOT EXISTS`.
-* `insert_update_cooler`: update de la fila PENDING y luego insert. Ver [bugs](../riesgos/bugs.md).
-* `update_cooler`: update por request y serie.
+* `insert_update_cooler`: update de la fila PENDING y luego insert. Mergeado en `claude/admiring-lovelace-3oh7g0` (rama `claude/e2c-fix-returning`, commits `877f03e`, `dc30f34`): `RETURNING` permite detectar el UPDATE; una fila no PENDING o con serie ya registrada no se inserta y se loguea sin PII "[BASEDATOS] cooler reenviado no aplicado ... requiere revisión: request_code=… row_number=…". Ver [bugs](../riesgos/bugs.md).
+* `update_cooler`: update por request y serie. Mergeado en `claude/admiring-lovelace-3oh7g0` (rama `claude/e2c-fix-returning`, commits `877f03e`, `dc30f34`): cuenta filas con `RETURNING`; una serie vacía ya no actualiza filas (antes marcaba REJECTED todas las filas con serie vacía).
+* `cooler_request.sql` lo usan `send_email_coolers` e `insert_update_cooler` (danone, gen, penafiel). Mergeado en `claude/admiring-lovelace-3oh7g0` (rama `claude/e2c-fix-returning`, commits `877f03e`, `dc30f34`): su `NOT EXISTS` recibe `(request_code, row_number, serie_fabricante, serie_dnn_bnf)`.
 * `update_email_request`: recalcula contadores y status.
+* `send_email_coolers` (danone, gen, penafiel): mergeado en `claude/admiring-lovelace-3oh7g0` (rama `claude/e2c-fix-parsers`) usa las series limpias (NaN→None) en INSERT y `WHERE NOT EXISTS`.
 * `cancel_email_request`, `complete_email_request`, `cancel_pending_coolers`.
 * `get_distribuidora_mov` y `get_distribuidora_ruta`: lookup por CP y precio.
 

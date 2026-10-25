@@ -24,7 +24,7 @@ Según `EMAIL_TYPE.detect_direccion` ([email_type](../services/email-type.md)):
 # Inbound (cliente → REPARE)
 
 * Requiere Excel. Sin Excel no se procesa.
-* Aplica las mismas reglas de negocio que la solicitud inicial, luego `insert_update_cooler` y `update_email_request`.
+* Aplica las mismas reglas de negocio que la solicitud inicial, luego `insert_update_cooler` y `update_email_request`. En la base (rama `claude/e2c-fix-returning`), una fila ACCEPTED reenviada no se aplica y se loguea para revisión.
 * Responde con `msj_add_cliente`.
 
 # Outbound (REPARE → cliente)
@@ -49,6 +49,6 @@ Un comando desconocido responde `msj_comando_no_reconocido`.
 
 # Riesgos
 
-* Danone `bot.cancelar` no cancela coolers. Un outbound posterior reabre la solicitud, porque `email_request_update.sql` no excluye CANCELLED. Ver [bugs](../riesgos/bugs.md).
+* Danone `bot.cancelar` no cancela coolers. Un outbound posterior reabre la solicitud, porque `email_request_update.sql` no excluye CANCELLED. Corregido mergeado en `claude/admiring-lovelace-3oh7g0` (rama `claude/e2c-fix-parsers`); Penafiel también (commit `a5bd0fc`). Ver [bugs](../riesgos/bugs.md).
 * `bot.estatus` de Danone puede lanzar `UnboundLocalError` si la consulta falla.
 * Los comandos responden éxito aunque el UPDATE no haya afectado filas.
