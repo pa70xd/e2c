@@ -456,10 +456,16 @@ class PENAFIEL_REPLY:
                             }
 
                     case "bot.estatus" | "bot.status":
+                        data = None
                         try:
                             data = db.email_request_bot_status(request_code)
                         except Exception as e:
                             print(f"No se logro cancelar la solicitud {e}")
+                        if not data:
+                            return {
+                                "mensaje": msj.msj_fail(),
+                                "attachments": None,
+                            }
                         return {
                             "mensaje": msj.msj_status_solicitud(data),
                             "attachments": None,
