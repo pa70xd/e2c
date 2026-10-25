@@ -16,7 +16,7 @@ python eval/run_eval.py --provider regex --set eval/sets/sintetico.jsonl
 ANTHROPIC_API_KEY=... python eval/run_eval.py --provider haiku --set <ruta>
 ```
 
-Opciones: `--umbral`, `--json <ruta>`. Cada caso pasa por `classifier.redact` y luego por `classifier.decidir` (la ruta de producción, con validación y caída a regex). Los reportes imprimen solo ids de caso. Si la precisión de gate queda bajo el umbral, el script sale con código 1 (según la sesión). Sin key, `haiku` avisa y sale con 0 sin hacer llamadas.
+Opciones: `--umbral`, `--json <ruta>`. Cada caso pasa por `classifier.redact` y luego por `classifier.decidir` (la ruta de producción, con validación y caída a regex). Los reportes imprimen solo ids de caso. Si la precisión de gate queda bajo el umbral, el script sale con código 1 (lo comprobé con `--provider regex`: salió 1). Sin key, `haiku` avisa "ANTHROPIC_API_KEY no está definida" y no hace llamadas (comprobado; el código de salida de 0 lo reporta la sesión).
 
 # Formato del set (`eval/schema.md`)
 
