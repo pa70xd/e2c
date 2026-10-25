@@ -21,9 +21,11 @@ Piezas
     Coherencia obligatoria: ``es_os`` es False solo con ``no_os`` o
     ``duplicado``. ``confidence`` va de 0 a 1.
 
-``extract(body_redacted, thread_ctx) -> list[RowExtraida]``
+``extract(body_redacted, thread_ctx, gate=None) -> list[RowExtraida]``
     Solo si ``es_os``. Devuelve las filas que el texto pide crear, cambiar o
-    cancelar. ``row_number`` identifica una fila ya guardada y es obligatorio
+    cancelar. ``gate`` es el ``GateResult`` ya validado (su ``tipo_evento``
+    fija la acción permitida, ver ``ACCION_POR_TIPO``); es opcional para que
+    un proveedor pueda probarse solo. ``row_number`` identifica una fila ya guardada y es obligatorio
     para ``modificar`` y ``cancelar``. El proveedor ``regex`` devuelve ``[]``:
     hoy las filas salen del Excel.
 
@@ -35,12 +37,12 @@ Piezas
     referencia a una fila existente se puede validar y la extracción cae a
     ``regex``.
 
-``redact(text) -> str``
-    La implementa otra sesión en ``classifier/redact.py``. Se aplica al asunto
-    y al cuerpo ANTES de cualquier proveedor que no sea ``regex``. El
-    proveedor ``regex`` corre local y recibe el texto original. Mientras
-    ``redact.py`` no exista, el stub de ``classifier.registry`` lanza
-    ``NotImplementedError`` y la decisión cae a ``regex``.
+``redact(text, conservar=()) -> str``
+    Vive en ``classifier/redact.py``. Se aplica al asunto y al cuerpo ANTES de
+    cualquier proveedor que no sea ``regex``, con ``conservar`` = las series
+    no vacías de ``thread_ctx.filas`` (una serie de 10 dígitos parece
+    teléfono). El proveedor ``regex`` corre local y recibe el texto original.
+    Si la redacción falla, la decisión cae a ``regex`` y no sale texto.
 
 Proveedores
 ===========
@@ -68,7 +70,9 @@ Reglas de negocio (decididas por el usuario el 2026-10-25)
   ``estado_no_pending``).
 * Esta capa solo EXPONE qué filas requieren revisión
   (``Decision.filas_revision``). El canal de revisión lo implementa otra
-  sesión.
+  sesión. La ``Decision`` viaja por el camino de la llamada: es el valor de
+  retorno de ``classifier.decidir`` y ``src/service.py`` la deja en el
+  parser del correo (``parser.classifier_decision``). No hay estado global.
 """
 
 from __future__ import annotations
@@ -197,6 +201,15 @@ class ThreadCtx:
     # None = no se cargaron; () = la solicitud no tiene filas.
     filas: Optional[tuple[FilaGuardada, ...]] = None
 
+    def series(self) -> tuple[str, ...]:
+        """Series no vacías de las filas guardadas (para ``redact(conservar=)``)."""
+        vistas = []
+        for fila in self.filas or ():
+            for serie in (fila.serie_fabricante, fila.serie_dnn_bnf):
+                if serie and str(serie).strip() and serie not in vistas:
+                    vistas.append(serie)
+        return tuple(vistas)
+
     def fila(self, row_number: int) -> Optional[FilaGuardada]:
         for fila in self.filas or ():
             if fila.row_number == row_number:
@@ -251,12 +264,15 @@ class GateProvider(Protocol):
 class ExtractProvider(Protocol):
     NAME: str
 
-    def extract(self, body_redacted: str, thread_ctx: ThreadCtx) -> Sequence[RowExtraida]:
+    def extract(
+        self, body_redacted: str, thread_ctx: ThreadCtx, gate: Optional[GateResult] = None
+    ) -> Sequence[RowExtraida]:
         ...
 
 
-# redact(text) -> str. Quita PII antes de mandar texto a un proveedor externo.
-Redactor = Callable[[str], str]
+# redact(text, conservar=()) -> str. Quita PII antes de mandar texto a un
+# proveedor externo; ``conservar`` son tokens exactos que no se tocan.
+Redactor = Callable[..., str]
 
 
 class ProveedorNoDisponible(RuntimeError):
