@@ -111,6 +111,8 @@ Fuente de verdad del negocio, leída vía el MCP de Emerald (`danone-bonafont.md
 
 ### Contradice
 
+> **Ojo con la severidad:** Danone está en producción. El hallazgo del CBU sale de 13 filas de muestra de mayo; un rechazo con motivo puede ser comportamiento deseado. Tratar estas filas como **hipótesis a validar** contra `solicitudes_rechazadas` en prod (conteo por motivo), no como bugs confirmados. Tampoco está garantizado que este repo (import inicial) sea idéntico a lo desplegado.
+
 | Wiki | Código |
 |------|--------|
 | El **CBU de Danone no es confiable**: llega como `BNF`/`BONAFONT` (alias), vacío en 2 de 13 filas, y en un layout la columna no existe | `EXPECTED_COLUMNS` exige la columna `CBU` (archivo completo rechazado si falta) y D3 rechaza cada fila con CBU vacío o fuera de la lista |
