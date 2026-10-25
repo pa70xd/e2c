@@ -21,8 +21,8 @@ tags: [config, mensajes]
 
 # Problemas
 
-* `msj_fail` definido dos veces. La segunda sobrescribe a la primera.
-* Métodos de mensaje sin llamadas: `msj_apertura`, `msj_respuesta`, `msj_reply_update_coolers`, `msj_reply_add_customer_cooler`, `msj_solicitud_completa`.
+* `msj_fail` definido dos veces; la segunda sobrescribía a la primera. En la rama `claude/e2c-limpieza` (Fase 2, sin mergear) se quitó la primera (`msj_fail(folio, url)`) y queda `msj_fail()` sin argumentos; ningún llamador pasa argumentos.
+* Métodos de mensaje sin llamadas (`msj_apertura`, `msj_respuesta`, `msj_reply_update_coolers`, `msj_reply_add_customer_cooler`, `msj_solicitud_completa`): En la rama `claude/e2c-limpieza` (Fase 2, sin mergear) se borraron.
 * Datos interpolados en HTML sin escapar.
 * "Estimado usuario REPARE" literal en código compartido.
 * `form_solicitud.sql` tiene una coma final antes de `);`. Invalida el DDL. Corregido mergeado en `claude/admiring-lovelace-3oh7g0` (rama `claude/e2c-fix-mecanicos`).

@@ -132,6 +132,13 @@
 * Conceptos actualizados a "mergeado": `parsers/gen-base.md`, `data/capa-repositorio.md`, `flows/respuesta-y-comandos.md`, `data/catalogos.md`, `riesgos/deuda-tecnica.md`, `pruebas/harness.md`.
 * Nueva sesión: limpieza (haiku) · session_01KH6MyNGZBXmdsy9TTGyijF · `claude/e2c-limpieza` · código muerto, `msj_fail` duplicada, typos en identificadores. En curso.
 
+## 2026-10-25 · limpieza: resumen (Fase 2)
+
+* Rama `claude/e2c-limpieza`, sin mergear (`fa37826`, `085c4b3`, `259aa74`). Verificado: `pytest -q` → 448 passed, 24 skipped, 1 xfailed; en `messages.py` queda solo `msj_fail(self)`; `TIPOS_SERVICIO_VALIDOS` renombrado; borrados confirmados con `git grep`. `tests/golden` sin diff según la sesión (no repetí `--update-golden`).
+* Borrado: `detect_purpose`/`union_cap_tables`/`complet_catalog_line` en Danone, `fill_movimiento`/`fill_ruta` en gen, `complet_catalog_line` en Penafiel, 5 métodos de `messages.py`, bloques comentados de `graphapi.py`, primera `msj_fail`. Bug 9 de `bugs.md` marcado corregido.
+* No borrado y por qué: `get_categoria_linea` y `fill_movimiento`/`fill_ruta` de Danone (pendientes de confirmar), `src/service.py::flujo` (sí se usa), `src/attachments.py` "debuger". Typos visibles a clientes sin corregir: `FECHA SOLCITUD`, `DIREECIÓN`, `Ocurrio`.
+* Sin `Co-Authored-By` en sus commits por regla de su sistema; llevan `Claude-Session`.
+
 ## 2026-10-24
 
 * Creación del bundle OKF del repositorio `e2c` (rama `claude/admiring-lovelace-3oh7g0`).
