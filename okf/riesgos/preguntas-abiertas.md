@@ -26,5 +26,6 @@ tags: [pendientes, negocio]
 # Repo
 
 * ¿KOF se habilita? Requiere reglas, buzón y registro en los mapas de parsers.
+* ¿Una corrección por hilo puede modificar filas ACCEPTED? Hoy, en la rama `claude/e2c-fix-returning` (sin mergear), una fila ACCEPTED reenviada no se toca y solo se loguea.
 * ¿Se elimina el historial de `email.json` y demás datos reales?
 * ¿Se cambia el webhook a validación por `clientState`?

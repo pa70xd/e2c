@@ -43,6 +43,12 @@ Regex `\a` (4: aviso/avisos × Danone/Penafiel); NaN en `send_email_coolers` (3)
 * Base `04f1ebe` (con las cuatro ramas mergeadas): verificado `292 passed, 3 xfailed`. Los 3 xfail: stopwords (1) e `insert_update_cooler` (2, bug 3, a cargo de fix-returning).
 * La base ya trae `a936571`: bug de `detect_direccion` del orquestador pasó a test normal y hay tests de `CORS_ALLOW_ORIGINS` y `GRAPH_CLIENT_STATE`.
 
+# Pruebas de SQL (rama `claude/e2c-fix-returning`, sin mergear)
+
+* `tests/sql/test_cooler_sql.py` corre el SQL real de coolers contra un PostgreSQL local si existe `E2C_TEST_PG_DSN` (solo socket Unix o localhost). Sin esa variable, hace skip.
+* `tests/sql/test_param_count.py` corre siempre y compara la cantidad de `%s` del SQL con `len(params)`.
+* Verificado en esa rama sin `E2C_TEST_PG_DSN`: `303 passed, 24 skipped, 1 xfailed`. **Las pruebas contra PostgreSQL no las ejecuté**; solo corrió lo que no necesita base.
+
 # Sin cubrir
 
-KOF (stub) y código muerto; SQL real (ningún `.sql` corre contra Postgres, `FakeRepo` fija las respuestas); Graph real (`getClient`, `sendMail`, renovación de `/lifecyclenotif`); Geocoding y Tableau reales; `.xls`, `.xlsm`, Base64, hojas ocultas; `DEBUG=true`; concurrencia (`MAX(row_number)` de Heineken).
+KOF (stub) y código muerto; SQL real (en la base ningún `.sql` corre contra Postgres, `FakeRepo` fija las respuestas; la rama `claude/e2c-fix-returning` agrega `tests/sql/`, ver abajo); Graph real (`getClient`, `sendMail`, renovación de `/lifecyclenotif`); Geocoding y Tableau reales; `.xls`, `.xlsm`, Base64, hojas ocultas; `DEBUG=true`; concurrencia (`MAX(row_number)` de Heineken).

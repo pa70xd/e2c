@@ -63,6 +63,14 @@
 * Abiertos sin dueño: `msj_fail` duplicada (conservar la firma sin argumentos, la usa `bot.estatus`), `/lifecyclenotif` sin `clientState`, `PARSERS_REPLY` `KeyError`, `bot.global` con `tzinfo`, `bot.*` desconocido no detectado.
 * Runbook: usar `python -m pytest -q`; `DEBUG=true` obligatorio para QA.
 
+## 2026-10-25 · fix-returning: bug 3 y contador de update_cooler
+
+* Rama `claude/e2c-fix-returning` (`877f03e`, `dc30f34`), sin mergear; no está en la base. Verificado contra el diff de SQL y repositorios. En esa rama `pytest -q` → 303 passed, 24 skipped, 1 xfailed (los tests de PostgreSQL local se saltan sin `E2C_TEST_PG_DSN`; no los ejecuté).
+* Bug 3 (`insert_update_cooler`) y bug 4 (contador de `update_cooler`) corregidos con `RETURNING`. Corrección al diagnóstico: el duplicado de `row_number` venía de filas ACCEPTED reenviadas, no de la falta de `RETURNING`. `cooler_request.sql` ahora bloquea por `request_code` + `row_number`.
+* `update_cooler.sql`: guard de serie vacía (`NULLIF(TRIM(...),'')`), sin filtro por `row_number` (decisión documentada en `bugs.md`).
+* Cambio de comportamiento: ACCEPTED reenviada no se inserta ni se sobrescribe; se loguea sin PII.
+* Pregunta abierta nueva en `riesgos/preguntas-abiertas.md`. Nueva capa de pruebas SQL en `pruebas/harness.md`.
+
 ## 2026-10-24
 
 * Creación del bundle OKF del repositorio `e2c` (rama `claude/admiring-lovelace-3oh7g0`).

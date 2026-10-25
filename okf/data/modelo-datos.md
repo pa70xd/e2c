@@ -42,4 +42,5 @@ Prioridad: HIGH en Danone; MEDIUM en Heineken y Holanda (SQL dice MEDIA).
 # Riesgos de integridad
 
 * Sin índices únicos verificables en el repo: los `WHERE NOT EXISTS` pueden duplicar con concurrencia.
-* `update_cooler.sql` no filtra por `row_number`. Si la serie es vacía, puede actualizar varias filas.
+* `update_cooler.sql` no filtra por `row_number`. Con serie vacía actualizaba varias filas; en rama `claude/e2c-fix-returning` (commits `877f03e`, `dc30f34`), sin mergear lo evita con un guard de serie vacía.
+* Cambio de comportamiento en esa rama: una fila ACCEPTED reenviada (con cambios o idéntica) ya no se inserta ni se sobrescribe; solo se loguea para revisión.
