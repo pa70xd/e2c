@@ -68,7 +68,7 @@ Bundle OKF del repositorio `e2c`: backend FastAPI que recibe correos de clientes
 
 ## Pruebas
 
-* [Evaluación del clasificador](pruebas/evaluacion.md) - gate y extract por proveedor contra el umbral 0.95; regex 0.7419, haiku sin medir (rama `claude/e2c-eval`, sin mergear).
+* [Evaluación del clasificador](pruebas/evaluacion.md) - gate y extract por proveedor contra el umbral 0.95; regex 0.7419, haiku sin medir (mergeado en la base).
 * [Harness de pruebas offline](pruebas/harness.md) - pytest sin red, goldens y xfail de bugs conocidos (mergeado en `claude/admiring-lovelace-3oh7g0`).
 
 ## Riesgos y pendientes

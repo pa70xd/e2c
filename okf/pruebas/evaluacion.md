@@ -1,13 +1,13 @@
 ---
 type: Module
 title: Evaluador del clasificador (eval/)
-description: Mide gate y extract por proveedor (regex|haiku) contra un set etiquetado y compara la precisión de gate con el umbral 0.95. Rama claude/e2c-eval, sin mergear.
+description: Mide gate y extract por proveedor (regex|haiku) contra un set etiquetado y compara la precisión de gate con el umbral 0.95. Mergeado en claude/admiring-lovelace-3oh7g0.
 tags: [classifier, eval, umbral, fase-3]
 ---
 
 # Estado
 
-Rama `claude/e2c-eval` (commit `80fef31`), **sin mergear**. Verificado en la rama: existen `eval/{run_eval,metrics,smoke_haiku}.py`, `eval/schema.md`, `eval/README.md`, `eval/sets/sintetico.jsonl` (67 casos) y `tests/unit_eval/`; `python -m pytest -q` → **792 passed, 48 skipped, 1 xfailed**. `eval/sets/real/` está en `.gitignore`.
+Rama `claude/e2c-eval` (commit `80fef31`), **mergeada en la base** `claude/admiring-lovelace-3oh7g0` (`003853d`). Verificado en la rama: existen `eval/{run_eval,metrics,smoke_haiku}.py`, `eval/schema.md`, `eval/README.md`, `eval/sets/sintetico.jsonl` (67 casos) y `tests/unit_eval/`; `python -m pytest -q` en la rama → 792 passed, 48 skipped, 1 xfailed; en la base `003853d` → **794 passed, 48 skipped, 1 xfailed**. `eval/sets/real/` está en `.gitignore`.
 
 # Cómo correrlo
 

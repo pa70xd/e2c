@@ -26,7 +26,7 @@ pip install -r requirements.txt -r requirements-dev.txt
 python -m pytest -q
 ```
 
-Usa `python -m pytest`, no el binario `pytest`: puede ser de otro intérprete. Esperado en la base con la Fase 3 (`29881a7`): **768 passed, 48 skipped, 1 xfailed** (448/24/1 en `9564d90`, antes de la Fase 3) (el xfail es "stopwords antes del regex" en Danone; los 48 skip son el SQL contra Postgres de abajo). La suite no usa red, credenciales ni producción. Detalle en [pruebas/harness.md](../pruebas/harness.md).
+Usa `python -m pytest`, no el binario `pytest`: puede ser de otro intérprete. Esperado en la base con la Fase 3 completa (`003853d`): **794 passed, 48 skipped, 1 xfailed** (448/24/1 en `9564d90`, antes de la Fase 3) (el xfail es "stopwords antes del regex" en Danone; los 48 skip son el SQL contra Postgres de abajo). La suite no usa red, credenciales ni producción. Detalle en [pruebas/harness.md](../pruebas/harness.md).
 
 # 2. Pruebas SQL opcionales (Postgres local desechable)
 
@@ -77,7 +77,9 @@ Además, la Fase 2 (refactor sin cambio de comportamiento, goldens sin diff) est
 
 Fase 3 (clasificador, mergeada): `classifier/`, `review/` y el proveedor haiku. Por defecto todo usa `regex` y el comportamiento no cambia. `tests/conftest.py` limpia `CLASSIFIER_*` y `ANTHROPIC_API_KEY`, así que exportarlas no altera la suite. Ver [núcleo del clasificador](../classifier/core.md) y [revisión por hilo](../flows/revision-por-hilo.md).
 
-**ADVERTENCIA: no actives haiku** (`CLASSIFIER_GATE=haiku` o `CLASSIFIER_EXTRACT=haiku`) **sin antes** correr `eval/smoke_haiku.py` con una key real y sin que la evaluación supere **precisión >= 0.95 en gate** (umbral de [decisiones](../riesgos/decisiones.md)). El evaluador existe en la rama `claude/e2c-eval` (sin mergear; ver [evaluador](../pruebas/evaluacion.md)): sobre el set sintético, regex da precisión de gate 0.7419 (no cumple) y haiku no se ha medido. Falta el set real. Además, `review` solo corre con un proveedor externo y manda avisos reales a REPARE.
+Para repetir la medición de la línea base: `python eval/run_eval.py --provider regex --set eval/sets/sintetico.jsonl` (hoy precisión de gate 0.7419, sale con código 1).
+
+**ADVERTENCIA: no actives haiku** (`CLASSIFIER_GATE=haiku` o `CLASSIFIER_EXTRACT=haiku`) **sin antes** correr `eval/smoke_haiku.py` con una key real y sin que la evaluación supere **precisión >= 0.95 en gate** (umbral de [decisiones](../riesgos/decisiones.md)). El evaluador está en la base (`eval/`; ver [evaluador](../pruebas/evaluacion.md)): sobre el set sintético, regex da precisión de gate 0.7419 (no cumple) y haiku no se ha medido. Falta el set real. Además, `review` solo corre con un proveedor externo y manda avisos reales a REPARE.
 
 Variables nuevas, todas opcionales y sin valores en el repo: `CLASSIFIER_GATE`, `CLASSIFIER_EXTRACT` (default `regex`), `CLASSIFIER_MIN_CONFIDENCE` (default 0.7), `ANTHROPIC_API_KEY` (solo para haiku). Nota: `requirements.txt` es UTF-16 LE con CRLF (ahí está `anthropic==2.3.0`): conserva esa codificación si lo editas.
 
