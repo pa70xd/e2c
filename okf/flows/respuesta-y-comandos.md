@@ -41,14 +41,30 @@ Palabras reservadas en `config/config_general/palabras_reser.py`. Se buscan como
 |---|---|---|---|
 | `bot.help`, `bot.ayuda` | respuesta de ayuda | ayuda | ayuda |
 | `bot.estatus`, `bot.status` | contadores y tickets | estatus por código | estatus por folio |
-| `bot.cancelar` | cancela solicitud; **no cancela coolers pendientes** | cancela pendientes y solicitud | cancela pendientes y solicitud |
+| `bot.cancelar` | cancela pendientes y solicitud (en la base desde fix-parsers; antes no cancelaba coolers) | cancela pendientes y solicitud | cancela pendientes y solicitud |
 | `bot.finalizar`, `bot.cerrar` | completa solicitud | completa solicitud | completa solicitud |
-| `bot.global` | lista global (solo Danone) | estado global | estado global |
+| `bot.global` | lista global (`get_email_request_global`) | estado global | estado global |
 
-Un comando desconocido responde `msj_comando_no_reconocido`.
+Un comando desconocido responde `msj_comando_no_reconocido`, pero hoy es inalcanzable: el lector solo detecta `palabras_reservadas`, así que un `bot.*` desconocido no se detecta ni se responde.
+
+# Despachador único (rama `claude/e2c-bot-commands`, Fase 2, mergeada en la base)
+
+Verificado en la rama: existen `bot/commands.py`, `bot/perfiles.py` y `tests/unit_bot/`. Los parsers de Danone, Penafiel, Holanda y Heineken delegan en `ejecutar(perfil, result_type, resolver)`; `parse()`, los `*_REPLY` y la interfaz de `DB_POSTGRE` quedan iguales. Según la sesión, el comportamiento no cambió (matriz antes/después); yo verifiqué que la suite pasa con los goldens sin tocar (no regeneré goldens).
+
+Flujo común: sin palabra → `None`; `help`/`ayuda` → `msj_ayuda`; `global` → datos + Excel; otra palabra → `msj_comando_no_reconocido`; luego se resuelve la solicitud y se atiende `estatus`, `cancelar` o `finalizar`.
+
+* **Resolver la solicitud**: Danone y Penafiel por hilo (`email_reply_validate`, fuera del bot). Holanda siempre por folio (`DB_HOLANDA.get_request`). Heineken: D2D por hilo; sin `request_code`, por folio (`DB_HEINEKEN.get_request`). Sin folio → `msj_folio_requerido()`; folio inexistente → `msj_folio_requerido(folio)`.
+* **Lectura de `result_type`**: Danone y Penafiel indexan directo (`KeyError` si falta la llave); Holanda y Heineken usan `.get()`.
+* **`global`**: si hay datos, `process_email_request_global` y luego `msj_global`; con error o datos vacíos responde sin adjunto.
+* **`estatus`**: Danone y Penafiel vacío o error → `msj_fail()`; Holanda → `msj_folio_requerido(folio)`; Heineken → `msj_folio_requerido(request_code)`.
+* **`cancelar`**: `cancel_pending_coolers`, luego `cancel_email_request`, luego `msj_cancelar`. Si el primero falla, el segundo no corre y **se responde éxito igual**.
+* **`finalizar`/`cerrar`**: `complete_email_request` y `msj_finalizar`; si falla, responde éxito igual.
+* **Logs**: Danone y Penafiel conservan "No se logro cancelar la solicitud {e}" también en `estatus` (copy-paste). Holanda y Heineken: `[CLIENTE][BOT][ERROR] No se logró consultar el estatus de / cancelar / finalizar {rc}: {e}`.
+
+Refactor sin cambio de comportamiento: los goldens no cambiaron.
 
 # Riesgos
 
 * Danone `bot.cancelar` no cancela coolers. Un outbound posterior reabre la solicitud, porque `email_request_update.sql` no excluye CANCELLED. Corregido mergeado en `claude/admiring-lovelace-3oh7g0` (rama `claude/e2c-fix-parsers`); Penafiel también (commit `a5bd0fc`). Ver [bugs](../riesgos/bugs.md).
-* `bot.estatus` de Danone puede lanzar `UnboundLocalError` si la consulta falla.
+* `bot.estatus` de Danone podía lanzar `UnboundLocalError`: corregido en la base (`2ab001b`).
 * Los comandos responden éxito aunque el UPDATE no haya afectado filas.

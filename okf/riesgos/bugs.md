@@ -22,6 +22,7 @@ tags: [bugs, riesgos]
    * **Estado**: corregido y mergeado en `claude/admiring-lovelace-3oh7g0` (rama `claude/e2c-fix-parsers`) (commit `2ab001b`), en Danone y Penafiel. `data = None` y, si no hay datos, responde `msj_fail()`. Depende de la versión sin argumentos de `msj_fail` (la segunda definición, `messages.py:331`, que sobrescribe la de la línea 287: ver bug 9 de la orquestadora, `msj_fail` duplicada).
 8. **Penafiel `DEBUG == "True"`**: `penafiel.py:230` compara bool con string. Nunca se cumple.
 9. **`msj_fail` duplicada**: `messages.py:287` y `messages.py:331`. La segunda sobrescribe.
+   * **Estado**: corregido y mergeado en la base (rama `claude/e2c-limpieza`) (`085c4b3`). Queda la versión sin argumentos, la que ya ganaba y la que usa `bot.estatus`.
 10. **`form_solicitud.sql` con coma final**: línea 24, antes de `);`. Verificar si se ejecuta.
     * **Estado**: corregido y mergeado en `claude/admiring-lovelace-3oh7g0` (rama `claude/e2c-fix-mecanicos`). Coma quitada de `"OS"`; era la única.
 

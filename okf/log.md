@@ -83,6 +83,68 @@
 * Sesiones de código terminadas: git, fix-parsers, fix-orquestador, fix-mecanicos, harness y fix-returning (todas mergeadas en la base; fix-returning por `ef1ebb9`).
 * Nuevo [deploy/runbook-lunes.md](deploy/runbook-lunes.md), enlazado en el índice y en `despliegue.md`. Verificado en el código: efectos de `DEBUG`, variables, formato de `E2C_TEST_PG_DSN`. Los comandos de comprobación de Graph y PostgreSQL están escritos a partir del código y no los ejecuté (requieren credenciales).
 
+## 2026-10-25 · Fase 2 iniciada
+
+* Aprobada por el usuario el 2026-10-25 (según la orquestadora). Base de partida: `55acb2f`.
+* Regla de la fase: refactor sin cambio de comportamiento; cualquier diff en un golden detiene el trabajo.
+
+| Sesión | Modelo | Rama | ID |
+|---|---|---|---|
+| core-parsers | sonnet | `claude/e2c-core-parsers` | session_01Dnpx2UrASsnBjt7iY1SejS (en curso) |
+| core-repository | opus | `claude/e2c-core-repository` | session_01U1DtW3ZHPe4EuxBceTVHKk (en curso) |
+| bot-commands | opus | `claude/e2c-bot-commands` | session_015XVeZawkn9EXDsGo28C8cK (en curso) |
+| catalogos | sonnet | `claude/e2c-catalogos` | session_015uwaotKiEb9kcpDcdfmWnf (en curso) |
+| limpieza | haiku | pendiente | pendiente: se crea después de mergear las 4 anteriores |
+
+## 2026-10-25 · Decisión: cancelar filas ACCEPTED desde un hilo
+
+* Decisión del usuario, relayada por la orquestadora: pedir en un hilo cancelar un cooler ya ACCEPTED (con OS) **no** lo cancela automáticamente; va a revisión humana, como las correcciones de filas ACCEPTED. Las filas PENDING sí se pueden cancelar. Registrada como respondida en `riesgos/preguntas-abiertas.md`.
+* Pendiente (Fase 3): canal de revisión (propuesta: respuesta en el hilo a REPARE con las filas marcadas); cola persistida como ticket aparte. Aún no implementado.
+
+## 2026-10-25 · core-parsers: resumen (Fase 2)
+
+* Rama `claude/e2c-core-parsers`, sin mergear (commits `54ee1b5`, `f9a92db`, `07d2f0e`). Verificado: existen `parsers/core/{tablas,texto,correo}.py` y las utils/readers re-exportan; `pytest -q` en la rama → 323 passed, 24 skipped, 1 xfailed.
+* Unificadas `unir_tablas`, `normalizar_texto`, `eliminar_stopwords`, `convertir_html_a_texto` y `detectar_tipo_correo`. Sigue duplicado `process_data`, `safe_filename`, `sql_list`, `normalize`. Documentado en `parsers/gen-base.md` y `riesgos/deuda-tecnica.md`.
+* La equivalencia de comportamiento entre copias (AST) es afirmación de la sesión; yo solo verifiqué que los goldens no cambian.
+
+## 2026-10-25 · catalogos: resumen (Fase 2)
+
+* Rama `claude/e2c-catalogos`, sin mergear (commit `8a54b96`). Verificado: `config/data/{distribuidoras,danone_model_line_cat}.json` y `loader.py`; conteos 3471 / 20 / 41 / 851; `pytest -q` → 310 passed, 24 skipped, 1 xfailed. Documentado en `data/catalogos.md`.
+* Corrección menor: la cifra de distribuidoras pasa de "~3,472" a 3,471 entradas cargadas (la clave `502635` duplicada colapsa al último valor).
+
+## 2026-10-25 · bot-commands: resumen (Fase 2)
+
+* Rama `claude/e2c-bot-commands`, sin mergear (5 commits, el último `312df12`). Verificado: existen `bot/{commands,perfiles}.py` y `tests/unit_bot/`; `pytest -q` en la rama → 374 passed, 24 skipped, 1 xfailed; sin cambios a `tests/golden` respecto de la base.
+* Documentado en `flows/respuesta-y-comandos.md` y `riesgos/deuda-tecnica.md`. También corregí la tabla de comandos, que seguía diciendo que `bot.cancelar` de Danone/Penafiel no cancelaba coolers (corregido en la base).
+* Se confirma que `msj_comando_no_reconocido` es inalcanzable (el lector solo detecta palabras reservadas).
+* Que el comportamiento es idéntico (matriz antes/después) es afirmación de la sesión; yo solo verifiqué suite y goldens.
+
+## 2026-10-25 · core-repository: resumen (Fase 2)
+
+* Rama `claude/e2c-core-repository`, sin mergear (`351ee40`, `ecaae40`). Verificado: `repository/core/consultas_postgre.py` y los módulos de cliente reducidos; `pytest -q` → 350 passed, 24 skipped, 1 xfailed.
+* Documentado en `data/capa-repositorio.md` y `riesgos/deuda-tecnica.md`, con la tabla de diferencias entre Danone, Gen y Penafiel (las diferencias de comportamiento sobreviven como overrides, no se unificaron).
+* El diff AST y el mecanismo `__init_subclass__` son afirmación de la sesión; yo verifiqué estructura y suite.
+
+## 2026-10-25 · Fase 2 mergeada; sesión limpieza
+
+* Base `claude/admiring-lovelace-3oh7g0` en `c981a79`: verifiqué `python -m pytest -q` → 448 passed, 24 skipped, 1 xfailed. Mergeada en mi rama.
+* Merges: core-parsers `b9bcb90`, catalogos `9b520e8`, bot-commands `0e387c3`, core-repository `c981a79`. Las 4 sesiones de la Fase 2 terminaron.
+* Conceptos actualizados a "mergeado": `parsers/gen-base.md`, `data/capa-repositorio.md`, `flows/respuesta-y-comandos.md`, `data/catalogos.md`, `riesgos/deuda-tecnica.md`, `pruebas/harness.md`.
+* Nueva sesión: limpieza (haiku) · session_01KH6MyNGZBXmdsy9TTGyijF · `claude/e2c-limpieza` · código muerto, `msj_fail` duplicada, typos en identificadores. En curso.
+
+## 2026-10-25 · limpieza: resumen (Fase 2)
+
+* Rama `claude/e2c-limpieza`, sin mergear (`fa37826`, `085c4b3`, `259aa74`). Verificado: `pytest -q` → 448 passed, 24 skipped, 1 xfailed; en `messages.py` queda solo `msj_fail(self)`; `TIPOS_SERVICIO_VALIDOS` renombrado; borrados confirmados con `git grep`. `tests/golden` sin diff según la sesión (no repetí `--update-golden`).
+* Borrado: `detect_purpose`/`union_cap_tables`/`complet_catalog_line` en Danone, `fill_movimiento`/`fill_ruta` en gen, `complet_catalog_line` en Penafiel, 5 métodos de `messages.py`, bloques comentados de `graphapi.py`, primera `msj_fail`. Bug 9 de `bugs.md` marcado corregido.
+* No borrado y por qué: `get_categoria_linea` y `fill_movimiento`/`fill_ruta` de Danone (pendientes de confirmar), `src/service.py::flujo` (sí se usa), `src/attachments.py` "debuger". Typos visibles a clientes sin corregir: `FECHA SOLCITUD`, `DIREECIÓN`, `Ocurrio`.
+* Sin `Co-Authored-By` en sus commits por regla de su sistema; llevan `Claude-Session`.
+
+## 2026-10-25 · Fase 2 cerrada
+
+* Base `claude/admiring-lovelace-3oh7g0` en `9564d90` (merge de limpieza): verifiqué `python -m pytest -q` → 448 passed, 24 skipped, 1 xfailed. Mergeada en mi rama.
+* limpieza (session_01KH6MyNGZBXmdsy9TTGyijF) terminada. Las 5 sesiones de la Fase 2 terminaron.
+* Consolidado en los conceptos: `parsers/gen-base.md`, `data/capa-repositorio.md`, `flows/respuesta-y-comandos.md`, `data/catalogos.md`, `riesgos/deuda-tecnica.md` y `services/codigo-muerto.md`. Runbook actualizado a 448/24/1.
+
 ## 2026-10-24
 
 * Creación del bundle OKF del repositorio `e2c` (rama `claude/admiring-lovelace-3oh7g0`).
