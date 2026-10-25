@@ -83,6 +83,19 @@
 * Sesiones de código terminadas: git, fix-parsers, fix-orquestador, fix-mecanicos, harness y fix-returning (todas mergeadas en la base; fix-returning por `ef1ebb9`).
 * Nuevo [deploy/runbook-lunes.md](deploy/runbook-lunes.md), enlazado en el índice y en `despliegue.md`. Verificado en el código: efectos de `DEBUG`, variables, formato de `E2C_TEST_PG_DSN`. Los comandos de comprobación de Graph y PostgreSQL están escritos a partir del código y no los ejecuté (requieren credenciales).
 
+## 2026-10-25 · Fase 2 iniciada
+
+* Aprobada por el usuario el 2026-10-25 (según la orquestadora). Base de partida: `55acb2f`.
+* Regla de la fase: refactor sin cambio de comportamiento; cualquier diff en un golden detiene el trabajo.
+
+| Sesión | Modelo | Rama | ID |
+|---|---|---|---|
+| core-parsers | sonnet | `claude/e2c-core-parsers` | session_01Dnpx2UrASsnBjt7iY1SejS (en curso) |
+| core-repository | opus | `claude/e2c-core-repository` | session_01U1DtW3ZHPe4EuxBceTVHKk (en curso) |
+| bot-commands | opus | `claude/e2c-bot-commands` | session_015XVeZawkn9EXDsGo28C8cK (en curso) |
+| catalogos | sonnet | `claude/e2c-catalogos` | session_015uwaotKiEb9kcpDcdfmWnf (en curso) |
+| limpieza | haiku | pendiente | pendiente: se crea después de mergear las 4 anteriores |
+
 ## 2026-10-24
 
 * Creación del bundle OKF del repositorio `e2c` (rama `claude/admiring-lovelace-3oh7g0`).
