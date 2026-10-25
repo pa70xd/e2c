@@ -101,6 +101,12 @@
 * Decisión del usuario, relayada por la orquestadora: pedir en un hilo cancelar un cooler ya ACCEPTED (con OS) **no** lo cancela automáticamente; va a revisión humana, como las correcciones de filas ACCEPTED. Las filas PENDING sí se pueden cancelar. Registrada como respondida en `riesgos/preguntas-abiertas.md`.
 * Pendiente (Fase 3): canal de revisión (propuesta: respuesta en el hilo a REPARE con las filas marcadas); cola persistida como ticket aparte. Aún no implementado.
 
+## 2026-10-25 · core-parsers: resumen (Fase 2)
+
+* Rama `claude/e2c-core-parsers`, sin mergear (commits `54ee1b5`, `f9a92db`, `07d2f0e`). Verificado: existen `parsers/core/{tablas,texto,correo}.py` y las utils/readers re-exportan; `pytest -q` en la rama → 323 passed, 24 skipped, 1 xfailed.
+* Unificadas `unir_tablas`, `normalizar_texto`, `eliminar_stopwords`, `convertir_html_a_texto` y `detectar_tipo_correo`. Sigue duplicado `process_data`, `safe_filename`, `sql_list`, `normalize`. Documentado en `parsers/gen-base.md` y `riesgos/deuda-tecnica.md`.
+* La equivalencia de comportamiento entre copias (AST) es afirmación de la sesión; yo solo verifiqué que los goldens no cambian.
+
 ## 2026-10-24
 
 * Creación del bundle OKF del repositorio `e2c` (rama `claude/admiring-lovelace-3oh7g0`).

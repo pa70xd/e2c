@@ -49,6 +49,10 @@ Regex `\a` (4: aviso/avisos × Danone/Penafiel); NaN en `send_email_coolers` (3)
 * `tests/sql/test_param_count.py` corre siempre y compara la cantidad de `%s` del SQL con `len(params)`.
 * Verificado en esa rama sin `E2C_TEST_PG_DSN`: `303 passed, 24 skipped, 1 xfailed`. **Las pruebas contra PostgreSQL no las ejecuté**; solo corrió lo que no necesita base.
 
+# Pruebas de `parsers/core` (Fase 2)
+
+Rama `claude/e2c-core-parsers` (sin mergear): `tests/unit_core/test_parsers_core.py` (20 pruebas). Verificado en esa rama: `323 passed, 24 skipped, 1 xfailed`; el xfail sigue siendo stopwords. Sin diffs de goldens.
+
 # Sin cubrir
 
 KOF (stub) y código muerto; SQL real (en la base ningún `.sql` corre contra Postgres, `FakeRepo` fija las respuestas; la rama `claude/e2c-fix-returning` agrega `tests/sql/`, ver abajo); Graph real (`getClient`, `sendMail`, renovación de `/lifecyclenotif`); Geocoding y Tableau reales; `.xls`, `.xlsm`, Base64, hojas ocultas; `DEBUG=true`; concurrencia (`MAX(row_number)` de Heineken).
