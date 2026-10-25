@@ -1,0 +1,30 @@
+{
+  "deliveries": [
+    {
+      "message": {
+        "id": "msg-danone-bot-bot",
+        "subject": "RE: Solicitud de servicios REPARE 02/03/2026",
+        "from": "cliente.danone@repare.example.com",
+        "to": [
+          "cliente.danone@repare.example.com"
+        ],
+        "attachments": []
+      },
+      "result": null,
+      "error": null,
+      "replies_sent": 0
+    }
+  ],
+  "repo_calls": [
+    {
+      "module": "danone.DB_POSTGRE",
+      "fn": "email_reply_validate",
+      "params": {
+        "conversation_id": "conv-danone-001",
+        "subject": "RE: Solicitud de servicios REPARE 02/03/2026"
+      }
+    }
+  ],
+  "external_calls": [],
+  "replies": []
+}

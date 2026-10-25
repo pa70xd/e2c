@@ -1,0 +1,38 @@
+{
+  "deliveries": [
+    {
+      "message": {
+        "id": "msg-danone-dup",
+        "subject": "Solicitud de servicios REPARE 02/03/2026",
+        "from": "contacto@danone-cliente.example.com",
+        "to": [
+          "cliente.danone@repare.example.com"
+        ],
+        "attachments": [
+          "solicitud_servicios.xlsx"
+        ]
+      },
+      "result": null,
+      "error": null,
+      "replies_sent": 0
+    }
+  ],
+  "repo_calls": [
+    {
+      "module": "danone.DB_POSTGRE",
+      "fn": "conversation_exists",
+      "params": {
+        "conversation_id": "conv-danone-003"
+      }
+    },
+    {
+      "module": "danone.DB_POSTGRE",
+      "fn": "email_init_exist",
+      "params": {
+        "mail_id": "msg-danone-dup"
+      }
+    }
+  ],
+  "external_calls": [],
+  "replies": []
+}

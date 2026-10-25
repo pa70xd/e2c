@@ -1,0 +1,31 @@
+{
+  "deliveries": [
+    {
+      "message": {
+        "id": "msg-holanda-ajeno",
+        "subject": "Otro tema distinto",
+        "from": "contacto@holanda-cliente.example.com",
+        "to": [
+          "cliente.holanda@repare.example.com"
+        ],
+        "attachments": [
+          "Casos REPARE 02032026.xlsx"
+        ]
+      },
+      "result": null,
+      "error": null,
+      "replies_sent": 0
+    }
+  ],
+  "repo_calls": [
+    {
+      "module": "danone.DB_POSTGRE",
+      "fn": "conversation_exists",
+      "params": {
+        "conversation_id": "conv-holanda-001"
+      }
+    }
+  ],
+  "external_calls": [],
+  "replies": []
+}
