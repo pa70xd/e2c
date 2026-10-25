@@ -1,0 +1,29 @@
+{
+  "d2d_init": {
+    "subject": "Precarga D2D 02/03/2026",
+    "body": "Buen dia.\nSe adjunta la precarga de movimientos del dia.\nSaludos,\nContacto Heineken Ejemplo"
+  },
+  "d2d_reenvio": {
+    "subject": "RE: Precarga D2D 02/03/2026",
+    "body": "Se reenvia la precarga con correcciones.\nSaludos,\nContacto Heineken Ejemplo"
+  },
+  "d2d_outbound": {
+    "subject": "RE: Precarga D2D 02/03/2026",
+    "body": "Hola. Adjunto las OS de la precarga.\nSaludos,\nOperador REPARE Ejemplo"
+  },
+  "ruta_init": {
+    "subject": "Mantenimiento Ferguez",
+    "body": "Buen dia.\nAdjunto los equipos para reparacion.\nSaludos,\nContacto Heineken Ejemplo"
+  },
+  "ruta_outbound": {
+    "subject": "RE: Mantenimiento Ferguez",
+    "body": "Hola. Adjunto las OS de mantenimiento.\nSaludos,\nOperador REPARE Ejemplo"
+  },
+  "comandos": {
+    "estatus_d2d": "bot.estatus",
+    "cancelar_d2d": "bot.cancelar",
+    "estatus_ruta": "bot.estatus REPARE_000042",
+    "ayuda": "bot.help",
+    "global": "bot.global"
+  }
+}
