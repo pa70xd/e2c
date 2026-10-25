@@ -25,7 +25,6 @@ from tests.support.scenarios import bot_command, inbound
 # Bug 1 — regex con ``\a`` (BEL) en movimientos_danone.py / movimientos_penafiel.py
 # ---------------------------------------------------------------------------
 
-@pytest.mark.xfail(strict=True, reason="bug 1 de okf/riesgos/bugs.md: `\\avisos`/`\\aviso` usan \\a (BEL), nunca matchean")
 @pytest.mark.parametrize("modulo", [movimientos_danone, movimientos_penafiel], ids=["danone", "penafiel"])
 @pytest.mark.parametrize("texto", ["avisos", "aviso"])
 def test_movements_reconoce_aviso(modulo, texto):
