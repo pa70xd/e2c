@@ -21,25 +21,6 @@ class DANONE_PROCESS:
         self.duckConn = duckConn
 
 
-    def detect_purpose(self,text: str) -> bool:
-        """ Funcion para detectra proposito SOLICITUD valido y descarta solicitudes invalidas """
-        text = text.lower()
-
-        if any(re.search(pattern, text) for pattern in IGNORE_REQUESTS):
-            return False
-
-        has_request = any(
-            re.search(pattern, text)
-            for pattern in CREATE_REQUESTS
-        )
-
-        has_movement = any(
-            re.search(pattern, text)
-            for pattern in MOVEMENTS
-        )
-
-        return has_request and has_movement
-
 
 
 
@@ -371,72 +352,7 @@ class DANONE_PROCESS:
         return ", ".join(f"'{v}'" for v in values)
 
 
-    def union_cap_tables(self,table):
 
-        self.duckConn.execute(f"""
-                CREATE OR REPLACE TABLE "{table}" AS
-                SELECT
-                DISTINCT
-                    s.*,
-                    -- Información Punto de Venta
-                    p.DISTRIBUIDORA_GEN AS DISTRIBUIDORA_GEN,
-                    p.CLIENTE as CLIENTE,
-
-                    -- Información Equipo
-                    m.ACTIVO      AS ACTIVO_GEN,
-                    LTRIM(m.SERIE, '0') AS SERIE_GEN,
-                    COALESCE(m.MODELO, s.MODELO) AS MODELO_GEN,
-                    m.CATEGORIA   AS CATEGORIA_GEN,
-                    m.LINEA       AS LINEA_GEN
-
-                FROM "{table}" AS s
-
-                LEFT JOIN tmp_mpto AS p
-                    ON CAST(s."ID CLIENTE" AS VARCHAR) = p.ID_PTO_VENTA
-
-                LEFT JOIN tmp_modl AS m
-                    ON
-                        CAST(s."SERIE DNN/BNF" AS VARCHAR) = m.ACTIVO
-
-                    OR
-
-                        LTRIM(CAST(s."SERIE FABRICANTE" AS VARCHAR), '0')
-                            =
-                        LTRIM(m.SERIE, '0')
-            """)
-
-
-
-    def complet_catalog_line(self, table: str, catalog: dict):
-
-        df = self.duckConn.execute(f"""
-            SELECT rowid, MODELO_GEN
-            FROM {table}
-            WHERE CATEGORIA_GEN IS NULL
-            OR CATEGORIA_GEN = ''
-            OR LINEA_GEN IS NULL
-            OR LINEA_GEN = ''
-        """).fetchdf()
-
-        for _, row in df.iterrows():
-
-            modelo = row["MODELO_GEN"]
-
-            if pd.isna(modelo):
-                continue
-
-            modelo = str(modelo).strip().upper().split()[0]
-
-            categoria, linea = self.get_categoria_linea(modelo, catalog)
-
-            if categoria is not None:
-                self.duckConn.execute("""
-                    UPDATE {table}
-                    SET
-                        CATEGORIA_GEN = ?,
-                        LINEA_GEN = ?
-                    WHERE rowid = ?
-                """.format(table=table), [categoria, linea, row["rowid"]])
 
 
     def prepare_data_request(

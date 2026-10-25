@@ -139,80 +139,6 @@ class MENSAJES_REPARE:
 #==================================================================================
 
 
-    def msj_apertura(self, folio: str, url: str):
-        return f"""
-        <div style="
-            font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Monaco,
-                        Consolas, 'Liberation Mono', 'Courier New', monospace;
-            max-width: 680px;
-            color: #24292f;
-            font-size: 14px;
-            line-height: 1.6;
-        ">
-
-            <p style="font-size: 15px; margin-bottom: 20px;">
-                🤖 Estimado usuario REPARE,
-            </p>
-
-            <div style="
-                border: 1px solid #d0d7de;
-                border-radius: 6px;
-                padding: 20px;
-                background: #f6f8fa;
-            ">
-
-                <div style="
-                    font-size: 14px;
-                    font-weight: bold;
-                    margin-bottom: 12px;
-                ">
-                    REQUEST RECEIVED
-                </div>
-
-                <div style="color: #57606a;">
-                    Se ha recibido una nueva solicitud y ha iniciado
-                    el <b>proceso de validación</b>.
-                </div>
-
-            </div>
-
-            <div style="
-                margin-top: 18px;
-                padding: 14px 16px;
-                border: 1px solid #d0d7de;
-                border-radius: 6px;
-                background: #ffffff;
-            ">
-
-                <div style="
-                    font-size: 12px;
-                    color: #57606a;
-                    margin-bottom: 5px;
-                ">
-                    FOLIO
-                </div>
-
-                <div style="
-                    font-size: 18px;
-                    font-weight: bold;
-                    letter-spacing: 1px;
-                ">
-                    {folio}
-                </div>
-
-            </div>
-
-            <p style="
-                color: #57606a;
-                margin-top: 18px;
-            ">
-                En breve recibirá la <b>sábana inicial</b> para su revisión
-                y complemento de información.
-            </p>
-
-        </div>
-        """
-
 
 
 
@@ -284,47 +210,6 @@ class MENSAJES_REPARE:
 
 
 
-    def msj_fail(self, folio, url):
-        return f"""
-        <div style="
-            font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Monaco,
-                        Consolas, 'Liberation Mono', 'Courier New', monospace;
-            max-width: 680px;
-            color: #24292f;
-            font-size: 14px;
-            line-height: 1.6;
-        ">
-
-            <p style="font-size: 15px; margin-bottom: 20px;">
-                🤖 Estimado usuario REPARE,
-            </p>
-
-            <div style="
-                border: 1px solid #d0d7de;
-                border-radius: 6px;
-                padding: 20px;
-                background: #f6f8fa;
-            ">
-
-                <div style="
-                    font-size: 14px;
-                    font-weight: bold;
-                    margin-bottom: 12px;
-                ">
-                    DOCUMENT READY
-                </div>
-
-                <div style="color: #57606a;">
-                    La información preliminar de la solicitud
-                    <b>{folio}</b> está disponible para su revisión.
-                </div>
-
-            </div>
-
-
-        </div>
-        """
-
 
 
 
@@ -342,107 +227,11 @@ class MENSAJES_REPARE:
 
     
 
-    def msj_respuesta(self, type_reply):
-        return f"""
-        <div style="
-            font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Monaco,
-                        Consolas, 'Liberation Mono', 'Courier New', monospace;
-            max-width: 680px;
-            color: #24292f;
-            font-size: 14px;
-            line-height: 1.6;
-        ">
-
-            <p style="font-size: 15px; margin-bottom: 20px;">
-                🤖 Estimado usuario REPARE,
-            </p>
-
-            <div style="
-                border: 1px solid #d0d7de;
-                border-radius: 6px;
-                padding: 20px;
-                background: #f6f8fa;
-            ">
-
-                <div style="
-                    font-size: 14px;
-                    font-weight: bold;
-                    margin-bottom: 12px;
-                ">
-                    RESPONSE RECEIVED
-                </div>
-
-                <div style="color: #57606a;">
-                    Se detectó una respuesta:
-                    <b>{type_reply}</b>
-                </div>
-
-            </div>
-
-        </div>
-        """
 
 
 
 
-    def msj_reply_update_coolers(self, type_reply):
-        return f"""
-        <div style="
-            font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Monaco,
-                        Consolas, 'Liberation Mono', 'Courier New', monospace;
-            max-width: 680px;
-            color: #24292f;
-            font-size: 14px;
-            line-height: 1.6;
-        ">
 
-            <p style="font-size: 15px; margin-bottom: 20px;">
-                🤖 Estimado usuario REPARE,
-            </p>
-
-            <div style="
-                border: 1px solid #d0d7de;
-                border-radius: 6px;
-                padding: 20px;
-                background: #f6f8fa;
-            ">
-
-                <div style="
-                    font-size: 14px;
-                    font-weight: bold;
-                    margin-bottom: 12px;
-                ">
-                    REQUEST UPDATED
-                </div>
-
-                <div style="color: #57606a;">
-                    Se detectaron cambios en la solicitud:
-                    <b>{type_reply}</b>
-                </div>
-
-            </div>
-
-        </div>
-        """
-
-
-
-
-    def msj_reply_add_customer_cooler(self,folio: str, url: str):
-        return f"""
-        <p>🤖 Estimado usuario REPARE,</p>
-        <p>
-            <b>Folio asignado:</b>
-            <span style="color:#0B5ED7;font-weight:bold;text-decoration:underline;">
-                {folio}
-            </span>
-        </p>
-
-        <p>
-            Se adjuntan la <b>solicitud</b> y la <b>pre-sábana</b> actualizadas.
-        </p>
-
-        """
 
 
 
@@ -606,58 +395,6 @@ class MENSAJES_REPARE:
         """
 
 
-
-    def msj_solicitud_completa(
-        self,
-        folio: str,
-        url: str,
-    ):
-        return f"""
-        <div style="
-            font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Monaco,
-                        Consolas, 'Liberation Mono', 'Courier New', monospace;
-            max-width: 680px;
-            color: #24292f;
-            font-size: 14px;
-            line-height: 1.6;
-        ">
-
-            <p style="font-size: 15px; margin-bottom: 20px;">
-                🤖 Estimado usuario REPARE,
-            </p>
-
-            <div style="
-                border: 1px solid #d0d7de;
-                border-radius: 6px;
-                padding: 20px;
-                background: #f6f8fa;
-            ">
-
-                <div style="
-                    font-size: 14px;
-                    font-weight: bold;
-                    margin-bottom: 12px;
-                ">
-                    REQUEST COMPLETED
-                </div>
-
-                <div style="color: #57606a;">
-                    La solicitud <b>{folio}</b> ha sido
-                    <b>finalizada correctamente</b>.
-                </div>
-
-            </div>
-
-            <p style="
-                color: #57606a;
-                margin-top: 18px;
-            ">
-                Las <b>OS correspondientes</b> han sido asignadas
-                a los equipos procesados.
-            </p>
-
-        </div>
-        """
 
  
     def msj_solicitud_completa_esc1(
