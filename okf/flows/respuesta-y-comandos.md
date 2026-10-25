@@ -47,7 +47,7 @@ Palabras reservadas en `config/config_general/palabras_reser.py`. Se buscan como
 
 Un comando desconocido responde `msj_comando_no_reconocido`, pero hoy es inalcanzable: el lector solo detecta `palabras_reservadas`, así que un `bot.*` desconocido no se detecta ni se responde.
 
-# Despachador único (rama `claude/e2c-bot-commands`, Fase 2, sin mergear)
+# Despachador único (rama `claude/e2c-bot-commands`, Fase 2, mergeada en la base)
 
 Verificado en la rama: existen `bot/commands.py`, `bot/perfiles.py` y `tests/unit_bot/`. Los parsers de Danone, Penafiel, Holanda y Heineken delegan en `ejecutar(perfil, result_type, resolver)`; `parse()`, los `*_REPLY` y la interfaz de `DB_POSTGRE` quedan iguales. Según la sesión, el comportamiento no cambió (matriz antes/después); yo verifiqué que la suite pasa con los goldens sin tocar (no regeneré goldens).
 
@@ -61,7 +61,7 @@ Flujo común: sin palabra → `None`; `help`/`ayuda` → `msj_ayuda`; `global` �
 * **`finalizar`/`cerrar`**: `complete_email_request` y `msj_finalizar`; si falla, responde éxito igual.
 * **Logs**: Danone y Penafiel conservan "No se logro cancelar la solicitud {e}" también en `estatus` (copy-paste). Holanda y Heineken: `[CLIENTE][BOT][ERROR] No se logró consultar el estatus de / cancelar / finalizar {rc}: {e}`.
 
-Cuando la rama se mergee, el cambio debe quedar como refactor sin cambio de comportamiento.
+Refactor sin cambio de comportamiento: los goldens no cambiaron.
 
 # Riesgos
 

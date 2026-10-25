@@ -18,15 +18,16 @@ tags: [postgres, sql, repositorio]
 
 | Módulo | Qué es |
 |---|---|
-| `repository/danone/consultas_postgre.py` (`DB_POSTGRE`) | En la base de integración: base genérica; Gen, Penafiel y Danone tienen la misma clase. En la rama `claude/e2c-core-repository` solo contiene los overrides sobre `DBPostgreBase` (ver abajo). |
-| `repository/penafiel/`, `repository/gen/` | En la base de integración, copias casi idénticas. En la rama, subclases con solo los overrides. |
+| `repository/danone/consultas_postgre.py` (`DB_POSTGRE`) | Subclase de `DBPostgreBase` (`repository/core/`) con solo sus overrides, desde la Fase 2. Antes, Gen, Penafiel y Danone tenían la misma clase. |
+| `repository/penafiel/`, `repository/gen/` | Subclases de `DBPostgreBase` con solo los overrides (Gen no tiene). |
+| `repository/core/` | `DBPostgreBase` y constantes comunes. |
 | `repository/heineken/` (`DB_HEINEKEN`) | Conciliación D2D y ruta, series abiertas, serie genérica. |
 | `repository/holanda/` (`DB_HOLANDA`) | Inserción por CASO2, actualización de OS por CASO2. |
 | `repository/querys/genericas/` | SQL genérico compartido. |
 
-# Base común (rama `%s`, Fase 2, sin mergear)
+# Base común (rama `claude/e2c-core-repository`, Fase 2, mergeada en la base)
 
-Commits `351ee40` y `ecaae40`. Verificado en la rama: existe `repository/core/consultas_postgre.py` (752 líneas) con `DBPostgreBase` (20 métodos públicos), las constantes (`DEBUG`, `DB_SCHEMA`, tablas, `SQL_FILE_*`) y `anunciar_destino(DEBUG)` (el print PRODUCCIÓN/QA). Los módulos de Danone (49 líneas), Gen (11) y Penafiel (35) ya solo hacen `from repository.core.consultas_postgre import *`, llaman `anunciar_destino(DEBUG)` y definen `class DB_POSTGRE(DBPostgreBase)` con los overrides. Nombres de módulo, métodos y firmas no cambian; Heineken y Holanda siguen importando las constantes de Danone.
+Commits `351ee40` y `ecaae40`. Verificado: existe `repository/core/consultas_postgre.py` (752 líneas) con `DBPostgreBase` (20 métodos públicos), las constantes (`DEBUG`, `DB_SCHEMA`, tablas, `SQL_FILE_*`) y `anunciar_destino(DEBUG)` (el print PRODUCCIÓN/QA). Los módulos de Danone (49 líneas), Gen (11) y Penafiel (35) ya solo hacen `from repository.core.consultas_postgre import *`, llaman `anunciar_destino(DEBUG)` y definen `class DB_POSTGRE(DBPostgreBase)` con los overrides. Nombres de módulo, métodos y firmas no cambian; Heineken y Holanda siguen importando las constantes de Danone.
 
 * **Mecanismo** (según la sesión): `__init_subclass__` copia cada `staticmethod` heredado a la subclase y lo liga a los globals del módulo del cliente, de modo que `execute_query`, `COOLER_REQUEST` y `SQL_FILE_*` se resuelven en el módulo del cliente en cada llamada (el monkeypatch del `FakeRepo` sigue funcionando). Si a un módulo de cliente le falta un global que usa la base, falla al importar.
 * **La base implementa el comportamiento de Gen**, que no tiene overrides.
@@ -36,7 +37,7 @@ Commits `351ee40` y `ecaae40`. Verificado en la rama: existe `repository/core/co
   * `get_distribuidora_ruta`: Danone devuelve `None` sin `distribuidora`; Gen y Penafiel devuelven la fila. Danone sobrescribe.
   * Los otros 17 métodos son idénticos.
 * Matiz: `load_dotenv()` y la lectura de `DEBUG` corren una sola vez (en core), no una por módulo; mismo valor salvo que el entorno cambie entre imports.
-* Pruebas: `tests/unit_repository/test_db_postgre_core.py` (47). Verificado en la rama: `pytest -q` → 350 passed, 24 skipped, 1 xfailed.
+* Pruebas: `tests/unit_repository/test_db_postgre_core.py` (47). Verificado en la rama antes del merge: 350 passed, 24 skipped, 1 xfailed.
 
 # Funciones clave
 

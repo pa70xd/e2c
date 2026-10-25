@@ -125,6 +125,13 @@
 * Documentado en `data/capa-repositorio.md` y `riesgos/deuda-tecnica.md`, con la tabla de diferencias entre Danone, Gen y Penafiel (las diferencias de comportamiento sobreviven como overrides, no se unificaron).
 * El diff AST y el mecanismo `__init_subclass__` son afirmación de la sesión; yo verifiqué estructura y suite.
 
+## 2026-10-25 · Fase 2 mergeada; sesión limpieza
+
+* Base `claude/admiring-lovelace-3oh7g0` en `c981a79`: verifiqué `python -m pytest -q` → 448 passed, 24 skipped, 1 xfailed. Mergeada en mi rama.
+* Merges: core-parsers `b9bcb90`, catalogos `9b520e8`, bot-commands `0e387c3`, core-repository `c981a79`. Las 4 sesiones de la Fase 2 terminaron.
+* Conceptos actualizados a "mergeado": `parsers/gen-base.md`, `data/capa-repositorio.md`, `flows/respuesta-y-comandos.md`, `data/catalogos.md`, `riesgos/deuda-tecnica.md`, `pruebas/harness.md`.
+* Nueva sesión: limpieza (haiku) · session_01KH6MyNGZBXmdsy9TTGyijF · `claude/e2c-limpieza` · código muerto, `msj_fail` duplicada, typos en identificadores. En curso.
+
 ## 2026-10-24
 
 * Creación del bundle OKF del repositorio `e2c` (rama `claude/admiring-lovelace-3oh7g0`).
