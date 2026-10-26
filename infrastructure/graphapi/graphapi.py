@@ -149,7 +149,6 @@ async def send_mail_file(
     attachments: list[tuple[str, bytes]] | None = None,
 ):
 
-    # EMAIL_REPARE = "yael.hurtado@imberacooling.com"
     EMAIL_REPARE = host_email
     
     user = client.users.by_user_id(EMAIL_SENDER)
@@ -205,7 +204,6 @@ async def reply_mail_onl_text(
     mensaje: str,
 ):
     
-    # EMAIL_REPARE = "yael.hurtado@imberacooling.com"
     EMAIL_REPARE = host_email
 
     user = client.users.by_user_id(user_id)
@@ -261,7 +259,6 @@ async def reply_mail_init_files(
     mensaje: str,
     attachments: list[tuple[str, bytes]] | None = None,
 ):
-    # EMAIL_REPARE = "yael.hurtado@imberacooling.com"
     EMAIL_REPARE = host_email
 
     user = client.users.by_user_id(user_id)

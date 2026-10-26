@@ -65,15 +65,22 @@ def _respuesta(mensaje, attachments=None):
 
 _PREFIJOS_RESPUESTA = re.compile(r"^\s*((re|rv|fw|fwd)\s*:\s*)+", re.IGNORECASE)
 _ETIQUETAS = re.compile(r"\[[^\]]*\]")
+# Fecha o sufijo numérico tras la frase: "04052026", "04/05/2026", "04-05-26", "2".
+_SUFIJO_ASUNTO = r"(?:[ _-]+\d[\d./-]*)"
 
 
 def es_asunto_holanda(asunto: str | None) -> bool:
     """True si el asunto es el del hilo de Holanda (ASUNTO_HOLANDA),
     ignorando mayúsculas, espacios, prefijos RE:/RV:/FW: y etiquetas
-    [..]. Los demás correos del buzón se ignoran sin contestar."""
+    [..]. Acepta además una fecha o sufijo numérico al final ("Casos
+    REPARE 04052026"). Los demás correos del buzón (incluidos los que solo
+    contienen la frase en medio de otro texto) se ignoran sin contestar."""
     texto = _ETIQUETAS.sub(" ", asunto or "")
     texto = _PREFIJOS_RESPUESTA.sub("", texto)
-    return " ".join(texto.split()).lower() == ASUNTO_HOLANDA
+    texto = " ".join(texto.split()).lower()
+    if texto == ASUNTO_HOLANDA:
+        return True
+    return bool(re.fullmatch(re.escape(ASUNTO_HOLANDA) + _SUFIJO_ASUNTO, texto))
 
 
 class HOLANDA_INIT:

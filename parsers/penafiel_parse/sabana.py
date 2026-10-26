@@ -332,7 +332,7 @@ class PENAFIEL_SABANA:
                     COALESCE("DISTRIBUIDORA_GEN",'') as Distribuidora,
                     "CATEGORIA_GEN" as Categoria,
                     "LINEA_GEN" as Linea,
-                    "MODELO" as Modelo,
+                    COALESCE("MODELO_GEN", "MODELO") as Modelo,
                     "SERIE FABRICANTE"  as Numero_Activo,
                     "SERIE" as Serie,
                     '' as Numero_Puertas,
@@ -435,7 +435,7 @@ class PENAFIEL_SABANA:
                 COALESCE("DISTRIBUIDORA_GEN",'') as Distribuidora,
                 "CATEGORIA_GEN" as Categoria,
                 "LINEA_GEN" as Linea,
-                "MODELO" as Modelo,
+                COALESCE("MODELO_GEN", "MODELO") as Modelo,
                 "SERIE FABRICANTE"  as Numero_Activo,
                 "SERIE" as Serie,
 

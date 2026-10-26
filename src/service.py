@@ -22,10 +22,11 @@ from fastapi import HTTPException
 
 from infrastructure.database.engine_duck import DuckEngine
 from src.excel_ingestion import Excel_Ingestion
-from src.email_type import EMAIL_TYPE
+from src.email_type import EMAIL_TYPE, with_test_mailbox
 from infrastructure.graphapi.graphapi import reply_mail_onl_text, reply_mail_init_files
 from parsers.gen_parse.reader import GEN_READER
 import classifier
+from classifier import shadow as classifier_shadow
 from classifier.contracts import ETAPA_INIT, ETAPA_REPLY
 import review
 
@@ -70,16 +71,22 @@ async def reply_with_attachments(
         GEN_READER.cleanup_original_files(temporary_files)
 
 with open("config/email_index.json", "r", encoding="utf-8") as f:
-    CUSTOMER_INDEX = json.load(f)
+    CUSTOMER_INDEX = with_test_mailbox(json.load(f))
 
 
 
+# Fase 4: cada sesión de cliente nuevo agrega aquí su entrada (en INIT y en
+# REPLY), con la clave del índice: "imbera", "kof", "torrey", "oxxo" y
+# "oxxo_garantias". El cliente además debe estar en E2C_CLIENTES_HABILITADOS
+# (src/email_type.py); sin parser registrado el correo se ignora con log.
 PARSERS_INIT = {
 
     "danone"    : DANONE_INIT,
     "penafiel"   : PENAFIEL_INIT,
     "holanda"   : HOLANDA_INIT,
     "heineken" : HEINEKEN_INIT,
+
+    # <-- clientes de la Fase 4: "imbera": IMBERA_INIT, ...
 
     #tests
     "test_danone"    : DANONE_INIT,
@@ -93,6 +100,8 @@ PARSERS_REPLY = {
     "penafiel"   : PENAFIEL_REPLY,
     "holanda"   : HOLANDA_REPLY,
     "heineken": HEINEKEN_REPLY,
+
+    # <-- clientes de la Fase 4: "imbera": IMBERA_REPLY, ...
 
     #tests
     "test_danone" : DANONE_REPLY,
@@ -116,6 +125,8 @@ def classifier_evaluar(email, customer, etapa, direccion=None):
     except Exception as e:
         print(f"[CLASSIFIER][ERROR] {type(e).__name__}; se sigue sin gate")
         return True, None, None
+    # Modo sombra (CLASSIFIER_SHADOW): solo registra; en un thread aparte.
+    classifier_shadow.lanzar(email, decision, ctx)
     if classifier.debe_continuar(decision, ctx):
         return True, decision, ctx
     print(f"[CLASSIFIER][INFO] {etapa} descartado: tipo={decision.tipo_evento}")
@@ -135,6 +146,9 @@ db = DB_POSTGRE()
 # Contexto del hilo (filas de cooler_request) para el clasificador. Solo se
 # consulta con un proveedor externo; con regex no se llama.
 classifier.registrar_cargador_contexto(review.cargador(db))
+# Candado de redacción: con proveedor externo o sombra y REDACT_VERSION < 2,
+# el error queda en el log desde el arranque (y se usa regex).
+classifier.registry.verificar_redaccion()
 
 async def processMail(data):
     
@@ -254,6 +268,11 @@ async def processMail(data):
         
         print(f"[CUSTOMER] {customer} - {customer_email}")
 
+        if customer not in PARSERS_INIT:
+            print(f"[INFO] Cliente '{customer}' sin parser INIT registrado; correo ignorado")
+            duckConn.close()
+            return None
+
         # Solo el primer mensaje de una conversación puede iniciar una
         # solicitud. Un correo posterior, aunque no tenga el prefijo "Re:",
         # actualiza el folio ya asociado al hilo.
@@ -292,6 +311,11 @@ async def processMail(data):
                     )
                     return None
 
+            if customer not in PARSERS_REPLY:
+                print(f"[INFO] Cliente '{customer}' sin parser REPLY registrado; correo ignorado")
+                duckConn.close()
+                return None
+
             # print(f"{flujo}CUSTOMER: {customer}")
             # print(f"{flujo}DIRECCIO: {direccion}")
 
@@ -306,21 +330,26 @@ async def processMail(data):
             # La decisión viaja con el procesamiento de este correo.
             parser.classifier_decision = decision
 
+            async def enviar_a_repare(mensaje_revision):
+                await reply_mail_onl_text(
+                    host_email = customer_email,
+                    client=client,
+                    user_id=user_id,
+                    mail_id=email.id,
+                    mensaje=mensaje_revision,
+                )
+
             try :
+                # Gate externo con duda en un inbound sin Excel: aviso
+                # "requiere revisión" a REPARE; nada se aplica por texto y el
+                # parser sigue igual que siempre.
+                if review.debe_avisar_duda(decision, thread_ctx, email):
+                    await review.avisar_duda(decision, thread_ctx, enviar_a_repare)
+
                 # Solo con CLASSIFIER_EXTRACT distinto de regex: cambios de
                 # filas pedidos en el texto (PENDING se aplica, el resto va a
                 # revisión de REPARE en el mismo hilo).
                 if review.debe_atender(decision, thread_ctx, email):
-
-                    async def enviar_a_repare(mensaje_revision):
-                        await reply_mail_onl_text(
-                            host_email = customer_email,
-                            client=client,
-                            user_id=user_id,
-                            mail_id=email.id,
-                            mensaje=mensaje_revision,
-                        )
-
                     result = await review.atender(decision, thread_ctx, db, enviar_a_repare)
                 else:
                     result = await parser.parse(

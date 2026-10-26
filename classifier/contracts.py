@@ -68,6 +68,10 @@ Reglas de negocio (decididas por el usuario el 2026-10-25)
 * Filas en otro estado (``CANCELLED``, ``REJECTED``): no hay decisión de
   negocio; por precaución también van a revisión (``motivo``
   ``estado_no_pending``).
+* Duda del modelo (usuario, 2026-10-26): en ``reply``, si el gate externo
+  cae solo por confianza baja, la ``Decision`` sale sin filas y con
+  ``motivo_revision = MOTIVO_CLASIFICACION_DUDOSA``: no se aplica nada por
+  texto y ``review`` avisa a REPARE. En ``init`` cae a regex (decide el Excel).
 * Esta capa solo EXPONE qué filas requieren revisión
   (``Decision.filas_revision``). El canal de revisión lo implementa otra
   sesión. La ``Decision`` viaja por el camino de la llamada: es el valor de
@@ -133,6 +137,10 @@ ETAPA_REPLY = "reply"
 ETAPAS = (ETAPA_INIT, ETAPA_REPLY)
 
 COMENTARIO_REVISION = "requiere revisión"
+
+# Motivo de revisión de un correo entero (no de una fila): el gate externo
+# dudó (confianza < ``CLASSIFIER_MIN_CONFIDENCE``) en un mensaje de hilo.
+MOTIVO_CLASIFICACION_DUDOSA = "clasificación dudosa"
 
 PROVEEDOR_REGEX = "regex"
 
@@ -239,6 +247,9 @@ class Decision:
     filas_revision: tuple[FilaRevision, ...] = ()
     # Motivos (códigos sin PII) por los que se cayó a regex.
     fallbacks: tuple[str, ...] = field(default_factory=tuple)
+    # Revisión humana del correo entero (``MOTIVO_CLASIFICACION_DUDOSA``):
+    # no se aplica nada por texto. None = no aplica.
+    motivo_revision: Optional[str] = None
 
     @property
     def es_os(self) -> bool:
@@ -250,7 +261,7 @@ class Decision:
 
     @property
     def requiere_revision(self) -> bool:
-        return bool(self.filas_revision)
+        return bool(self.filas_revision) or self.motivo_revision is not None
 
 
 # ------------------------------------------------------------------ interfaces
