@@ -68,7 +68,7 @@ Lo reportan la sesión `session_01Jnc7eVXwXyKjsou32zFdCn` y la orquestadora (202
 Rama `claude/e2c-eval-set-v2` (commit `225b457`): `eval/sets/sintetico_v2.jsonl`, 41 casos inventados "difíciles" con 18 negativos y 21 filas esperadas (verifiqué esas tres cifras). La sesión dice que son 4 ambiguos y que lo escribió sin leer los prompts ni `haiku.py`, para no sesgarlo; eso no lo puedo comprobar.
 
 * **Regex (medido por mí en la rama):** precisión de gate 0.5610, recall 1.0000, F1 0.7188 — **no cumple** 0.95; extract 0 de 21 filas. Regex marca todo como OS.
-* **Haiku no se ha corrido** sobre v2. Es la medición que más falta: v2 tiene casi el doble de proporción de negativos (18 de 41 frente a 21 de 67) y fue escrito sin ver el prompt.
+* **Haiku sobre v2:** al escribir esto no estaba corrido; ahora hay 4 corridas reportadas (sección siguiente de resultados). Lo que sigue explica por qué importaba: v2 tiene casi el doble de proporción de negativos (18 de 41 frente a 21 de 67) y fue escrito sin ver el prompt.
 * La sesión no pudo correr `pytest` en su contenedor (falta `msgraph`); el evaluador sí corrió en mi entorno.
 * Sigue siendo sintético: no sustituye el set real.
 
