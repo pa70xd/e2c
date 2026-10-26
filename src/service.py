@@ -14,6 +14,7 @@ from parsers.danone import DANONE_INIT,DANONE_REPLY
 from parsers.penafiel import PENAFIEL_INIT, PENAFIEL_REPLY
 
 from parsers.heineken import HEINEKEN_INIT, HEINEKEN_REPLY   # imports
+from parsers.kof import KOF_INIT, KOF_REPLY
 
 import re
 
@@ -80,12 +81,14 @@ PARSERS_INIT = {
     "penafiel"   : PENAFIEL_INIT,
     "holanda"   : HOLANDA_INIT,
     "heineken" : HEINEKEN_INIT,
+    "kof"       : KOF_INIT,
 
     #tests
     "test_danone"    : DANONE_INIT,
     "test_penafiel"   : PENAFIEL_INIT,
     "test_holanda"   : HOLANDA_INIT,
     "test_heineken" : HEINEKEN_INIT,
+    "test_kof"      : KOF_INIT,
 }
 PARSERS_REPLY = {
 
@@ -93,12 +96,14 @@ PARSERS_REPLY = {
     "penafiel"   : PENAFIEL_REPLY,
     "holanda"   : HOLANDA_REPLY,
     "heineken": HEINEKEN_REPLY,
+    "kof"     : KOF_REPLY,
 
     #tests
     "test_danone" : DANONE_REPLY,
     "test_penafiel" : PENAFIEL_REPLY,
     "test_holanda"   : HOLANDA_REPLY,
     "test_heineken": HEINEKEN_REPLY,
+    "test_kof"     : KOF_REPLY,
 }
 
 # Clientes cuyo parser INIT ya pasa por el gate del clasificador en

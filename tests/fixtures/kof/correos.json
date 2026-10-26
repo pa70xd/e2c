@@ -1,0 +1,29 @@
+{
+  "init_falla": {
+    "subject": "Reportes por falla de enfriador",
+    "body": "Buen día.\nSe envían los reportes por falla de enfriador.\nSaludos,\nContacto KOF Ejemplo"
+  },
+  "init_bitacora": {
+    "subject": "Bitácora Plaza Ejemplo 02/03/2026",
+    "body": "me apoyan con esta carga"
+  },
+  "init_texto": {
+    "subject": "Proyecto especial instalación eléctrica",
+    "body": "Buen día, me apoyan con lo siguiente:\nFolio (.Net): 900001\nNombre: Tienda Ejemplo Proyecto\nDirección: Calle Ficticia 300\nMunicipio: MUNICIPIO EJEMPLO\nCEDIS: CEDIS EJEMPLO 2\nObservaciones: instalación eléctrica en áreas generales\nTeléfono: 5550100300\nSaludos"
+  },
+  "inbound": {
+    "subject": "RE: Bitácora Plaza Ejemplo 02/03/2026",
+    "body": "Agrego un equipo más, me apoyan con esta carga"
+  },
+  "outbound": {
+    "subject": "RE: BITACORA Plaza Ejemplo 02/03/2026",
+    "body": "Se adjunta la bitácora con las OS generadas.\nOperador REPARE Ejemplo"
+  },
+  "comandos": {
+    "ayuda": "bot.help",
+    "estatus": "bot.status",
+    "cancelar": "bot.cancelar",
+    "finalizar": "bot.cerrar",
+    "global": "bot.global"
+  }
+}

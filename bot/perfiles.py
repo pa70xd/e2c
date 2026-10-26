@@ -43,6 +43,11 @@ def perfil_penafiel(db, msj, process):
     return _perfil_hilo(db, msj, process)
 
 
+def perfil_kof(db, msj, process):
+    """KOF: mismo perfil por hilo que Danone/Penafiel (repository.gen)."""
+    return _perfil_hilo(db, msj, process)
+
+
 def perfil_holanda(db, db_holanda, msj, process):
     """Estatus y global desde DB_HOLANDA; estatus vacío -> msj_folio_requerido(folio)."""
     return PerfilBot(

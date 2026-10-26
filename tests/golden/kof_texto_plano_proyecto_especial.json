@@ -1,0 +1,295 @@
+{
+  "deliveries": [
+    {
+      "message": {
+        "id": "msg-kof-texto",
+        "subject": "Proyecto especial instalación eléctrica",
+        "from": "contacto@kof-cliente.example.com",
+        "to": [
+          "cliente.kof@repare.example.com"
+        ],
+        "attachments": []
+      },
+      "result": "recibido",
+      "error": null,
+      "replies_sent": 1
+    }
+  ],
+  "repo_calls": [
+    {
+      "module": "danone.DB_POSTGRE",
+      "fn": "conversation_exists",
+      "params": {
+        "conversation_id": "conv-kof-texto"
+      }
+    },
+    {
+      "module": "gen.DB_POSTGRE",
+      "fn": "email_init_exist",
+      "params": {
+        "mail_id": "msg-kof-texto"
+      }
+    },
+    {
+      "module": "gen.DB_POSTGRE",
+      "fn": "save_email_log_init",
+      "params": {
+        "email_model": {
+          "id": null,
+          "request_code": null,
+          "graph_message_id": "msg-kof-texto",
+          "internet_message_id": "<msg-kof-texto@mail.example.com>",
+          "conversation_id": "conv-kof-texto",
+          "conversation_index": "idx-msg-kof-texto",
+          "parent_message_id": null,
+          "change_key": "ck-msg-kof-texto",
+          "link_email": "https://mail.example.com/owa/?ItemID=msg-kof-texto",
+          "direction": "INBOUND",
+          "sender_name": "Contacto KOF Ejemplo",
+          "sender_email": "contacto@kof-cliente.example.com",
+          "recipients_to": [
+            {
+              "name": null,
+              "email": "cliente.kof@repare.example.com"
+            }
+          ],
+          "recipients_cc": [],
+          "recipients_bcc": [],
+          "subject": "Proyecto especial instalación eléctrica",
+          "body": "Buen día, me apoyan con lo siguiente:\nFolio (.Net): 900001\nNombre: Tienda Ejemplo Proyecto\nDirección: Calle Ficticia 300\nMunicipio: MUNICIPIO EJEMPLO\nCEDIS: CEDIS EJEMPLO 2\nObservaciones: instalación eléctrica en áreas generales\nTeléfono: 5550100300\nSaludos",
+          "has_attachments": false,
+          "attachment_count": 0,
+          "processing_status": "RECEIVED",
+          "processing_message": null,
+          "received_at": "2026-03-02T15:30:00+00:00",
+          "sent_at": "2026-03-02T15:30:00+00:00",
+          "created_at": "<now>",
+          "updated_at": "<now>",
+          "customer": "kof"
+        }
+      }
+    },
+    {
+      "module": "gen.DB_POSTGRE",
+      "fn": "send_email_request",
+      "params": {
+        "parametros": {
+          "request_code": "REPARE_000101",
+          "customer": "kof",
+          "status": "IN_PROGRESS",
+          "priority": "HIGH",
+          "total_coolers": 1,
+          "pending_coolers": 1,
+          "completed_coolers": 0,
+          "failed_coolers": 0,
+          "assigned_to": "NA"
+        }
+      }
+    },
+    {
+      "module": "gen.DB_POSTGRE",
+      "fn": "send_email_coolers",
+      "params": {
+        "parametros": {
+          "request_code": "REPARE_000101",
+          "row_number": 1,
+          "status": "PENDING",
+          "rejection_reason": null,
+          "prioridad": null,
+          "folio": "900001",
+          "ticket_solicitud": null,
+          "assigned_to": null,
+          "gestion_observaciones": "Hoja: (texto plano) | Distribuidora: CEDIS EJEMPLO 2",
+          "fecha_asignacion": null,
+          "fecha_atencion": null,
+          "fecha_completado": null,
+          "id_cliente": null,
+          "fecha_solicitud": null,
+          "modelo": null,
+          "serie_fabricante": null,
+          "serie_dnn_bnf": null,
+          "tipo_servicio": "PROYECTO ESPECIAL",
+          "canal": null,
+          "region": null,
+          "plaza": "CEDIS EJEMPLO 2",
+          "razon_social": "Tienda Ejemplo Proyecto",
+          "direccion": "Calle Ficticia 300",
+          "cp": null,
+          "ciudad": "MUNICIPIO EJEMPLO",
+          "colonia": null,
+          "latitud": null,
+          "longitud": null,
+          "ruta": null,
+          "telefono_1": "5550100300",
+          "telefono_2": null,
+          "comentarios": "Tipo: PROYECTO ESPECIAL | Id servicio: AREAS GENERALES | Folio: 900001 | Obs: instalación eléctrica en áreas generales",
+          "cbu": "KOF",
+          "cliente": null,
+          "os": null
+        }
+      }
+    }
+  ],
+  "external_calls": [],
+  "replies": [
+    {
+      "in_reply_to": "msg-kof-texto",
+      "to": [
+        "cliente.kof@repare.example.com"
+      ],
+      "body": "<div style=\" font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; max-width: 680px; color: #24292f; font-size: 14px; line-height: 1.6; \"> <p style=\"font-size: 15px; margin-bottom: 20px;\"> 🤖 Estimado usuario REPARE, </p> <div style=\" border: 1px solid #d0d7de; border-radius: 6px; padding: 20px; background: #f6f8fa; \"> <div style=\" font-size: 14px; font-weight: bold; margin-bottom: 12px; \"> REQUEST RECEIVED </div> <div style=\"color: #57606a;\"> Hemos recibido su solicitud y ha iniciado el <b>proceso de validación</b>. </div> </div> <div style=\" margin-top: 18px; padding: 14px 16px; border: 1px solid #d0d7de; border-radius: 6px; background: #ffffff; \"> <div style=\" font-size: 12px; color: #57606a; margin-bottom: 5px; \"> FOLIO </div> <div style=\" font-size: 18px; font-weight: bold; letter-spacing: 1px; \"> REPARE_000101 </div> </div> <p style=\" color: #57606a; margin-top: 18px; \"> Se adjunta la <b>pre-sábana</b> correspondiente a su solicitud. </p> </div> <div style=\" font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; max-width: 680px; color: #57606a; font-size: 13px; margin-top: 12px; \"> ACEPTADAS&nbsp;=&nbsp;<code>1</code>&nbsp;&nbsp; RECHAZADAS&nbsp;=&nbsp;<code>0</code><br> El detalle por fila va en el archivo RESULTADO_KOF adjunto. </div>",
+      "attachments": [
+        {
+          "name": "REPARE_000101|SABANA_RUTA.xlsx",
+          "sheets": [
+            {
+              "title": "Ordenes",
+              "state": "visible",
+              "rows": [
+                [
+                  "Distribuidora",
+                  "Categoría",
+                  "Linea",
+                  "Modelo ",
+                  "N° de activo",
+                  "Serie",
+                  "Comentarios Cliente",
+                  "Hora Atención",
+                  "Prioridad",
+                  "Folio",
+                  "Ticket de solicitud",
+                  "Canal",
+                  "Correo electrónico solicitante",
+                  "N° de Cliente",
+                  "Nombre punto de venta",
+                  "Calle",
+                  "Número",
+                  "Entre calle",
+                  "y calle",
+                  "Colonia",
+                  "Municipio",
+                  "Código Postal",
+                  "Latitud",
+                  "Longitud",
+                  "Telefono y/o fax",
+                  "Teléfono adicional",
+                  "Correo electrónico",
+                  "Nombre contacto punto de venta",
+                  "Código Postal Generado",
+                  "Colonia Generado",
+                  "Ciudad Generado",
+                  "Estado Generado",
+                  "Pais Generado"
+                ],
+                [
+                  "CEDIS EJEMPLO 2",
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "Tipo: PROYECTO ESPECIAL | Id servicio: AREAS GENERALES | Folio: 900001 | Obs: instalación eléctrica en áreas generales",
+                  null,
+                  null,
+                  "900001",
+                  null,
+                  "Sin Canal",
+                  null,
+                  null,
+                  "Tienda Ejemplo Proyecto",
+                  "Calle Ficticia 300",
+                  null,
+                  null,
+                  null,
+                  null,
+                  "MUNICIPIO EJEMPLO",
+                  null,
+                  null,
+                  null,
+                  "5550100300",
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null
+                ]
+              ]
+            },
+            {
+              "title": "LinesByCategories",
+              "state": "hidden",
+              "max_row": 12
+            },
+            {
+              "title": "ModelsByLines",
+              "state": "hidden",
+              "max_row": 544
+            },
+            {
+              "title": "CustomerDistributors",
+              "state": "hidden",
+              "max_row": 3473
+            },
+            {
+              "title": "Categories",
+              "state": "hidden",
+              "max_row": 21
+            },
+            {
+              "title": "CommercialChannels",
+              "state": "hidden",
+              "max_row": 8
+            },
+            {
+              "title": "Priority",
+              "state": "hidden",
+              "max_row": 4
+            }
+          ]
+        },
+        {
+          "name": "RESULTADO_KOF_REPARE_000101.xlsx",
+          "sheets": [
+            {
+              "title": "Resultado",
+              "state": "visible",
+              "rows": [
+                [
+                  "Estado",
+                  "Motivo",
+                  "Archivo",
+                  "Hoja",
+                  "Fila",
+                  "Folio",
+                  "Tipo de servicio",
+                  "Movimiento KOF",
+                  "Serie",
+                  "Modelo",
+                  "Activo/SAP",
+                  "ID detallista"
+                ],
+                [
+                  "ACEPTADA",
+                  null,
+                  null,
+                  "(texto plano)",
+                  null,
+                  "900001",
+                  "PROYECTO ESPECIAL",
+                  null,
+                  null,
+                  null,
+                  null,
+                  null
+                ]
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
