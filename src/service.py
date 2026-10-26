@@ -22,7 +22,7 @@ from fastapi import HTTPException
 
 from infrastructure.database.engine_duck import DuckEngine
 from src.excel_ingestion import Excel_Ingestion
-from src.email_type import EMAIL_TYPE
+from src.email_type import EMAIL_TYPE, with_test_mailbox
 from infrastructure.graphapi.graphapi import reply_mail_onl_text, reply_mail_init_files
 from parsers.gen_parse.reader import GEN_READER
 import classifier
@@ -70,7 +70,7 @@ async def reply_with_attachments(
         GEN_READER.cleanup_original_files(temporary_files)
 
 with open("config/email_index.json", "r", encoding="utf-8") as f:
-    CUSTOMER_INDEX = json.load(f)
+    CUSTOMER_INDEX = with_test_mailbox(json.load(f))
 
 
 

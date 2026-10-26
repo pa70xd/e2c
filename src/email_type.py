@@ -4,6 +4,19 @@ import base64
 import re
 import time
 import hashlib
+import os
+
+# Variable de entorno opcional con el buzón de pruebas (cliente "test").
+# Sin ella no hay buzón de pruebas.
+TEST_MAILBOX_ENV = "E2C_TEST_MAILBOX"
+
+
+def with_test_mailbox(mailboxes: dict) -> dict:
+    """Agrega E2C_TEST_MAILBOX (si está definida) como cliente "test"."""
+    address = os.getenv(TEST_MAILBOX_ENV, "").strip().lower()
+    if address:
+        mailboxes = {**mailboxes, address: "test"}
+    return mailboxes
 
 
 class EMAIL_TYPE:
@@ -22,10 +35,10 @@ class EMAIL_TYPE:
             )
 
         with path.open("r", encoding="utf-8") as file:
-            return {
+            return with_test_mailbox({
                 key.lower(): value
                 for key, value in json.load(file).items()
-            }
+            })
 
     def validate_email(self, email):
 
