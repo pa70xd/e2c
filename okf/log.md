@@ -302,6 +302,19 @@
 * Nuevo concepto [classifier/sombra.md](classifier/sombra.md); fila de "clasificación dudosa" en [flows/revision-por-hilo.md](flows/revision-por-hilo.md); variables en `deploy/despliegue.md`; runbook al día.
 * Bloqueo vigente: sombra con correos reales espera `redact-v2`. Límite: el init de Danone y Penafiel no pasa por la sombra.
 
+## 2026-10-26 · Fase 4 iniciada: Imbera, KOF, Torrey y Oxxo
+
+* Aprobada por el usuario (según la orquestadora). Registrada en [riesgos/decisiones.md](riesgos/decisiones.md): entran Imbera, KOF, Torrey y Oxxo; **Oxxo apagado por defecto** (PoC automatizada fuera del repo, riesgo de duplicado). Oxgar no figura: sigue fuera de alcance.
+
+| Sesión | Modelo | Rama | ID |
+|---|---|---|---|
+| lector-excel + flag de clientes | sonnet | `claude/e2c-lector-excel` | session_01Hij48ERTesNyVTDdyWeyPH (en curso) |
+| KOF | opus | `claude/e2c-kof` | session_01UEpkYP4VR6wHShaKZL9biN (en curso) |
+| Imbera + Torrey | opus | `claude/e2c-imbera-torrey` | session_01RhmhtzWqP56UdKESrWfBkt (en curso) |
+| Oxxo (parser de plantillas sin LLM) | sonnet | `claude/e2c-oxxo` | session_01E8Gh3qWbaaqB8cksMj4s5n (en curso) |
+
+* Variable nueva `E2C_CLIENTES_HABILITADOS` (sin ella solo corren los 4 clientes actuales); aún no verificada en código. Orden: lector-excel primero; KOF e Imbera/Torrey se adaptan a él; Oxxo en paralelo.
+
 ## 2026-10-24
 
 * Creación del bundle OKF del repositorio `e2c` (rama `claude/admiring-lovelace-3oh7g0`).
