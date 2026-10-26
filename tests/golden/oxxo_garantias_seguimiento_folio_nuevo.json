@@ -1,0 +1,137 @@
+{
+  "deliveries": [
+    {
+      "message": {
+        "id": "msg-og-nueva",
+        "subject": "Seguimiento a Folio: GAR-0001",
+        "from": "notificaciones@oxxo-sistema.example.com",
+        "to": [
+          "cliente.oxogar@repare.example.com"
+        ],
+        "attachments": []
+      },
+      "result": "recibido",
+      "error": null,
+      "replies_sent": 1
+    }
+  ],
+  "repo_calls": [
+    {
+      "module": "danone.DB_POSTGRE",
+      "fn": "conversation_exists",
+      "params": {
+        "conversation_id": "conv-msg-og-nueva"
+      }
+    },
+    {
+      "module": "danone.DB_POSTGRE",
+      "fn": "email_init_exist",
+      "params": {
+        "mail_id": "msg-og-nueva"
+      }
+    },
+    {
+      "module": "oxxo.DB_OXXO",
+      "fn": "get_by_folio",
+      "params": {
+        "folio": "GAR-0001"
+      }
+    },
+    {
+      "module": "danone.DB_POSTGRE",
+      "fn": "save_email_log_init",
+      "params": {
+        "email_model": {
+          "id": null,
+          "request_code": null,
+          "graph_message_id": "msg-og-nueva",
+          "internet_message_id": "<msg-og-nueva@mail.example.com>",
+          "conversation_id": "conv-msg-og-nueva",
+          "conversation_index": "idx-msg-og-nueva",
+          "parent_message_id": null,
+          "change_key": "ck-msg-og-nueva",
+          "link_email": "https://mail.example.com/owa/?ItemID=msg-og-nueva",
+          "direction": "INBOUND",
+          "sender_name": "Sistema Oxxo Ejemplo",
+          "sender_email": "notificaciones@oxxo-sistema.example.com",
+          "recipients_to": [
+            {
+              "name": null,
+              "email": "cliente.oxogar@repare.example.com"
+            }
+          ],
+          "recipients_cc": [],
+          "recipients_bcc": [],
+          "subject": "Seguimiento a Folio: GAR-0001",
+          "body": "Fecha de generación de folio: 02/03/2026 09:30\nDescripción Servicio (Plaza): NORTE\nCR Tienda: 50EJE\nNombre de quien reporta: Persona Ejemplo Dos\nTeléfono de contacto: 55 5501 0002\nCorreo Electrónico: persona.dos@example.com\nEquipo: Cuarto frío\nMarca/Fabricante del Equipo: Marca Ejemplo\nModelo: MOD-EJ-01\nNumero Serie: SERIE-EJ-0001\nDiagnostico y/o Falla: Compresor no arranca\nDireccion de Envío de Garantía: Calle Ficticia 200, Colonia Ejemplo\nFolio Referencia Mantenimiento: 10000001\nMensaje de Seguimiento: se cumplió el tiempo y no se ha atendido",
+          "has_attachments": false,
+          "attachment_count": 0,
+          "processing_status": "RECEIVED",
+          "processing_message": null,
+          "received_at": "2026-03-02T15:30:00+00:00",
+          "sent_at": "2026-03-02T15:30:00+00:00",
+          "created_at": "<now>",
+          "updated_at": "<now>",
+          "customer": "oxxo_garantias"
+        }
+      }
+    },
+    {
+      "module": "danone.DB_POSTGRE",
+      "fn": "send_email_request",
+      "params": {
+        "parametros": {
+          "request_code": "REPARE_000101",
+          "customer": "oxxo_garantias",
+          "status": "IN_PROGRESS",
+          "priority": "MEDIUM",
+          "total_coolers": 1,
+          "pending_coolers": 1,
+          "completed_coolers": 0,
+          "failed_coolers": 0,
+          "assigned_to": "NA"
+        }
+      }
+    },
+    {
+      "module": "oxxo.DB_OXXO",
+      "fn": "insert_fila",
+      "params": {
+        "request_code": "REPARE_000101",
+        "row_number": 1,
+        "fila": {
+          "id_cliente": "50EJE",
+          "fecha_solicitud": "2026-03-02T09:30:00",
+          "modelo": "MOD-EJ-01",
+          "serie_fabricante": "SERIE-EJ-0001",
+          "tipo_servicio": "GARANTIA",
+          "region": null,
+          "plaza": "NORTE",
+          "razon_social": null,
+          "direccion": "Calle Ficticia 200, Colonia Ejemplo",
+          "cp": null,
+          "ciudad": null,
+          "colonia": null,
+          "telefono_1": "5555010002",
+          "comentarios": "Compresor no arranca",
+          "prioridad": "MEDIA",
+          "folio": "GAR-0001",
+          "ticket_solicitud": "10000001",
+          "gestion_observaciones": "Reporta: Persona Ejemplo Dos | Equipo: Cuarto frío | Marca: Marca Ejemplo | Seguimiento: se cumplió el tiempo y no se ha atendido",
+          "cliente": "OXXO_GARANTIAS"
+        }
+      }
+    }
+  ],
+  "external_calls": [],
+  "replies": [
+    {
+      "in_reply_to": "msg-og-nueva",
+      "to": [
+        "cliente.oxogar@repare.example.com"
+      ],
+      "body": "<div style=\" font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; max-width: 680px; color: #24292f; font-size: 14px; line-height: 1.6; \"> <p style=\"font-size: 15px; margin-bottom: 20px;\"> 🤖 Estimado usuario REPARE, </p> <div style=\" border: 1px solid #d0d7de; border-radius: 6px; padding: 20px; background: #f6f8fa; \"> <div style=\"font-size: 14px; font-weight: bold; margin-bottom: 12px;\"> REQUEST RECEIVED </div> <div style=\"color: #57606a;\"> Se registró una <b>OS nueva</b>.<br><b>Aviso:</b> El folio no tenía solicitud en la base; se registró como OS nueva de garantía. </div> </div> <div style=\" margin-top: 18px; padding: 14px 16px; border: 1px solid #d0d7de; border-radius: 6px; background: #ffffff; \"> <div style=\"font-size: 12px; color: #57606a; margin-bottom: 5px;\">FOLIO REPARE</div> <div style=\"font-size: 18px; font-weight: bold; letter-spacing: 1px;\">REPARE_000101</div> </div> <div style=\" margin-top: 18px; padding: 14px 16px; border: 1px solid #d0d7de; border-radius: 6px; background: #ffffff; \"> <div style=\"font-size: 12px; color: #57606a; margin-bottom: 5px;\">FOLIO</div> <div style=\"font-size: 18px; font-weight: bold; letter-spacing: 1px;\">GAR-0001</div> </div> <p style=\"color: #57606a; margin-top: 18px;\"> Correo original: <a href=\"https://mail.example.com/owa/?ItemID=msg-og-nueva\">abrir</a> </p> </div>",
+      "attachments": []
+    }
+  ]
+}

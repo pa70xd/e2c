@@ -1,0 +1,29 @@
+{
+  "deliveries": [
+    {
+      "message": {
+        "id": "msg-ox-apagado",
+        "subject": "Abierto-Asignado ----> 10000001",
+        "from": "notificaciones@oxxo-sistema.example.com",
+        "to": [
+          "cliente.oxxo@repare.example.com"
+        ],
+        "attachments": []
+      },
+      "result": null,
+      "error": null,
+      "replies_sent": 0
+    }
+  ],
+  "repo_calls": [
+    {
+      "module": "danone.DB_POSTGRE",
+      "fn": "conversation_exists",
+      "params": {
+        "conversation_id": "conv-msg-ox-apagado"
+      }
+    }
+  ],
+  "external_calls": [],
+  "replies": []
+}

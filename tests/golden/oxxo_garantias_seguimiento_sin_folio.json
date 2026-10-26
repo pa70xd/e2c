@@ -1,0 +1,45 @@
+{
+  "deliveries": [
+    {
+      "message": {
+        "id": "msg-og-sin-folio",
+        "subject": "Seguimiento a Folio:",
+        "from": "notificaciones@oxxo-sistema.example.com",
+        "to": [
+          "cliente.oxogar@repare.example.com"
+        ],
+        "attachments": []
+      },
+      "result": "recibido",
+      "error": null,
+      "replies_sent": 1
+    }
+  ],
+  "repo_calls": [
+    {
+      "module": "danone.DB_POSTGRE",
+      "fn": "conversation_exists",
+      "params": {
+        "conversation_id": "conv-msg-og-sin-folio"
+      }
+    },
+    {
+      "module": "danone.DB_POSTGRE",
+      "fn": "email_init_exist",
+      "params": {
+        "mail_id": "msg-og-sin-folio"
+      }
+    }
+  ],
+  "external_calls": [],
+  "replies": [
+    {
+      "in_reply_to": "msg-og-sin-folio",
+      "to": [
+        "cliente.oxogar@repare.example.com"
+      ],
+      "body": "<div style=\" font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; max-width: 680px; color: #24292f; font-size: 14px; line-height: 1.6; \"> <p style=\"font-size: 15px; margin-bottom: 20px;\"> 🤖 Estimado usuario REPARE, </p> <div style=\" border: 1px solid #d0d7de; border-radius: 6px; padding: 20px; background: #f6f8fa; \"> <div style=\" font-size: 14px; font-weight: bold; margin-bottom: 12px; \"> REVIEW REQUIRED · N/A </div> <div style=\"color: #57606a;\"> Este mensaje pide cambios sobre filas que no están pendientes. No se aplicaron: cada fila <b>requiere revisión</b>. </div> <table style=\"border-collapse:collapse;margin-top:10px;font-size:13px;\"> <tr style=\"color:#57606a;\"><th style='padding:4px 10px;text-align:left;'>Fila</th><th style='padding:4px 10px;text-align:left;'>Serie</th><th style='padding:4px 10px;text-align:left;'>Acción</th><th style='padding:4px 10px;text-align:left;'>Motivo</th></tr> <tr><td style='padding:4px 10px;border-top:1px solid #d0d7de;'>-</td><td style='padding:4px 10px;border-top:1px solid #d0d7de;'>-</td><td style='padding:4px 10px;border-top:1px solid #d0d7de;'>alta</td><td style='padding:4px 10px;border-top:1px solid #d0d7de;'>falta_folio</td></tr> </table> </div> </div>",
+      "attachments": []
+    }
+  ]
+}

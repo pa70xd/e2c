@@ -1,0 +1,39 @@
+{
+  "mantenimiento": {
+    "subject": "Abierto-Asignado ----> 10000001",
+    "body": "Buen día,\nLa tienda OXXO 50EJE NORTE TIENDA EJEMPLO UNO, ubicada en Calle Ficticia 100, Colonia Ejemplo, Municipio Ejemplo, nos reportó lo siguiente\nMotivo: El equipo no enfría\nRepresentante Propietario: Persona Ejemplo Uno\nPrestador de Servicio: REPARE - Norte\nCategoria: Refrigeración\nFalla especifica: Cuarto frío sin temperatura. El número de ticket es: 10000001. Prioridad: ALTA\n\nSaludos cordiales,\nSistema de tickets Ejemplo"
+  },
+  "mantenimiento_sin_ticket": {
+    "subject": "Abierto-Asignado ----> ",
+    "body": "Buen día,\nLa tienda OXXO 50EJE NORTE TIENDA EJEMPLO UNO, ubicada en Calle Ficticia 100, Colonia Ejemplo, Municipio Ejemplo, nos reportó lo siguiente\nMotivo: El equipo no enfría\nRepresentante Propietario: Persona Ejemplo Uno\nPrestador de Servicio: REPARE - Norte\nCategoria: Refrigeración\nFalla especifica: Cuarto frío sin temperatura. El número de ticket es: (pendiente). Prioridad: ALTA\n\nSaludos cordiales,\nSistema de tickets Ejemplo"
+  },
+  "seguimiento": {
+    "subject": "Seguimiento a Folio: GAR-0001",
+    "body": "Fecha de generación de folio: 02/03/2026 09:30\nDescripción Servicio (Plaza): NORTE\nCR Tienda: 50EJE\nNombre de quien reporta: Persona Ejemplo Dos\nTeléfono de contacto: 55 5501 0002\nCorreo Electrónico: persona.dos@example.com\nEquipo: Cuarto frío\nMarca/Fabricante del Equipo: Marca Ejemplo\nModelo: MOD-EJ-01\nNumero Serie: SERIE-EJ-0001\nDiagnostico y/o Falla: Compresor no arranca\nDireccion de Envío de Garantía: Calle Ficticia 200, Colonia Ejemplo\nFolio Referencia Mantenimiento: 10000001\nMensaje de Seguimiento: se cumplió el tiempo y no se ha atendido"
+  },
+  "seguimiento_sin_folio": {
+    "subject": "Seguimiento a Folio:",
+    "body": "Fecha de generación de folio: 02/03/2026 09:30\nDescripción Servicio (Plaza): NORTE\nCR Tienda: 50EJE\nNombre de quien reporta: Persona Ejemplo Dos\nTeléfono de contacto: 55 5501 0002\nCorreo Electrónico: persona.dos@example.com\nEquipo: Cuarto frío\nMarca/Fabricante del Equipo: Marca Ejemplo\nModelo: MOD-EJ-01\nNumero Serie: SERIE-EJ-0001\nDiagnostico y/o Falla: Compresor no arranca\nDireccion de Envío de Garantía: Calle Ficticia 200, Colonia Ejemplo\nFolio Referencia Mantenimiento: 10000001\nMensaje de Seguimiento: se cumplió el tiempo y no se ha atendido"
+  },
+  "excel_init": {
+    "subject": "Solicitud de Orden de Servicio Oxxo Tienda Ejemplo",
+    "body": "Buen día. Adjunto el layout con las OS de garantía de la tienda.\nSaludos,\nPersona Ejemplo Tres"
+  },
+  "excel_reply": {
+    "subject": "RE: Solicitud de generación de OS para cliente Ejemplo - OXO",
+    "body": "Hola. Les comparto las 4 OS de garantía en el layout adjunto.\nSaludos,\nPersona Ejemplo Tres"
+  },
+  "excel_reply_conteo": {
+    "subject": "RE: Solicitud de generación de OS para cliente Ejemplo - OXO",
+    "body": "Hola. Les comparto las 5 OS de garantía en el layout adjunto.\nSaludos,\nPersona Ejemplo Tres"
+  },
+  "comandos": {
+    "estatus": "bot.estatus REPARE_000042",
+    "ayuda": "bot.ayuda",
+    "sin_folio": "bot.estatus"
+  },
+  "fuera_de_plantilla": {
+    "subject": "Cerrado ----> 10000001",
+    "body": "Este correo no pertenece a ninguna plantilla de Oxxo."
+  }
+}

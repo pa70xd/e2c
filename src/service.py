@@ -14,6 +14,7 @@ from parsers.danone import DANONE_INIT,DANONE_REPLY
 from parsers.penafiel import PENAFIEL_INIT, PENAFIEL_REPLY
 
 from parsers.heineken import HEINEKEN_INIT, HEINEKEN_REPLY   # imports
+from parsers.oxxo import OXXO_INIT, OXXO_REPLY, OXXO_GARANTIAS_INIT, OXXO_GARANTIAS_REPLY
 
 import re
 
@@ -80,12 +81,16 @@ PARSERS_INIT = {
     "penafiel"   : PENAFIEL_INIT,
     "holanda"   : HOLANDA_INIT,
     "heineken" : HEINEKEN_INIT,
+    "oxxo"     : OXXO_INIT,
+    "oxxo_garantias" : OXXO_GARANTIAS_INIT,
 
     #tests
     "test_danone"    : DANONE_INIT,
     "test_penafiel"   : PENAFIEL_INIT,
     "test_holanda"   : HOLANDA_INIT,
     "test_heineken" : HEINEKEN_INIT,
+    "test_oxxo" : OXXO_INIT,
+    "test_oxxo_garantias" : OXXO_GARANTIAS_INIT,
 }
 PARSERS_REPLY = {
 
@@ -93,12 +98,16 @@ PARSERS_REPLY = {
     "penafiel"   : PENAFIEL_REPLY,
     "holanda"   : HOLANDA_REPLY,
     "heineken": HEINEKEN_REPLY,
+    "oxxo"     : OXXO_REPLY,
+    "oxxo_garantias" : OXXO_GARANTIAS_REPLY,
 
     #tests
     "test_danone" : DANONE_REPLY,
     "test_penafiel" : PENAFIEL_REPLY,
     "test_holanda"   : HOLANDA_REPLY,
     "test_heineken": HEINEKEN_REPLY,
+    "test_oxxo" : OXXO_REPLY,
+    "test_oxxo_garantias" : OXXO_GARANTIAS_REPLY,
 }
 
 # Clientes cuyo parser INIT ya pasa por el gate del clasificador en

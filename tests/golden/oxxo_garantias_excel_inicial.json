@@ -1,0 +1,190 @@
+{
+  "deliveries": [
+    {
+      "message": {
+        "id": "msg-og-excel",
+        "subject": "Solicitud de Orden de Servicio Oxxo Tienda Ejemplo",
+        "from": "notificaciones@oxxo-sistema.example.com",
+        "to": [
+          "cliente.oxogar@repare.example.com"
+        ],
+        "attachments": [
+          "Solicitud OS Oxxo Tienda Ejemplo.xlsm"
+        ]
+      },
+      "result": "recibido",
+      "error": null,
+      "replies_sent": 1
+    }
+  ],
+  "repo_calls": [
+    {
+      "module": "danone.DB_POSTGRE",
+      "fn": "conversation_exists",
+      "params": {
+        "conversation_id": "conv-msg-og-excel"
+      }
+    },
+    {
+      "module": "danone.DB_POSTGRE",
+      "fn": "email_init_exist",
+      "params": {
+        "mail_id": "msg-og-excel"
+      }
+    },
+    {
+      "module": "danone.DB_POSTGRE",
+      "fn": "save_email_log_init",
+      "params": {
+        "email_model": {
+          "id": null,
+          "request_code": null,
+          "graph_message_id": "msg-og-excel",
+          "internet_message_id": "<msg-og-excel@mail.example.com>",
+          "conversation_id": "conv-msg-og-excel",
+          "conversation_index": "idx-msg-og-excel",
+          "parent_message_id": null,
+          "change_key": "ck-msg-og-excel",
+          "link_email": "https://mail.example.com/owa/?ItemID=msg-og-excel",
+          "direction": "INBOUND",
+          "sender_name": "Sistema Oxxo Ejemplo",
+          "sender_email": "notificaciones@oxxo-sistema.example.com",
+          "recipients_to": [
+            {
+              "name": null,
+              "email": "cliente.oxogar@repare.example.com"
+            }
+          ],
+          "recipients_cc": [],
+          "recipients_bcc": [],
+          "subject": "Solicitud de Orden de Servicio Oxxo Tienda Ejemplo",
+          "body": "Buen día. Adjunto el layout con las OS de garantía de la tienda.\nSaludos,\nPersona Ejemplo Tres",
+          "has_attachments": true,
+          "attachment_count": 0,
+          "processing_status": "RECEIVED",
+          "processing_message": null,
+          "received_at": "2026-03-02T15:30:00+00:00",
+          "sent_at": "2026-03-02T15:30:00+00:00",
+          "created_at": "<now>",
+          "updated_at": "<now>",
+          "customer": "oxxo_garantias"
+        }
+      }
+    },
+    {
+      "module": "danone.DB_POSTGRE",
+      "fn": "send_email_request",
+      "params": {
+        "parametros": {
+          "request_code": "REPARE_000101",
+          "customer": "oxxo_garantias",
+          "status": "IN_PROGRESS",
+          "priority": "MEDIUM",
+          "total_coolers": 3,
+          "pending_coolers": 3,
+          "completed_coolers": 0,
+          "failed_coolers": 0,
+          "assigned_to": "NA"
+        }
+      }
+    },
+    {
+      "module": "oxxo.DB_OXXO",
+      "fn": "insert_fila",
+      "params": {
+        "request_code": "REPARE_000101",
+        "row_number": 1,
+        "fila": {
+          "id_cliente": "50EJ1",
+          "fecha_solicitud": "2026-03-02T00:00:00",
+          "modelo": "MOD-EJ-01",
+          "serie_fabricante": "SERIE-EJ-0101",
+          "tipo_servicio": "GARANTIA",
+          "region": "NORTE",
+          "plaza": "PLAZA EJEMPLO",
+          "razon_social": "OXXO TIENDA EJEMPLO 1",
+          "direccion": "Calle Ficticia 101",
+          "cp": "06000",
+          "ciudad": "Municipio Ejemplo",
+          "colonia": "Colonia Ejemplo",
+          "telefono_1": "5550100001",
+          "comentarios": "No enfría",
+          "prioridad": "MEDIA",
+          "folio": "OX-0001",
+          "ticket_solicitud": null,
+          "gestion_observaciones": null,
+          "cliente": "OXXO_GARANTIAS"
+        }
+      }
+    },
+    {
+      "module": "oxxo.DB_OXXO",
+      "fn": "insert_fila",
+      "params": {
+        "request_code": "REPARE_000101",
+        "row_number": 2,
+        "fila": {
+          "id_cliente": "50EJ2",
+          "fecha_solicitud": "2026-03-02T00:00:00",
+          "modelo": "MOD-EJ-01",
+          "serie_fabricante": "SERIE-EJ-0102",
+          "tipo_servicio": "GARANTIA",
+          "region": "NORTE",
+          "plaza": "PLAZA EJEMPLO",
+          "razon_social": "OXXO TIENDA EJEMPLO 2",
+          "direccion": "Calle Ficticia 102",
+          "cp": "06000",
+          "ciudad": "Municipio Ejemplo",
+          "colonia": "Colonia Ejemplo",
+          "telefono_1": "5550100002",
+          "comentarios": "Gotea",
+          "prioridad": "MEDIA",
+          "folio": "OX-0002",
+          "ticket_solicitud": null,
+          "gestion_observaciones": null,
+          "cliente": "OXXO_GARANTIAS"
+        }
+      }
+    },
+    {
+      "module": "oxxo.DB_OXXO",
+      "fn": "insert_fila",
+      "params": {
+        "request_code": "REPARE_000101",
+        "row_number": 3,
+        "fila": {
+          "id_cliente": "50EJ3",
+          "fecha_solicitud": "2026-03-02T00:00:00",
+          "modelo": "MOD-EJ-02",
+          "serie_fabricante": "SERIE-EJ-0103",
+          "tipo_servicio": "GARANTIA",
+          "region": "NORTE",
+          "plaza": "PLAZA EJEMPLO",
+          "razon_social": "OXXO TIENDA EJEMPLO 3",
+          "direccion": "Calle Ficticia 103",
+          "cp": "06000",
+          "ciudad": "Municipio Ejemplo",
+          "colonia": "Colonia Ejemplo",
+          "telefono_1": "5550100003",
+          "comentarios": "Ruido en compresor",
+          "prioridad": "MEDIA",
+          "folio": null,
+          "ticket_solicitud": null,
+          "gestion_observaciones": null,
+          "cliente": "OXXO_GARANTIAS"
+        }
+      }
+    }
+  ],
+  "external_calls": [],
+  "replies": [
+    {
+      "in_reply_to": "msg-og-excel",
+      "to": [
+        "cliente.oxogar@repare.example.com"
+      ],
+      "body": "<div style=\" font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; max-width: 680px; color: #24292f; font-size: 14px; line-height: 1.6; \"> <p style=\"font-size: 15px; margin-bottom: 20px;\"> 🤖 Estimado usuario REPARE, </p> <div style=\" border: 1px solid #d0d7de; border-radius: 6px; padding: 20px; background: #f6f8fa; \"> <div style=\"font-size: 14px; font-weight: bold; margin-bottom: 12px;\"> REQUEST RECEIVED </div> <div style=\"color: #57606a;\"> Se registraron <b>3</b> OS desde el Excel adjunto. </div> </div> <div style=\" margin-top: 18px; padding: 14px 16px; border: 1px solid #d0d7de; border-radius: 6px; background: #ffffff; \"> <div style=\"font-size: 12px; color: #57606a; margin-bottom: 5px;\">FOLIO REPARE</div> <div style=\"font-size: 18px; font-weight: bold; letter-spacing: 1px;\">REPARE_000101</div> </div> <p style=\"color: #57606a; margin-top: 18px;\"> Correo original: <a href=\"https://mail.example.com/owa/?ItemID=msg-og-excel\">abrir</a> </p> </div>",
+      "attachments": []
+    }
+  ]
+}

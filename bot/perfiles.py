@@ -68,3 +68,17 @@ def perfil_heineken(db, db_heineken, msj, process):
         estatus_vacio=lambda solicitud: msj.msj_folio_requerido(solicitud.request_code),
         logs=_logs_folio("HEINEKEN"),
     )
+
+
+def perfil_oxxo(db, db_oxxo, msj, process, customer):
+    """Oxxo (mantenimiento y garantías): estatus y global desde DB_OXXO,
+    acotados al cliente del buzón; estatus vacío -> msj_folio_requerido(folio)."""
+    return PerfilBot(
+        msj=msj,
+        repo=db,
+        estatus=lambda request_code: db_oxxo.bot_status(request_code, customer),
+        datos_global=lambda: db_oxxo.global_status(customer),
+        archivo_global=lambda data: process.process_email_request_global(data),
+        estatus_vacio=lambda solicitud: msj.msj_folio_requerido(solicitud.folio),
+        logs=_logs_folio("OXXO"),
+    )
