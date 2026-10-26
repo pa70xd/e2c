@@ -133,3 +133,63 @@ def test_reporte_de_costo_no_configurado(capsys):
     }
     run_eval.imprimir(resumen, "x.jsonl")
     assert "costo: no configurado" in capsys.readouterr().out
+
+
+# ------------------------------------------------------------------ diagnóstico
+class _G:
+    def __init__(self, es_os):
+        self.es_os = es_os
+
+
+class _D:
+    def __init__(self, es_os, tipo, fallbacks=()):
+        self.es_os, self.tipo_evento, self.fallbacks = es_os, tipo, tuple(fallbacks)
+        self.gate = _G(es_os)
+        self.rows = ()
+        self.proveedor_gate = "haiku"
+
+
+def _res(id_, esp_os, esp_tipo, pred_os, pred_tipo, fb=(), ambiguo=False):
+    caso = {"id": id_, "esperado": {"es_os": esp_os, "tipo_evento": esp_tipo, "filas": []}}
+    if ambiguo:
+        caso["ambiguo"] = True
+    return {"caso": caso, "decision": _D(pred_os, pred_tipo, fb), "latencia": 0.0, "tokens": (0, 0)}
+
+
+def test_resumen_diagnostico_haiku():
+    rs = [
+        _res("ok", True, "estatus", True, "estatus"),
+        _res("fn1", True, "estatus", False, "no_os", ["gate:haiku:haiku_filas_no_cargadas"]),
+        _res("fp1", False, "no_os", True, "estatus", ["extract:haiku:a,b"]),
+        _res("amb", True, "estatus", False, "no_os", ambiguo=True),
+        _res("tipo", True, "cancelar_filas", True, "modificar_filas"),
+    ]
+    r = run_eval.resumir(rs, [], "haiku", 0.95)
+    assert [x["id"] for x in r["falsos_negativos"]] == ["fn1", "amb"]
+    assert [x["id"] for x in r["falsos_positivos"]] == ["fp1"]
+    assert {x["id"] for x in r["errores_tipo_evento"]} == {"fn1", "fp1", "amb", "tipo"} - {"x"}
+    assert r["caidas_regex"][0] == {
+        "id": "fn1", "etapa": "gate", "proveedor": "haiku",
+        "motivo": "haiku_filas_no_cargadas", "motivos": ["haiku_filas_no_cargadas"],
+    }
+    assert r["caidas_por_motivo"] == {
+        "extract:a": 1, "extract:b": 1, "gate:haiku_filas_no_cargadas": 1,
+    }
+    # solo proveedor: sin fn1 (cayó en gate)
+    assert r["gate_solo_proveedor"]["casos"] == 4 and r["gate_solo_proveedor"]["fn"] == 1
+    assert r["gate"]["fn"] == 2
+    assert r["gate_sin_ambiguos"]["casos"] == 4 and r["gate_sin_ambiguos"]["fn"] == 1
+
+
+def test_resumen_regex_no_inventa_caidas():
+    r = run_eval.resumir([_res("a", True, "estatus", True, "estatus")], [], "regex", 0.95)
+    assert r["caidas_regex"] == [] and r["gate_solo_proveedor"] is None
+
+
+def test_imprimir_muestra_diagnostico(capsys):
+    rs = [_res("fn1", True, "estatus", False, "no_os", ["gate:haiku:haiku_filas_no_cargadas"])]
+    run_eval.imprimir(run_eval.resumir(rs, [], "haiku", 0.95), "x.jsonl")
+    out = capsys.readouterr().out
+    assert "Falsos negativos (1)" in out and "fn1" in out
+    assert "Errores de tipo_evento (1)" in out
+    assert "fn1: gate · haiku_filas_no_cargadas" in out

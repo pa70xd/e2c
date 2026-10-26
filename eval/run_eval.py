@@ -181,6 +181,36 @@ def correr_caso(caso: dict, proveedor: str) -> dict:
 
 
 # ------------------------------------------------------------------ resumen
+def _cayo(decision, etapa: str) -> bool:
+    return any(f.startswith(f"{etapa}:") for f in decision.fallbacks)
+
+
+def listar_caidas(resultados: list[dict]) -> list[dict]:
+    """Caídas a regex: id, etapa y motivos. Los fallbacks del registry traen
+    ``etapa:proveedor:codigos`` (códigos de error, nunca texto del correo)."""
+    caidas = []
+    for r in resultados:
+        for f in r["decision"].fallbacks:
+            etapa, _, resto = f.partition(":")
+            proveedor, _, motivo = resto.partition(":")
+            caidas.append(
+                {
+                    "id": r["caso"]["id"],
+                    "etapa": etapa,
+                    "proveedor": proveedor,
+                    "motivo": motivo,
+                    "motivos": [m for m in motivo.split(",") if m] or ["desconocido"],
+                }
+            )
+    return caidas
+
+
+def _gate_de(resultados: list[dict]) -> dict:
+    return metrics.gate_es_os(
+        (r["caso"]["esperado"]["es_os"], r["decision"].es_os) for r in resultados
+    )
+
+
 def resumir(resultados: list[dict], errores: list[tuple[str, str]], proveedor: str, umbral: float) -> dict:
     from classifier.contracts import TIPOS_EVENTO
 
@@ -200,12 +230,33 @@ def resumir(resultados: list[dict], errores: list[tuple[str, str]], proveedor: s
         for r in resultados
         if r["decision"].es_os and not r["caso"]["esperado"]["es_os"]
     ]
+    falsos_negativos = [
+        {
+            "id": r["caso"]["id"],
+            "esperado": r["caso"]["esperado"]["tipo_evento"],
+            "predicho": r["decision"].tipo_evento,
+        }
+        for r in resultados
+        if not r["decision"].es_os and r["caso"]["esperado"]["es_os"]
+    ]
+    errores_tipo = [
+        {
+            "id": r["caso"]["id"],
+            "esperado": r["caso"]["esperado"]["tipo_evento"],
+            "predicho": r["decision"].tipo_evento,
+        }
+        for r in resultados
+        if r["caso"]["esperado"]["tipo_evento"] != r["decision"].tipo_evento
+    ]
+    caidas = [] if proveedor == "regex" else listar_caidas(resultados)
+    sin_ambiguos = [r for r in resultados if not r["caso"].get("ambiguo")]
+    solo_proveedor = [r for r in resultados if not _cayo(r["decision"], "gate")]
     extract = metrics.extract_filas(
         (r["caso"]["esperado"].get("filas", []), r["decision"].rows) for r in resultados
     )
     con_extract = [r for r in resultados if r["decision"].gate.es_os]
-    caidas_gate = sum(any(f.startswith("gate:") for f in r["decision"].fallbacks) for r in resultados)
-    caidas_extract = sum(any(f.startswith("extract:") for f in r["decision"].fallbacks) for r in con_extract)
+    caidas_gate = sum(_cayo(r["decision"], "gate") for r in resultados)
+    caidas_extract = sum(_cayo(r["decision"], "extract") for r in con_extract)
     lat = [r["latencia"] * 1000 for r in resultados]
     resumen = {
         "proveedor": proveedor,
@@ -214,6 +265,16 @@ def resumir(resultados: list[dict], errores: list[tuple[str, str]], proveedor: s
         "gate": gate,
         "confusion": metrics.matriz_confusion(pares_tipo, TIPOS_EVENTO),
         "falsos_positivos": falsos_positivos,
+        "falsos_negativos": falsos_negativos,
+        "errores_tipo_evento": errores_tipo,
+        "caidas_regex": caidas,
+        "caidas_por_motivo": metrics.agrupar_caidas(caidas),
+        # Con regex todo lo responde regex: no hay subconjunto "solo proveedor".
+        "gate_solo_proveedor": None if proveedor == "regex" else {**_gate_de(solo_proveedor), "casos": len(solo_proveedor)},
+        "gate_sin_ambiguos": {**_gate_de(sin_ambiguos), "casos": len(sin_ambiguos)},
+        "gate_solo_proveedor_sin_ambiguos": None
+        if proveedor == "regex"
+        else (lambda xs: {**_gate_de(xs), "casos": len(xs)})([r for r in solo_proveedor if not r["caso"].get("ambiguo")]),
         "extract": extract,
         # Con regex no hay a qué caer: la tasa no aplica.
         "caida_regex_gate": None if proveedor == "regex" else metrics.tasa(caidas_gate, len(resultados)),
@@ -260,6 +321,31 @@ def imprimir(r: dict, ruta: str) -> None:
     print(f"\nFalsos positivos ({len(r['falsos_positivos'])}):")
     for fp in r["falsos_positivos"]:
         print(f"  {fp['id']}: esperado {fp['esperado']} -> predicho {fp['predicho']}")
+    print(f"\nFalsos negativos ({len(r.get('falsos_negativos', []))}):")
+    for fn in r.get("falsos_negativos", []):
+        print(f"  {fn['id']}: esperado {fn['esperado']} -> predicho {fn['predicho']}")
+    errs = r.get("errores_tipo_evento", [])
+    print(f"\nErrores de tipo_evento ({len(errs)}):")
+    for t in errs:
+        print(f"  {t['id']}: {t['esperado']} -> {t['predicho']}")
+    for titulo, clave in (
+        ("Gate solo donde respondió el proveedor (sin caídas)", "gate_solo_proveedor"),
+        ("Gate sin casos ambiguos", "gate_sin_ambiguos"),
+        ("Gate solo proveedor y sin ambiguos", "gate_solo_proveedor_sin_ambiguos"),
+    ):
+        m = r.get(clave)
+        if m:
+            print(
+                f"\n{titulo} ({m['casos']} casos): precisión {m['precision']:.4f} · recall {m['recall']:.4f} · "
+                f"F1 {m['f1']:.4f} · TP {m['tp']} FP {m['fp']} FN {m['fn']} TN {m['tn']}"
+            )
+    caidas = r.get("caidas_regex", [])
+    if r["proveedor"] != "regex":
+        print(f"\nCaídas a regex ({len(caidas)}):")
+        for c in caidas:
+            print(f"  {c['id']}: {c['etapa']} · {c['motivo']}")
+        for k, n in r.get("caidas_por_motivo", {}).items():
+            print(f"  total {k}: {n}")
     print("\n-- Extract (acción + row_number + series) --")
     print(
         f"exactitud por fila {e['exactitud']:.4f} ({e['tp']} de {e['tp'] + e['fn']} esperadas) · "
