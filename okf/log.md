@@ -296,6 +296,12 @@
 * Documentado: el buzón de pruebas pasa a `E2C_TEST_MAILBOX` (rama `claude/e2c-fix-holanda-indice`, por mergear). **Siguen dos usos funcionales de esa dirección en código** (verificado): `EMAIL_SENDER` en `infrastructure/graphapi/graphapi.py:44` y el default de `MAIL` en `src/handler.py:26`. No se tocaron porque afectan el envío por Graph; el dev decide moverlos a una `MAIL` obligatoria.
 * El historial de git conserva las direcciones antiguas.
 
+## 2026-10-26 · sombra + duda→revisión: resumen
+
+* Rama `claude/e2c-sombra` (`7b86977`, `ca00f10`), sin mergear. Verificado: `classifier/shadow.py`, `eval/shadow_report.py`, `msj_clasificacion_dudosa`, `Decision.motivo_revision`; `pytest -q` → 872 passed, 48 skipped, 1 xfailed. El comportamiento del thread/timeout, el contenido del log y los comandos de exportación son descripción de la sesión.
+* Nuevo concepto [classifier/sombra.md](classifier/sombra.md); fila de "clasificación dudosa" en [flows/revision-por-hilo.md](flows/revision-por-hilo.md); variables en `deploy/despliegue.md`; runbook al día.
+* Bloqueo vigente: sombra con correos reales espera `redact-v2`. Límite: el init de Danone y Penafiel no pasa por la sombra.
+
 ## 2026-10-24
 
 * Creación del bundle OKF del repositorio `e2c` (rama `claude/admiring-lovelace-3oh7g0`).

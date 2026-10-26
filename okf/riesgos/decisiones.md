@@ -26,7 +26,7 @@ tags: [decisiones, fase-3]
 2. **Se aprueba el modo sombra** (el clasificador corre en paralelo sin decidir). Variables nuevas opcionales: `CLASSIFIER_SHADOW` y `CLASSIFIER_SHADOW_SAMPLE` (nombres según la orquestadora; aún no verificadas en código).
 3. **Se aprueba el backfill de solo lectura con etiquetas automáticas a partir del histórico:** las series que entran y salen de la sábana son la señal. Sin escritura en la base.
 
-Sesiones: sombra + duda→revisión (opus) · `session_01E9q7mT1muX4Ayrtc2z8Bg9` · `claude/e2c-sombra`; backfill (sonnet) · `session_01F6oVDx61MHMbSLJoHLekdz` · `claude/e2c-backfill`. Ninguna ha reportado aún.
+Implementación: (1) y (2) en la rama `claude/e2c-sombra` (ver [sombra](../classifier/sombra.md) y [revisión por hilo](../flows/revision-por-hilo.md)); (3) en `claude/e2c-backfill` (ver [evaluación](../pruebas/evaluacion.md)). Ninguna está mergeada. Sesiones: sombra + duda→revisión `session_01E9q7mT1muX4Ayrtc2z8Bg9`; backfill `session_01F6oVDx61MHMbSLJoHLekdz`.
 
 Contexto: el usuario compartió 21 correos reales (.eml). La orquestadora los analiza localmente, sin salir del contenedor, y **no se documenta su contenido** aquí; el resumen redactado llegará después.
 
