@@ -35,6 +35,7 @@ Bundle OKF del repositorio `e2c`: backend FastAPI que recibe correos de clientes
 * [Penafiel](parsers/penafiel.md)
 * [Holanda](parsers/holanda.md)
 * [Heineken](parsers/heineken.md)
+* [Oxxo](parsers/oxxo.md) - mantenimiento y garantías, apagado por defecto (rama `claude/e2c-oxxo`, sin mergear).
 * [KOF (stub)](parsers/kof.md)
 
 ## Clientes
