@@ -12,7 +12,7 @@ from config.customers.heineken.columns_names import (
 )
 from config.customers.heineken.reglas_heineken import FLUJO_D2D, VALORES_VACIOS
 
-EXCEL_EXTENSIONS = (".xlsx", ".xlsm")
+EXCEL_EXTENSIONS = (".xlsx", ".xlsm", ".ods")
 FILAS_BUSQUEDA_ENCABEZADO = 10
 
 

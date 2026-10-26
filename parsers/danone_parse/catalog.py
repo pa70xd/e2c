@@ -1,5 +1,6 @@
 from infrastructure.tableau.tableau import getPtoVentaData, getModelo, get_modelo_act_ser
 import pandas as pd
+from parsers.core.modelos import llenar_modelo
 from config.config_general.distribuidoras import CATALOG_DISTRIBUIDORAS
 from concurrent.futures import ThreadPoolExecutor
 from config.customers.danone.model_line_cat import catalog
@@ -387,19 +388,7 @@ class DANONE_CATALOG:
     
 
     def calcula_modelo(self, table):
-        columnas = (
-            "ACTIVO_GEN",
-            "SERIE_GEN",
-            "MODELO_GEN",
-            "CATEGORIA_GEN",
-            "LINEA_GEN",
-        )
-
-        for columna in columnas:
-            self.duckConn.execute(
-                f'''ALTER TABLE "{table}"
-                ADD COLUMN IF NOT EXISTS "{columna}" VARCHAR'''
-            )
+        llenar_modelo(self.duckConn, table, "SERIE FABRICANTE", "SERIE DNN/BNF")
 
 
     def calcula_coordenadas(self, table):
