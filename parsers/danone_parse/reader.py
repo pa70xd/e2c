@@ -21,7 +21,7 @@ from parsers.gen_parse.reader import GEN_READER
 
 class DANONE_READER:
     NAMES_COLUMNS = NAMES_COLUMNS
-    EXCEL_EXTENSIONS = (".xlsx", ".xls")
+    EXCEL_EXTENSIONS = (".xlsx", ".xls", ".xlsm", ".ods")
 
     @staticmethod
     async def get_adjuntos(

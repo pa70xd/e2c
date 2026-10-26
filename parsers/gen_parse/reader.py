@@ -12,7 +12,7 @@ import shutil
 
 
 class GEN_READER:
-    EXCEL_EXTENSIONS = (".xlsx", ".xls", ".xlsm")
+    EXCEL_EXTENSIONS = (".xlsx", ".xls", ".xlsm", ".ods")
 
     @staticmethod
     async def get_adjuntos(
