@@ -327,6 +327,12 @@
 * Documentado en [parsers/lector.md](parsers/lector.md), `clients/index.md`, `deploy/despliegue.md`, `decisiones.md`, `bugs.md`.
 * Dos cosas que señalo: `oxogar`→`oxxo_garantias` quedó mapeado sin estar en la lista aprobada (apagado por el flag), y `.xls` necesita `xlrd` que no está en `requirements.txt`. Los lectores actuales no están migrados al lector común.
 
+## 2026-10-26 · modelos: bug 2 corregido en parte
+
+* Rama `claude/e2c-modelos` (`ee6c3a0`, `a8cf448`), sin mergear. Verificado: `parsers/core/modelos.py`, `eval/cobertura_modelos.py`, `eval/reportes/modelos_ambiguos.md` (46 ambiguos de 803); `pytest -q` → 916 passed, 48 skipped, 1 xfailed.
+* **Discrepancia con el resumen:** el commit `a8cf448` (posterior al resumen) cambia 5 goldens, regenera 4 fixtures y agrega un párrafo "Modelos sin resolver" al correo de respuesta; el resumen decía que los goldens no cambiaron. Documentado en `riesgos/bugs.md`.
+* Pendiente de decisión: cómo llevar el motivo a REPARE (el párrafo de aviso es una solución parcial en la rama).
+
 ## 2026-10-24
 
 * Creación del bundle OKF del repositorio `e2c` (rama `claude/admiring-lovelace-3oh7g0`).
