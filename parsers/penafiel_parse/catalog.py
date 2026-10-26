@@ -1,3 +1,4 @@
+from parsers.core.modelos import llenar_modelo
 import pandas as pd
 from config.customers.penafiel.movimientos_penafiel import DIC_SABANAS_MOV 
 from repository.penafiel.consultas_postgre import DB_POSTGRE
@@ -91,19 +92,7 @@ class PENAFIEL_CATALOG:
     
 
     def calcula_modelo(self, table):
-        columnas = (
-            "ACTIVO_GEN",
-            "SERIE_GEN",
-            "MODELO_GEN",
-            "CATEGORIA_GEN",
-            "LINEA_GEN",
-        )
-
-        for columna in columnas:
-            self.duckConn.execute(
-                f'''ALTER TABLE "{table}"
-                ADD COLUMN IF NOT EXISTS "{columna}" VARCHAR'''
-            )
+        llenar_modelo(self.duckConn, table, "SERIE FABRICANTE", "SERIE")
 
 
     def calcula_coordenadas(self, table):
