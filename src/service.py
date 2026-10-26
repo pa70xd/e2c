@@ -306,21 +306,26 @@ async def processMail(data):
             # La decisión viaja con el procesamiento de este correo.
             parser.classifier_decision = decision
 
+            async def enviar_a_repare(mensaje_revision):
+                await reply_mail_onl_text(
+                    host_email = customer_email,
+                    client=client,
+                    user_id=user_id,
+                    mail_id=email.id,
+                    mensaje=mensaje_revision,
+                )
+
             try :
+                # Gate externo con duda en un inbound sin Excel: aviso
+                # "requiere revisión" a REPARE; nada se aplica por texto y el
+                # parser sigue igual que siempre.
+                if review.debe_avisar_duda(decision, thread_ctx, email):
+                    await review.avisar_duda(decision, thread_ctx, enviar_a_repare)
+
                 # Solo con CLASSIFIER_EXTRACT distinto de regex: cambios de
                 # filas pedidos en el texto (PENDING se aplica, el resto va a
                 # revisión de REPARE en el mismo hilo).
                 if review.debe_atender(decision, thread_ctx, email):
-
-                    async def enviar_a_repare(mensaje_revision):
-                        await reply_mail_onl_text(
-                            host_email = customer_email,
-                            client=client,
-                            user_id=user_id,
-                            mail_id=email.id,
-                            mensaje=mensaje_revision,
-                        )
-
                     result = await review.atender(decision, thread_ctx, db, enviar_a_repare)
                 else:
                     result = await parser.parse(
