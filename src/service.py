@@ -19,6 +19,7 @@ from parsers.oxxo import OXXO_INIT, OXXO_REPLY, OXXO_GARANTIAS_INIT, OXXO_GARANT
 
 from parsers.imbera import IMBERA_INIT, IMBERA_REPLY
 from parsers.torrey import TORREY_INIT, TORREY_REPLY
+from parsers.kof import KOF_INIT, KOF_REPLY
 
 import re
 
@@ -96,6 +97,7 @@ PARSERS_INIT = {
 
     "imbera"    : IMBERA_INIT,
     "torrey"    : TORREY_INIT,
+    "kof"       : KOF_INIT,
 
     # <-- clientes de la Fase 4: "imbera": IMBERA_INIT, ...
 
@@ -110,6 +112,7 @@ PARSERS_INIT = {
 
     "test_imbera"   : IMBERA_INIT,
     "test_torrey"   : TORREY_INIT,
+    "test_kof"      : KOF_INIT,
 }
 PARSERS_REPLY = {
 
@@ -123,6 +126,7 @@ PARSERS_REPLY = {
 
     "imbera"    : IMBERA_REPLY,
     "torrey"    : TORREY_REPLY,
+    "kof"     : KOF_REPLY,
 
     # <-- clientes de la Fase 4: "imbera": IMBERA_REPLY, ...
 
@@ -137,6 +141,7 @@ PARSERS_REPLY = {
 
     "test_imbera"   : IMBERA_REPLY,
     "test_torrey"   : TORREY_REPLY,
+    "test_kof"     : KOF_REPLY,
 }
 
 # Clientes cuyo parser INIT ya pasa por el gate del clasificador en

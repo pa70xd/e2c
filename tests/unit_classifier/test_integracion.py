@@ -161,6 +161,7 @@ def test_la_decision_viaja_en_el_parser(harness, fixtures_for, proveedores, monk
 def test_gate_en_parser_init_cubre_danone_y_penafiel():
     assert service.GATE_EN_PARSER_INIT == {"danone", "penafiel", "test_danone", "test_penafiel"}
     # Los parsers nuevos (Oxxo, ...) también pasan por el gate de service.
+    # Los clientes de la Fase 4 (sin gate en su parser) se suman a este set.
     assert {
         "holanda", "heineken", "test_holanda", "test_heineken",
     } <= set(service.PARSERS_INIT) - service.GATE_EN_PARSER_INIT
