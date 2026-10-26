@@ -13,7 +13,8 @@
   excepción que ``classifier.decidir`` ya maneja para caer a ``regex``.
 * Logs sin PII: solo operación, tipo_evento, confidence y latencia.
 
-Variable opcional: ``ANTHROPIC_API_KEY``. Sin ella el proveedor no se usa.
+Variables opcionales: ``ANTHROPIC_API_KEY`` (sin ella el proveedor no se usa) y
+``CLASSIFIER_PROMPT_VERSION`` (``v1`` por defecto, ``v2`` = contexto de negocio).
 """
 
 from __future__ import annotations
@@ -72,12 +73,36 @@ class HaikuSalidaInvalida(HaikuError):
 
 
 # ------------------------------------------------------------------ prompts
+# Versión de prompt: ``CLASSIFIER_PROMPT_VERSION`` (opcional). Vacía o "v1" =
+# los archivos actuales (gate-v1, extract-v2); "v2" = gate-v2 y extract-v3, que
+# incluyen ``contexto_negocio.md`` en la parte cacheada.
+_ARCHIVO_PROMPT = {
+    "v1": {"gate": "gate", "extract": "extract"},
+    "v2": {"gate": "gate-v2", "extract": "extract-v3"},
+}
+_INCLUIR = re.compile(r"<!--\s*incluir:\s*(\w+)\s*-->")
+
+
+def _version_configurada() -> str:
+    v = (os.getenv("CLASSIFIER_PROMPT_VERSION") or "v1").strip().lower()
+    if v not in _ARCHIVO_PROMPT:
+        raise ProveedorNoDisponible("haiku_prompt_version_desconocida")
+    return v
+
+
 @lru_cache(maxsize=None)
-def _prompt(nombre: str) -> tuple[str, str]:
-    """(texto, versión) de ``classifier/prompts/<nombre>.md``."""
-    texto = (_PROMPTS / f"{nombre}.md").read_text(encoding="utf-8")
+def _cargar_prompt(archivo: str) -> tuple[str, str]:
+    texto = (_PROMPTS / f"{archivo}.md").read_text(encoding="utf-8")
+    texto = _INCLUIR.sub(
+        lambda m: (_PROMPTS / f"{m.group(1)}.md").read_text(encoding="utf-8").strip(), texto
+    )
     m = re.match(r"<!--\s*version:\s*(\S+)\s*-->", texto)
     return texto, (m.group(1) if m else "sin_version")
+
+
+def _prompt(nombre: str) -> tuple[str, str]:
+    """(texto, versión) del prompt ``gate`` o ``extract`` de la versión activa."""
+    return _cargar_prompt(_ARCHIVO_PROMPT[_version_configurada()][nombre])
 
 
 def version_prompt(nombre: str) -> str:

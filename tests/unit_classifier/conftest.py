@@ -15,7 +15,7 @@ from classifier import registry
 
 @pytest.fixture(autouse=True)
 def _clasificador_por_defecto(monkeypatch):
-    for var in ("CLASSIFIER_GATE", "CLASSIFIER_EXTRACT", "CLASSIFIER_MIN_CONFIDENCE"):
+    for var in ("CLASSIFIER_GATE", "CLASSIFIER_EXTRACT", "CLASSIFIER_MIN_CONFIDENCE", "CLASSIFIER_PROMPT_VERSION"):
         monkeypatch.delenv(var, raising=False)
     monkeypatch.setattr(classifier, "_cargador_contexto", None)
 
