@@ -1,7 +1,7 @@
 ---
 type: Module
 title: Redacción de PII (classifier/redact.py)
-description: Función redact() que quita datos personales del texto de un correo antes de enviarlo a cualquier proveedor externo (LLM). Mergeado en claude/admiring-lovelace-3oh7g0.
+description: Función redact() que quita datos personales del texto de un correo antes de enviarlo a cualquier proveedor externo (LLM). Mergeado en claude/admiring-lovelace-3oh7g0 (v1). La v2 está en la rama claude/e2c-redact-v2, sin mergear.
 tags: [classifier, redact, pii, fase-3]
 ---
 
@@ -36,7 +36,19 @@ Amplía `redact()` con los patrones F1-F9 (según la sesión):
 
 **Límites (de la sesión):** nombres sin contexto siguen sin detectarse; tablas aplanadas de una sola fila.
 
-> **El bloqueo sigue vigente.** La sesión aún no re-probó `redact` v2 con la batería real de los 21 correos dentro del contenedor, y yo no los tengo. Hasta que se haga y se mergee, no activar `CLASSIFIER_SHADOW` ni haiku con correos reales. Con una muestra de 21, además, "0 fugas" no prueba cobertura general: la redacción por patrones puede dejar pasar nombres sin contexto.
+## Resultado final (resumen final de la sesión, commit `c15543e`)
+
+Rama aprobada por la orquestadora para merge; **aún no mergeada** (lo verifiqué: la base no la contiene). Verificado en la rama: `REDACT_VERSION = 2` (candado), `redact` itera a punto fijo (máx. 5), `pytest -q` → **1062 passed, 48 skipped, 1 xfailed**.
+
+**Medición sobre los 21 correos reales** (hecha por la sesión dentro del contenedor; yo no tengo los correos): v1 → v2 — nombres 53 → 2; direcciones 7 → 0; coordenadas 6 → 0 útiles (queda 1 truncada a 2 decimales, "aceptable"); montos 3 → 0; correos 2 → 0; URL de mapa 1 → 0; teléfonos 0.
+
+**Límites conocidos — los 2 nombres que siguen pasando:**
+
+1. "NOMBRE APELLIDO" solo en una línea entre líneas en blanco, sin etiqueta, cargo, saludo ni firma. **Lo reproduje** con texto inventado: queda sin redactar. No se detecta sin un modelo.
+2. Valor de columna de contacto en una tabla aplanada desalineada por una celda vacía: el redactor no redacta por posición cuando el bloque no cuadra.
+3. En general, nombres sin ningún contexto siguen sin detectarse.
+
+**Candado `REDACT_VERSION`:** el código exige `REDACT_VERSION >= 2` para que corra un proveedor externo o la sombra ([runbook](../deploy/runbook-lunes.md)). **Al mergear esta rama el candado se abre solo**, aunque quedan 2 nombres de 21 correos sin redactar (y una muestra de 21 no prueba cobertura general). Es una decisión de riesgo del usuario: aceptar esa fuga residual antes de mandar correos reales a un proveedor externo, o exigir revisión manual/otra capa.
 
 # Qué NO redacta (v1, sigue valiendo en v2 salvo lo indicado arriba)
 

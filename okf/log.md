@@ -364,6 +364,12 @@
 * Rama `claude/e2c-kof` (`b7f6e64`), sin mergear. Verificado: archivos, registro en `src/service.py`, 11 goldens; `pytest -q` → 942 passed, **1 failed** (el test del gate en el parser INIT espera solo Danone y Penafiel; ya reportado por la sesión), 48 skipped, 1 xfailed. `parsers/kof.md` deja de ser stub en el bundle (la base sí lo sigue siendo).
 * Preguntas abiertas de negocio en `riesgos/preguntas-abiertas.md`.
 
+## 2026-10-26 · redact v2: resumen final
+
+* Rama `claude/e2c-redact-v2` (`c15543e`), aprobada para merge, **sin mergear**. Verificado: `REDACT_VERSION = 2`, iteración a punto fijo, `pytest -q` → 1062 passed, 48 skipped, 1 xfailed; reproduje con texto inventado el límite (1) (nombre mayúsculo aislado sin contexto queda sin redactar).
+* Medición sobre los 21 correos reales (de la sesión, no verificable por mí): nombres 53 → 2; direcciones, coordenadas útiles, montos, correos y URL de mapa → 0.
+* **Al mergear se abre el candado `REDACT_VERSION`**; quedan 2 nombres sin redactar. Dejado como decisión de riesgo del usuario en [classifier/redact.md](classifier/redact.md), `correos-reales.md` y el runbook.
+
 ## 2026-10-24
 
 * Creación del bundle OKF del repositorio `e2c` (rama `claude/admiring-lovelace-3oh7g0`).
