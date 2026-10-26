@@ -81,6 +81,8 @@ Para repetir la medición de la línea base: `python eval/run_eval.py --provider
 
 **ADVERTENCIA: no actives haiku** (`CLASSIFIER_GATE=haiku` o `CLASSIFIER_EXTRACT=haiku`) **sin antes** correr `eval/smoke_haiku.py` con una key real y sin que la evaluación supere **precisión >= 0.95 en gate** (umbral de [decisiones](../riesgos/decisiones.md)). El evaluador está en la base (`eval/`; ver [evaluador](../pruebas/evaluacion.md)): sobre el set sintético, regex da precisión de gate 0.7419 (no cumple) y haiku, según una sesión con key (no verificado por mí), cumple 1.00 sobre ese mismo set sintético. Falta el set real: con eso sigue sin ser suficiente para activar. Además, `review` solo corre con un proveedor externo y manda avisos reales a REPARE.
 
+En entornos cloud la plataforma descarta las variables `ANTHROPIC_*`: la key se guarda como `E2C_ANTHROPIC_API_KEY` y se pasa con `env -u ANTHROPIC_BASE_URL ANTHROPIC_API_KEY="$E2C_ANTHROPIC_API_KEY" python eval/run_eval.py --provider haiku --set <ruta>` (según la orquestadora; no lo ejecuté). Nunca pegues el valor en el repo.
+
 Variables nuevas, todas opcionales y sin valores en el repo: `CLASSIFIER_GATE`, `CLASSIFIER_EXTRACT` (default `regex`), `CLASSIFIER_MIN_CONFIDENCE` (default 0.7), `ANTHROPIC_API_KEY` (solo para haiku). Nota: `requirements.txt` es UTF-16 LE con CRLF (ahí está `anthropic==2.3.0`): conserva esa codificación si lo editas.
 
 # 6. Sigue abierto

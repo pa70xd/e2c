@@ -32,13 +32,23 @@ Corrí el evaluador sobre el set sintético en la rama:
 * Extract (regex): exactitud por fila 0.0 (0 de 41), porque regex devuelve `[]` y las filas salen del Excel.
 * Latencia: media 11.2 ms, p95 0.7 ms.
 
+# Correr con key en entornos cloud
+
+La plataforma descarta las variables `ANTHROPIC_*` en la sesión de ejecución. La key de la organización se guardó con otro nombre, `E2C_ANTHROPIC_API_KEY` (solo el nombre; el valor no va al repo), y se pasa así:
+
+```
+env -u ANTHROPIC_BASE_URL ANTHROPIC_API_KEY="$E2C_ANTHROPIC_API_KEY" python eval/run_eval.py --provider haiku --set <ruta>
+```
+
+(`-u ANTHROPIC_BASE_URL` quita la URL base del proxy de la plataforma. Comando según la orquestadora; no lo ejecuté.)
+
 # Por qué el set sintético no basta para activar
 
 Activar un proveedor externo exige correos reales redactados (set real fuera del repo) y una corrida con key real. El set sintético sirve para regresión y para comparar proveedores, no para decidir la activación (lo señala también la orquestadora).
 
 # Resultado reportado: haiku sobre el set sintético (NO verificado por mí)
 
-Lo reporta la sesión `session_01Jnc7eVXwXyKjsou32zFdCn` (2026-10-26), que tenía `ANTHROPIC_API_KEY`; yo no tengo key y **no repetí la medición**. El reporte completo se envió a la orquestadora; no lo he visto.
+Lo reportan la sesión `session_01Jnc7eVXwXyKjsou32zFdCn` y la orquestadora (2026-10-26), con una key de la organización del usuario; yo no la usé y **no repetí la medición**. No he visto el reporte completo.
 
 * Smoke (`eval/smoke_haiku.py`): OK.
 * Gate (67 casos sintéticos): precisión 1.00, recall 1.00, F1 1.00, 0 falsos positivos; el umbral de 0.95 **se cumple** sobre este set.
@@ -46,7 +56,10 @@ Lo reporta la sesión `session_01Jnc7eVXwXyKjsou32zFdCn` (2026-10-26), que tení
 * Caída a regex: gate 1.5 %, extract 2.2 %.
 * Latencia: media 2.0 s, p95 3.2 s. Tokens: ~128 k de entrada, ~7.7 k de salida.
 * Comparación: regex en el mismo set, precisión 0.74 con 16 falsos positivos (no cumple).
+* Dos confusiones de tipo de evento en extract: `cancelar_filas` → `modificar_filas` y `cancelar_solicitud` → `estatus`.
 * Pendiente señalado por la sesión: los motivos de la caída a regex no se imprimen en `run_eval`.
+
+**Veredicto técnico (orquestadora): cumple el umbral en el sintético, pero NO se activa.** El set es sintético, tiene solo 21 negativos y lo escribió un modelo; falta el set real.
 
 **Cómo leerlo:** el set sintético tiene 21 negativos, así que una precisión de 1.00 es compatible con un error real bastante mayor. Este resultado **no basta para activar** haiku: hacen falta correos reales redactados (set real) y la corrida con key sobre ellos. Que el umbral se cumpla en el sintético no equivale a cumplirlo en producción.
 
