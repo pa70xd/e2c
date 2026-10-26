@@ -162,4 +162,5 @@ def test_gate_en_parser_init_cubre_danone_y_penafiel():
     assert service.GATE_EN_PARSER_INIT == {"danone", "penafiel", "test_danone", "test_penafiel"}
     assert set(service.PARSERS_INIT) - service.GATE_EN_PARSER_INIT == {
         "holanda", "heineken", "test_holanda", "test_heineken",
+        "imbera", "torrey", "test_imbera", "test_torrey",
     }
