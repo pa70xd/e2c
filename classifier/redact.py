@@ -72,6 +72,8 @@ import re
 import unicodedata
 from typing import Iterable
 
+REDACT_VERSION = 2  # candado del modo sombra: 1 = redacción original, 2 = F1-F9
+
 CORREO = "[CORREO]"
 TELEFONO = "[TELEFONO]"
 FIRMA = "[FIRMA]"

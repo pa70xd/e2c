@@ -955,3 +955,8 @@ def test_idempotencia_v2_corpus(texto):
 def test_conservar_sigue_funcionando_con_v2():
     t = "Contacto: Ana Ruiz\nSerie 5555550199 Tel 5555550101 $ 5,000"
     assert redact(t, conservar=["5555550199"]) == "Contacto: [ID]\nSerie 5555550199 Tel [TELEFONO] [MONTO]"
+
+
+def test_redact_version():
+    from classifier import redact as modulo
+    assert modulo.REDACT_VERSION == 2
