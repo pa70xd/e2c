@@ -22,7 +22,7 @@ El usuario compartió 21 correos reales (.eml). La orquestadora los analizó **l
 
 ## Holanda descarta todo (bug)
 
-`es_asunto_holanda` (`parsers/holanda.py:70`) compara el asunto normalizado con `ASUNTO_HOLANDA` de forma exacta ("casos repare"; ignora mayúsculas, prefijos `RE:`/`RV:`/`FW:` y etiquetas `[..]`). Verificado en el código. Según el análisis, el asunto real lleva una fecha, así que **Holanda descarta todo, incluida la conciliación de OS**. Asignado: `session_01WjEJyAUVg4bTSoA1wXQ8HM`, rama `claude/e2c-fix-holanda-indice`, que también saca un correo personal del índice (variable nueva opcional `E2C_TEST_MAILBOX`).
+`es_asunto_holanda` (`parsers/holanda.py:70`) compara el asunto normalizado con `ASUNTO_HOLANDA` de forma exacta ("casos repare"; ignora mayúsculas, prefijos `RE:`/`RV:`/`FW:` y etiquetas `[..]`). Verificado en el código. Según el análisis, el asunto real lleva una fecha, así que **Holanda descarta todo, incluida la conciliación de OS**. **Corregido en la rama `claude/e2c-fix-holanda-indice` (`330763f`, sin mergear)**: el asunto acepta fecha o sufijo numérico; esa rama también saca un correo personal del índice (variable opcional `E2C_TEST_MAILBOX`). Verificado ejecutando la función y `pytest -q` → 829 passed, 48 skipped, 1 xfailed.
 
 ## Dirección y etapa
 

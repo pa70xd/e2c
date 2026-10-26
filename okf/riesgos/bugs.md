@@ -65,7 +65,7 @@ tags: [bugs, riesgos]
 * **Heineken `MAX(row_number)`**: sin transacción. Concurrencia puede repetir.
 * **Riesgo de la corrección de `\a`→`\b`**: `aviso` ahora sí coincide en `MOVEMENTS`; el harness corroboró que sin guarda un pie "Aviso de privacidad" generaba movimientos falsos. Mitigado en la base con el lookahead `(?!\s+(?:de\s+)?privacidad)`. Otros pies que contengan "aviso" no se probaron.
 * **Hallazgos del análisis de 21 correos reales** (2026-10-26, ver [correos reales](../pruebas/correos-reales.md); cifras de la orquestadora, no verificadas por mí salvo lo indicado):
-  * **Holanda descarta todo** si el asunto lleva fecha: `es_asunto_holanda` exige el asunto exacto (verificado en `parsers/holanda.py:70`). Incluye la conciliación de OS. En curso: rama `claude/e2c-fix-holanda-indice`.
+  * **Holanda descarta todo** si el asunto lleva fecha: `es_asunto_holanda` exigía el asunto exacto (`parsers/holanda.py:70`). Incluye la conciliación de OS. **Corregido en la rama `claude/e2c-fix-holanda-indice`, sin mergear** (`330763f`): acepta fecha o sufijo numérico; verifiqué ejecutándola ("RE: Casos REPARE 04052026" sí; "Casos REPARE 04052026 urgente" y "Fwd: algo Casos REPARE" no). Sigue abierto: el lector de Holanda no acepta `.xlsm` (solo `.xlsx`/`.xls`, `reader.py:19` según la sesión).
   * `config/email_index.json` incluye un buzón personal (verificado) y no mapea Imbera, oxxo, oxogar, torrey ni kof: 14 de 21 correos nunca entran. Decisión de alcance pendiente con el usuario.
   * La etapa sale solo del prefijo "RE:", sin `In-Reply-To` (verificado).
   * `detect_direccion` mira solo el `To:` (verificado) y confunde correos internos de REPARE.

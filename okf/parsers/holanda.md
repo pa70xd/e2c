@@ -13,7 +13,7 @@ tags: [holanda, helados, unilever]
 
 # Flujo particular
 
-* Gate de asunto: tras quitar `[..]`, `RE:` y `FW:`, debe ser `casos repare`. Si no, se ignora sin respuesta.
+* Gate de asunto: tras quitar `[..]`, `RE:` y `FW:`, debe ser `casos repare`. Si no, se ignora sin respuesta. En la rama `claude/e2c-fix-holanda-indice` (sin mergear), `es_asunto_holanda` acepta además una fecha o sufijo numérico al final ("Casos REPARE 04052026", con `RE:`/`RV:`/`FW:`, mayúsculas y `[etiquetas]`), pero no la frase embebida en otro texto ni texto tras la fecha. Verificado ejecutando la función en la rama. Antes solo aceptaba el asunto exacto y descartaba los correos reales.
 * No usa hilo. Cada correo con Excel crea una solicitud. Comandos del bot por folio `REPARE_\d+`.
 * Origen desde el sufijo de CASO2: `H` → HELADIO, `G` → GDR. Otro origen rechaza la fila.
 * Fecha en DD/MM/AAAA o ISO. Teléfono solo dígitos; para HELADIO, `521` + 10 dígitos → 10.

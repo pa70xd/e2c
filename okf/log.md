@@ -283,6 +283,13 @@
 * Rama `claude/e2c-backfill` (`25a9c34`), sin mergear. Verificado: `eval/backfill.py`, flags, transacción `READ ONLY`, guarda contra escritura, `--tablas prod` exige confirmación; `pytest -q` → 851 passed, 48 skipped, 1 xfailed. No se corrió contra datos ni esquema reales (afirmación de la sesión y consistente con el código).
 * Añadido el paso 7 (opcional, solo lectura) al runbook y la sección en [pruebas/evaluacion.md](pruebas/evaluacion.md). Riesgo anotado: el backfill redacta con `redact()` v1, insuficiente; tratar el set como sensible hasta `redact-v2`.
 
+## 2026-10-26 · fix-holanda-indice: resumen
+
+* Rama `claude/e2c-fix-holanda-indice` (`330763f`, `707d0b5`), sin mergear. Verificado: `pytest -q` → 829 passed, 48 skipped, 1 xfailed; `es_asunto_holanda` acepta "Casos REPARE" con fecha o sufijo y rechaza frase embebida o texto tras la fecha; `email_index.json` queda con 4 claves; `E2C_TEST_MAILBOX` se lee en `src/email_type.py`.
+* Documentado en `parsers/holanda.md`, `clients/reglas-por-cliente.md`, `infrastructure/subscriptions.md`, `deploy/despliegue.md`, `riesgos/bugs.md` y `riesgos/seguridad.md`.
+* PII: quité del bundle la dirección personal de `clients/index.md`. El historial de git sigue conteniéndola; `subscriptions.py` aún la tiene hardcodeada (según la sesión).
+* Sigue abierto: el lector de Holanda no acepta `.xlsm`.
+
 ## 2026-10-24
 
 * Creación del bundle OKF del repositorio `e2c` (rama `claude/admiring-lovelace-3oh7g0`).

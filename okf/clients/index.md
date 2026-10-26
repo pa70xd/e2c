@@ -15,7 +15,7 @@ Fuente: `config/email_index.json`.
 | `cliente.holanda@repare.com.mx` | holanda | [Holanda](../parsers/holanda.md) | Activo |
 | `cliente.kdrp@repare.com.mx` | penafiel | [Penafiel](../parsers/penafiel.md) | Activo |
 | `cliente.hnk@repare.com.mx` | heineken | [Heineken](../parsers/heineken.md) | Mapeado, suscripción comentada en `subscriptions.py` |
-| `yael.hurtado@imberacooling.com` | test | `test_*` | Buzón de prueba |
+| `<buzón de pruebas personal>` (dirección omitida; en la rama `claude/e2c-fix-holanda-indice` sale del índice y pasa a `E2C_TEST_MAILBOX`) | test | `test_*` | Buzón de prueba |
 
 KOF: sin buzón mapeado, sin parser conectado. Ver [KOF](../parsers/kof.md).
 
