@@ -1062,3 +1062,106 @@ def test_r2_idempotencia_por_punto_fijo():
     for texto in (FORMULARIO, "Nombre\nTeléfono\nFolio\nAna Ruiz\n5555550101\n12345678\nTel:\n" * 3):
         una = redact(texto)
         assert redact(una) == una
+
+
+# ======================================================================
+# Ronda 3 (formas reales del call center, descritas con letras/dígitos)
+# ======================================================================
+FORMULARIO_BARRAS = (
+    "INFORMACION DEL CLIENTE:\n"
+    "| Nombre Del Cliente\n| CADENA XYZ SA DE CV\n"
+    "| Teléfono Local\n| 5555550101\n\n\n"
+    "| Teléfono Celular\n| 5555550102\n"
+    "| Correo electrónico\n"
+    "| Nombre Del Negocio\n| TIENDA LOS PINOS 1234\n"
+    "| No de Cliente (SAP)\n| 99999999\n\n\n"
+    "| Nombre del contacto\n| ITZEL QUIROZ VALDIVIA\n"
+    "| Calle y numero\n| AVENIDA SIEMPRE VIVA 12\n"
+    "| Colonia\n| JARDINES DE LA LOMA NORTE\n"
+    "| Referencia del domicilio\n"
+    "| Latitud\n| 19.432612\n"
+    "| Longitud\n| -99.13321\n"
+)
+
+
+def test_r3_formulario_con_prefijo_barra_una_celda_por_linea():
+    esperado = (
+        "INFORMACION DEL CLIENTE:\n"
+        "| Nombre Del Cliente\n| CADENA XYZ SA DE CV\n"
+        "| Teléfono Local\n| [TELEFONO]\n\n\n"
+        "| Teléfono Celular\n| [TELEFONO]\n"
+        "| Correo electrónico\n"
+        "| Nombre Del Negocio\n| TIENDA LOS PINOS 1234\n"
+        "| No de Cliente (SAP)\n| 99999999\n\n\n"
+        "| Nombre del contacto\n| [ID]\n"
+        "| Calle y numero\n| [DIRECCION]\n"
+        "| Colonia\n| [DIRECCION]\n"
+        "| Referencia del domicilio\n"
+        "| Latitud\n| [UBICACION]\n"
+        "| Longitud\n| [UBICACION]\n"
+    )
+    assert redact(FORMULARIO_BARRAS) == esperado
+
+
+def test_r3_celda_vacia_no_toma_la_etiqueta_siguiente_como_valor():
+    texto = "| Correo electrónico\n| Nombre Del Negocio\n| TIENDA 1\n| Referencia del domicilio\n| Latitud\n"
+    assert redact(texto) == texto
+    assert redact("| Nombre del contacto\n| Teléfono Celular\n| 5555550101") == \
+        "| Nombre del contacto\n| Teléfono Celular\n| [TELEFONO]"
+
+
+@pytest.mark.parametrize("etiqueta", ["Persona que atiende", "Nombre del encargado", "Nombre", "Contacto",
+                                      "Responsable", "Nombre del solicitante", "Nombre de quien reporta"])
+def test_r3_etiquetas_de_persona_con_barra(etiqueta):
+    assert redact(f"| {etiqueta}\n| itzel quiroz valdivia") == f"| {etiqueta}\n| [ID]"
+
+
+@pytest.mark.parametrize("etiqueta", ["Nombre Del Negocio", "Nombre de la tienda", "Nombre del PDV", "Folio"])
+def test_r3_etiquetas_que_no_son_persona(etiqueta):
+    texto = f"| {etiqueta}\n| TIENDA LOS PINOS"
+    assert redact(texto) == texto
+
+
+def test_r3_cabecera_nombre_mayusculas_guion_empresa():
+    entrada = "De: JUAN PEREZ LOPEZ - GRUPO NORTE <j@example.com>\nEnviado: lunes\nAsunto: Baja"
+    salida = redact(entrada)
+    assert "JUAN" not in salida and "PEREZ" not in salida and "NORTE" not in salida
+    assert salida.endswith("Enviado: lunes\nAsunto: Baja")
+    assert redact("De: JUAN PEREZ - [ID] <[CORREO]>") == "De: [ID] - [ID] <[CORREO]>"
+
+
+@pytest.mark.parametrize("entrada, esperado", [
+    ("@JUAN PEREZ (GCM) COBRANZA revisa", "@[ID] revisa"),
+    ("@Juan Pérez (SAP) Cobranza revisa", "@[ID] revisa"),
+    ("@JUAN PEREZ revisa por favor", "@[ID] revisa por favor"),
+    ("Hola @ANA RUIZ (TI) SISTEMAS, gracias", "Hola @[ID], gracias"),
+])
+def test_r3_mencion_en_mayusculas_con_sigla(entrada, esperado):
+    assert redact(entrada) == esperado
+
+
+@pytest.mark.parametrize("entrada, esperado", [
+    ("Ok, gracias.\n\nJUAN PEREZ\nANALISTA DE SISTEMAS\n\nAviso de privacidad: texto",
+     "Ok, gracias.\n\n[FIRMA]\n\n[FIRMA]"),
+    ("Listo\nITZEL QUIROZ\nCOORDINADOR DE ZONA NORTE\nDe: Ana Ruiz\nEnviado: x",
+     "Listo\n[FIRMA]\nDe: [ID]\nEnviado: x"),
+    ("Listo\nITZEL QUIROZ\nGERENTE\nEMPRESA NORTE\n", "Listo\n[FIRMA]\n"),
+])
+def test_r3_firma_en_mayusculas_sin_despedida(entrada, esperado):
+    assert redact(entrada) == esperado
+
+
+@pytest.mark.parametrize("texto", [
+    "NO ENFRIA\nEQUIPO DE REFRIGERACION\n\nCOBERTURA",
+    "CAMBIO DE EQUIPO\nINSTALACIÓN\n",
+    "TIPO DE SERVICIO\nRETIRO DE EQUIPO\n",
+    "Solicito\nCOBERTURA\nEQUIPO ADICIONAL\n",
+])
+def test_r3_servicios_en_mayusculas_no_son_firma(texto):
+    assert redact(texto) == texto
+
+
+def test_r3_idempotencia():
+    for texto in (FORMULARIO_BARRAS, "@JUAN PEREZ (GCM) COBRANZA\nDe: JUAN PEREZ - GRUPO NORTE <j@example.com>"):
+        una = redact(texto)
+        assert redact(una) == una

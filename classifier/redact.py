@@ -578,6 +578,9 @@ def _es_nombre_libre(core: str) -> bool:
     return not _EMPRESA.search(c) and _plano(c) not in _NO_NOMBRE
 
 
+_NOMBRE_GUION_ID = re.compile(rf"(?P<n>[{_LETRA}'’.,\- ]+?)(?P<r>[ \t]+-[ \t]+\[ID\].*)$")
+
+
 def _parte_cabecera(p: str) -> str:
     lead = p[: len(p) - len(p.lstrip())]
     trail = p[len(p.rstrip()):]
@@ -590,6 +593,9 @@ def _parte_cabecera(p: str) -> str:
         return f"{ID} {m.group('c')}" if _es_nombre_libre(n) else m.group(0)
 
     core = _NOM_CORREO.sub(con_correo, core)
+    nom_empresa = _NOMBRE_GUION_ID.match(core)
+    if nom_empresa and _es_nombre_libre(nom_empresa.group("n")):
+        return lead + ID + nom_empresa.group("r") + trail
     if "[" in core or "@" in core:
         return lead + core + trail
     if _es_nombre_libre(core):
@@ -661,7 +667,12 @@ def _escribio(m: re.Match) -> str:
 
 
 # --------------------------------------------------------------------- tablas (F5)
-_COL_PERSONA = re.compile(rf"(?:{_ET_PERSONA_FUERTE}|{_ET_PERSONA_DEBIL})", _FLAGS)
+_COL_PERSONA = re.compile(
+    rf"(?:{_ET_PERSONA_FUERTE}|{_ET_PERSONA_DEBIL}|nombre(?![ ]+(?:de(?:l)?[ ]+(?:la[ ]+)?)?"
+    r"(?:negocio|tienda|pdv|punto|sucursal|equipo|cadena|empresa|raz[oó]n|archivo|modelo|marca|proveedor|"
+    r"distribuidor|establecimiento|comercial|producto|plaza|zona)\b)(?:[ ]+\w+){0,3})",
+    _FLAGS,
+)
 _COL_TEL = re.compile(
     r"(?:tel(?:[eé]fono)?s?|cel(?:ular)?|m[oó]vil|whats?[ ]?app|fax|n[uú]mero[ ]+de[ ]+"
     r"(?:contacto|tel[eé]fono|celular))(?:[ ]+(?:de|del)[ ]+\w+(?:[ ]+\w+)?|[ ]+\w+)?", _FLAGS)
@@ -686,7 +697,7 @@ _COL_GENERICA = re.compile(
 
 def _tipo_columna(celda: str):
     """'p' persona, 't' teléfono, 'c' correo, 'd' dirección, 'g' genérica o None."""
-    c = celda.strip().strip(":*_ ").strip()
+    c = re.sub(r"[ ]*\([^)]{1,15}\)[ ]*$", "", celda.strip().strip(":*_ ")).strip()
     if not c or len(c) > 40 or re.search(r"\d{3}", c) or "[" in c:
         return None
     for tipo, rx in (("p", _COL_PERSONA), ("t", _COL_TEL), ("c", _COL_CORREO), ("d", _COL_DIR),
@@ -813,20 +824,42 @@ def _tablas(cuerpos):
         else:
             i = max(j, i + 1)
     # 3) formulario con una celda por línea: etiqueta, valor, etiqueta, valor...
-    for i in range(n - 1):
+    #    (a) líneas "| celda": el valor es la siguiente línea "| ..." salvo que sea otra etiqueta
+    #        (una celda vacía no produce línea); (b) líneas sueltas: el valor es la línea de abajo
+    for i in range(n):
         c = cuerpos[i]
-        if not c.strip() or "|" in c:
+        if not c.strip():
             continue
-        tp = _tipo_columna(c)
+        barra = c.lstrip().startswith("|") and c.count("|") == 1
+        if not barra and "|" in c:
+            continue
+        etq = c.lstrip()[1:].strip() if barra else c
+        tp = _tipo_columna(etq)
         if tp not in ("p", "t", "d", "u"):
             continue
-        if tp == "d" and re.fullmatch(r"\s*(?:direcci[oó]n|domicilio)\s*:?\s*", c, _FLAGS):
+        if tp == "d" and re.fullmatch(r"\s*(?:direcci[oó]n|domicilio)\s*:?\s*", etq, _FLAGS):
             continue  # "Dirección" sola: puede ser la del punto de venta
-        sig = cuerpos[i + 1]
-        if not sig.strip() or _tipo_columna(sig) is not None or _PARECE_ETIQUETA.search(sig.strip()) \
-                or len(sig) > 100:
+        j = i + 1
+        if barra:
+            while j < n and not cuerpos[j].strip() and j - i <= 4:
+                j += 1
+        if j >= n:
             continue
-        cuerpos[i + 1] = _valor_tabla(tp, sig)
+        sig = cuerpos[j]
+        if barra:
+            if not (sig.lstrip().startswith("|") and sig.count("|") == 1):
+                continue
+            val = sig.lstrip()[1:]
+        else:
+            val = sig
+        if not val.strip() or _tipo_columna(val) is not None or _PARECE_ETIQUETA.search(val.strip()) \
+                or len(val) > 100:
+            continue
+        if barra:
+            lead = sig[: len(sig) - len(sig.lstrip())]
+            cuerpos[j] = lead + "|" + _valor_tabla(tp, val)
+        else:
+            cuerpos[j] = _valor_tabla(tp, val)
     return cuerpos
 
 
@@ -845,7 +878,10 @@ _SALUDO_INV = re.compile(
     r"|buen[ ]+d[ií]a|hola)\b)",
     re.M,
 )
-_MENCION = re.compile(rf"(?<![\w.@/])@(?P<n>[{_LETRA}][{_LETRA}'’\-]*(?:[ ]+[{_LETRA}][{_LETRA}'’\-]*){{0,5}})")
+_MENCION = re.compile(
+    rf"(?<![\w.@/])@(?P<n>[{_LETRA}][{_LETRA}'’\-]*(?:[ ]+[{_LETRA}][{_LETRA}'’\-]*){{0,5}})"
+    rf"(?P<x>[ ]*\([A-Z0-9]{{2,8}}\)(?:[ ]+[{_LETRA}]+)?)?"
+)
 _OTROS_SALUDO = {"senor", "senores", "senora", "senoras", "sres", "sras", "caballeros", "damas",
                  "ingenieros", "licenciados", "doctores", "personal", "gerentes", "colaboradores",
                  "compa", "compas", "buen", "buenos", "buenas", "lic", "ing"}
@@ -907,7 +943,10 @@ def _saludos(t: str) -> str:
             fin = e
         if not fin:
             return m.group(0)
-        return "@" + ID + m.group("n")[fin:]
+        resto = m.group("n")[fin:]
+        if resto.strip():
+            return "@" + ID + resto + (m.group("x") or "")
+        return "@" + ID  # nombre completo: "@NOMBRE APELLIDO (SIGLA) área" -> sigla y área también
 
     t = _SALUDO.sub(directo, t)
     t = _SALUDO_INV.sub(inverso, t)
@@ -1100,6 +1139,9 @@ _CARGO = re.compile(
 )
 
 
+_LINEA_MAY = re.compile(rf"{_PAL_MAY}(?:[ ]+{_PAL_MAY}){{0,4}}")
+
+
 def _linea_nombre_cargo(cuerpo: str) -> bool:
     """"Nombre Apellido" al inicio de una línea corta (puede seguir un cargo: "Pedro Gómez - Jefe de
     Mantenimiento"); sus dos primeras palabras no son de contenido ni de saludo."""
@@ -1124,6 +1166,22 @@ def _firmas_contacto(t: str) -> str:
     while i < n:
         pref, c = partes[i]
         prof = pref.count(">")
+        if _NOMBRE_MAY.fullmatch(c.strip()) and _es_nombre_firma(c):
+            mayus = []
+            k = i + 1
+            while (k < n and k <= i + 3 and partes[k][0].count(">") == prof
+                   and _LINEA_MAY.fullmatch(partes[k][1].strip())
+                   and not _NO_FIRMA_NOMBRE.search(partes[k][1]) and not _es_contenido(partes[k][1])):
+                mayus.append(k)
+                k += 1
+            cargo = mayus and (_CARGO.search(partes[mayus[0]][1])
+                               or re.search(r"\bDE\b", partes[mayus[0]][1]))
+            cierra = k >= n or not partes[k][1].strip() or _LEGAL.match(partes[k][1].strip()) \
+                or _es_frontera(partes[k][1])
+            if cargo and cierra:
+                out.append(f"{_pref(pref)}{FIRMA}")
+                i = k
+                continue
         sig_cargo = (i + 1 < n and partes[i + 1][0].count(">") == prof
                      and len(partes[i + 1][1].strip()) <= 60 and _CARGO.search(partes[i + 1][1]))
         if _es_nombre_firma(c) and sig_cargo or (
