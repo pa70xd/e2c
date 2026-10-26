@@ -383,6 +383,11 @@
 
 * Rama `claude/e2c-imbera-torrey` (`01bf07a`) aprobada para merge, sin confirmar en la base. Los 8 TODO de negocio quedaron detallados en `riesgos/preguntas-abiertas.md`. Anotada la nota técnica del lector (`NaN` vs `None` en `iterrows()`).
 
+## 2026-10-26 · KOF: resumen final
+
+* Rama `claude/e2c-kof` (`295dc97`), aprobada; no la veo en la base aún. Verificado: usa `leer_adjunto` con `si_coinciden`, el buzón está en `email_index.json`. Suite de la sesión: 1088 passed, 0 diff en goldens (no repetido por mí sobre este commit). La suscripción de Graph sigue comentada.
+* Los 9 TODO de negocio quedaron en `riesgos/preguntas-abiertas.md`. Aviso: los fixtures de KOF no vienen de archivos reales; con el primer correo real habrá que ajustar los alias de columnas.
+
 ## 2026-10-24
 
 * Creación del bundle OKF del repositorio `e2c` (rama `claude/admiring-lovelace-3oh7g0`).

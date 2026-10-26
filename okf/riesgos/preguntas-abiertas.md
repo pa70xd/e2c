@@ -53,17 +53,15 @@ Torrey:
 
 # KOF (Fase 4, negocio)
 
-* ¿Cuál es el sufijo R de reubicación y el código del ID de servicio "áreas generales" (hoy texto en Observaciones)?
-* ¿Cuáles son los nombres exactos de las columnas de la bitácora y del texto plano?
-* ¿Cuál es el formato real de la respuesta con OS? ¿Una OS vacía es REJECTED en KOF?
-* ¿Se activa la suscripción de KOF?
-
-# Oxxo (Fase 4)
-
-* ¿Cuándo se apaga la PoC externa para encender los parsers de Oxxo sin duplicar OS? Lo decide REPARE.
-* ¿Cuál es el formato real de "<plaza> <nombre tienda>" en la plantilla de mantenimiento?
-* ¿Debe conciliarse el outbound REPARE → Oxxo?
-* ¿Hay que cubrir la carrera residual que deja un `email_request` huérfano?
+1. Sufijo "R" de reubicaciones: no se sabe si KOF ya lo manda en la serie o si REPARE lo agrega, ni si se quita para conciliar. Hoy la serie se guarda tal como llega.
+2. ID de servicio de "áreas generales" (proyectos especiales): falta el código. La sábana de ruta no tiene `Id_Servicio`; hoy va el texto "AREAS GENERALES" en Observaciones.
+3. Nombres exactos de las columnas de la bitácora (Folio (.Net), Tipo de Movimiento, serie/modelo/SAP a instalar y a retirar). Los fixtures se armaron con la estructura descrita, no con archivos reales; con el primer correo real hay que ajustar los alias.
+4. Formato real de "RE: BITACORA" con OS: se asumió la respuesta ya desdoblada (9 filas); también funciona con una sola OS por Cambio de Equipo, que concilia la instalación y el retiro.
+5. Claves del correo en texto plano (proyectos especiales): hoy se aceptan líneas "CLAVE: valor" con los mismos alias y se exige el folio.
+6. Regla de OS en KOF: ¿una OS vacía debe marcar REJECTED? Hoy rige la regla común: vacía REJECTED, 403 ACCEPTED, el resto PENDING.
+7. Prioridad HIGH y CBU "KOF": copiados del patrón, sin confirmar con negocio.
+8. Los ~10 formatos de KOF: solo están cubiertos el reporte por falla, la bitácora, su respuesta y el texto plano; los demás requieren alias nuevos.
+9. Activar la suscripción de Graph del buzón y habilitar `kof` en `E2C_CLIENTES_HABILITADOS` en producción.
 
 # Respondidas
 
