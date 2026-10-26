@@ -33,6 +33,14 @@ tags: [pendientes, negocio]
 * ¿La cola de revisión debe persistirse? Hoy solo hay correo a REPARE. Ver [revisión](../classifier/revision.md).
 * Alta desde texto sin Excel: hoy va a revisión (decisión de la orquestadora). ¿Lo confirmas?
 
+# Imbera y Torrey (Fase 4, negocio)
+
+* ¿Cómo se nombra en la base el sub-cliente de Imbera (hoy va a `cbu`)?
+* ¿Cuál es el criterio exacto de garantía y la lista de clientes institucionales?
+* ¿Cuál es el formato de la OS (¿403?)?
+* En Torrey, ¿sin factura PDF se rechaza o solo se avisa? ¿El hielo va en un `email_request` aparte? ¿Cuál es el catálogo de modelos de hielo?
+* Penafiel usa el catálogo de Danone (no tiene propio): ¿es correcto?
+
 # Respondidas
 
 Ver también [decisiones](decisiones.md).

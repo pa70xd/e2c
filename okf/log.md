@@ -347,6 +347,11 @@
 * Rama `claude/e2c-oxxo` (`0278796`), sin mergear. Verificado: archivos, 7 SQL, 4 clases en `src/service.py`, flag en `habilitado.py`, `email_index.json` de la rama sin buzones de Oxxo; `pytest -q` → 1009 passed, 56 skipped, 1 xfailed. SQL contra PG16 local: afirmación de la sesión.
 * Nuevo concepto [parsers/oxxo.md](parsers/oxxo.md). **Apagado por defecto** por la PoC externa (riesgo de duplicar OS). Aclarado que `oxogar` es el buzón de garantías de Oxxo; sigue pendiente de confirmar por el usuario.
 
+## 2026-10-26 · Imbera y Torrey: resumen (Fase 4)
+
+* Rama `claude/e2c-imbera-torrey` (`07f3fea`, `b4cb7ac`), sin mergear. Verificado: archivos, entradas en `src/service.py`, 17 goldens de Imbera/Torrey, `pytest -q` → 938 passed, 48 skipped, 1 xfailed. Que ningún golden existente cambió es afirmación de la sesión.
+* Nuevo concepto [parsers/imbera-torrey.md](parsers/imbera-torrey.md); TODOs de negocio en `riesgos/preguntas-abiertas.md`. Usa un adaptador de lectura propio hasta que el lector común esté en la base; la rama no mapea los buzones en `email_index.json`.
+
 ## 2026-10-24
 
 * Creación del bundle OKF del repositorio `e2c` (rama `claude/admiring-lovelace-3oh7g0`).
