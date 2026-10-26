@@ -138,12 +138,35 @@ def penafiel_ods() -> bytes:
     return buf.getvalue()
 
 
+def ruta_xls() -> bytes:
+    """.xls (BIFF) con una hoja visible y un catálogo oculto. Requiere xlwt (dev)."""
+    import xlwt
+
+    wb = xlwt.Workbook()
+    ws = wb.add_sheet("RUTA")
+    for i, fila in enumerate([
+        ["FOLIO", "No SERIE", "MODELO", "CALLE"],
+        ["F-1", "SER00001", "MOD-A", "Calle Uno 1"],
+        ["F-2", "SER00002", "MOD-B", "Calle Dos 2"],
+    ]):
+        for j, v in enumerate(fila):
+            ws.write(i, j, v)
+    cat = wb.add_sheet("CATALOGO")
+    cat.visibility = 1  # oculta
+    cat.write(0, 0, "FOLIO")
+    cat.write(0, 1, "No SERIE")  # mismo encabezado parcial, distinto al de datos
+    buf = BytesIO()
+    wb.save(buf)
+    return buf.getvalue()
+
+
 ARCHIVOS = {
     "kof.xlsx": kof_xlsx,
     "ruta.xlsx": ruta_xlsx,
     "encabezado_fila1.xlsx": lambda: encabezado_en_fila(1),
     "encabezado_fila4.xlsx": lambda: encabezado_en_fila(4),
     "penafiel.ods": penafiel_ods,
+    "ruta.xls": ruta_xls,
 }
 
 

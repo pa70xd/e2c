@@ -33,6 +33,8 @@ def test_extensiones_soportadas():
 
 def test_archivos_versionados_coinciden_con_el_script():
     for nombre, fn in fx.ARCHIVOS.items():
+        if nombre.endswith(".xls"):
+            pytest.importorskip("xlwt")
         viejo = _leer(nombre, fx.VOCAB_KOF + fx.VOCAB_RUTA, hojas_ocultas="siempre")
         nuevo = leer_adjunto(nombre, fn(), fx.VOCAB_KOF + fx.VOCAB_RUTA, "siempre")
         assert [(t.hoja, t.columnas, t.df.values.tolist()) for t in viejo] == [
@@ -153,3 +155,14 @@ def test_extension_no_soportada_y_archivo_corrupto():
         leer_adjunto("roto.xlsx", b"no es un excel", fx.VOCAB_RUTA)
     with pytest.raises(AdjuntoIlegible):
         leer_adjunto("roto.ods", b"no es un ods", fx.VOCAB_RUTA)
+
+
+def test_xls_visible_y_oculta():
+    # Bug encontrado en la Fase 4: .xls estaba en las listas de extensiones pero
+    # xlrd no estaba en requirements.txt, así que nunca se podía abrir.
+    tablas = _leer("ruta.xls", fx.VOCAB_RUTA, fx.CLAVES_RUTA, hojas_ocultas="siempre")
+    assert [(t.hoja, t.oculta) for t in tablas] == [("RUTA", False), ("CATALOGO", True)]
+    assert tablas[0].df["FOLIO"].tolist() == ["F-1", "F-2"]
+    assert [t.hoja for t in _leer("ruta.xls", fx.VOCAB_RUTA, hojas_ocultas="nunca")] == ["RUTA"]
+    # La oculta tiene otro encabezado: en "si_coinciden" no se lee.
+    assert [t.hoja for t in _leer("ruta.xls", fx.VOCAB_RUTA)] == ["RUTA"]

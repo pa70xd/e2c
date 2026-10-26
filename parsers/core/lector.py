@@ -115,11 +115,7 @@ def _ocultas(excel: pd.ExcelFile, contenido: bytes) -> set[str]:
     if motor == "openpyxl":
         return {h.title for h in excel.book.worksheets if h.sheet_state != "visible"}
     if motor == "xlrd":
-        return {
-            nombre
-            for nombre, visibilidad in zip(excel.sheet_names, excel.book.sheet_visibility)
-            if visibilidad != 0
-        }
+        return {h.name for h in excel.book.sheets() if h.visibility != 0}
     if motor == "odf":
         return _hojas_ocultas_ods(contenido)
     return set()
