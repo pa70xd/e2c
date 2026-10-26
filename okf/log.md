@@ -248,6 +248,12 @@
 * Rama `claude/e2c-eval-set-v2` (`225b457`), sin mergear. Verificado: `sintetico_v2.jsonl` con 41 casos, 18 negativos y 21 filas esperadas; regex: precisión de gate 0.5610 (NO CUMPLE), extract 0/21. Los "4 ambiguos" y que se escribió sin leer los prompts son afirmación de la sesión.
 * Haiku no corrido sobre v2. Documentado en [pruebas/evaluacion.md](pruebas/evaluacion.md).
 
+## 2026-10-26 · prompt-v2: resumen (Fase 3)
+
+* Rama `claude/e2c-prompt-v2` (`14ca237`), sin mergear. Verificado: prompts nuevos, `CLASSIFIER_PROMPT_VERSION` en `haiku.py`, cambio en `debe_continuar`; `pytest -q` → 801 passed, 48 skipped, 1 xfailed. Goldens sin diff: afirmación de la sesión.
+* Corrección: el outbound (REPARE→cliente) siempre continúa. Documentada en [classifier/core.md](classifier/core.md); prompts v2 en [classifier/provider-haiku.md](classifier/provider-haiku.md).
+* Pendiente: medir las 4 corridas sobre `sintetico_v2`; no hay cifras de v2.
+
 ## 2026-10-24
 
 * Creación del bundle OKF del repositorio `e2c` (rama `claude/admiring-lovelace-3oh7g0`).

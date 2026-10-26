@@ -33,6 +33,7 @@ tags: [docker, cloud-run, env]
 | `CLASSIFIER_MIN_CONFIDENCE` | classifier (Fase 3) | Opcional. Confianza mínima del gate externo; default 0.7. Misma rama. |
 | `ANTHROPIC_API_KEY` | provider-haiku (Fase 3) | Opcional. Verificada en `classifier/providers/haiku.py`, mergeado en la base. Sin ella, el proveedor haiku cae a regex. No pegues su valor en el repo. |
 | `E2C_ANTHROPIC_API_KEY` | eval / entornos cloud | Solo en entornos cloud donde la plataforma descarta `ANTHROPIC_*`: guarda la key de la organización con este nombre y pásala como `ANTHROPIC_API_KEY` al comando. Según la orquestadora; no verificada en código. No pegues el valor en el repo. |
+| `CLASSIFIER_PROMPT_VERSION` | classifier / haiku (Fase 3) | Opcional. Vacía o `v1` = prompts actuales; `v2` = con contexto de negocio. Rama `claude/e2c-prompt-v2`, sin mergear. |
 | `EVAL_PRICE_IN`, `EVAL_PRICE_OUT` | eval (Fase 3) | Opcionales. USD por millón de tokens para calcular el costo de haiku en el evaluador. Mergeado en la base. |
 
 Sin uso: `MAIL`, `NOTIFICATIONS_TOPIC_ID`, `NOTIFY_ERROR_MAILS`, `SECRET_ID`, `GOOGLE_MAPS_API_KEY` (catálogos muertos).

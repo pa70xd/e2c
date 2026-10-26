@@ -36,6 +36,10 @@ Esquema, enums, confianza mínima, coherencia `es_os` ↔ tipo, evento contra et
 
 El gate se aplica a **todos** los mensajes de hilo (antes del parser REPLY) y al init de Holanda y Heineken. Si un gate externo dice `no_os` o `duplicado`, se descarta. Los comandos internos (`reply_to_bot`/`bot`) siempre siguen. Si el clasificador falla, el flujo sigue como antes (log `[CLASSIFIER][ERROR]`). Con el proveedor regex por defecto, `--update-golden` no dejó diff (según la sesión).
 
+# Dirección outbound (corrección en la rama `claude/e2c-prompt-v2`, sin mergear)
+
+Commit `14ca237`: `debe_continuar` ahora **siempre deja pasar la dirección outbound** (REPARE → cliente, la que cierra filas), además de `bot`/`reply_to_bot`. Sin proveedor externo (regex) no cambia nada. La sesión lo trata como bug: con un gate externo, un `no_os`/`duplicado` podía descartar un outbound legítimo. Verificado que el diff toca `classifier/__init__.py`; el efecto con un proveedor externo no lo probé.
+
 # Reglas de filas
 
 * Modificar o cancelar una fila **ACCEPTED nunca se aplica**: va a `filas_revision` con el comentario "requiere revisión". Es la [decisión del usuario](../riesgos/decisiones.md).
