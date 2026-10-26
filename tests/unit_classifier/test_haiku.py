@@ -289,3 +289,46 @@ def test_logs_sin_pii(cliente, capsys):
     out = capsys.readouterr().out
     assert "tipo_evento=modificar_filas" in out and "confidence=0.9" in out and "latencia_ms=" in out
     assert "secreto" not in out and "SF-9999" not in out and "Texto del correo" not in out
+
+
+# ------------------------------------------------------------------ prompt v2
+def test_prompt_version_default_es_la_actual(monkeypatch):
+    monkeypatch.delenv("CLASSIFIER_PROMPT_VERSION", raising=False)
+    assert haiku.version_prompt("gate") == "gate-v1"
+    assert haiku.version_prompt("extract") == "extract-v2"
+    assert "Contexto de negocio" not in haiku._prompt("gate")[0]
+
+
+def test_prompt_v2_incluye_contexto_de_negocio(monkeypatch):
+    monkeypatch.setenv("CLASSIFIER_PROMPT_VERSION", "v2")
+    for nombre, version in (("gate", "gate-v2"), ("extract", "extract-v3")):
+        texto, v = haiku._prompt(nombre)
+        assert v == version
+        assert "## Contexto de negocio" in texto
+        assert "incluir:" not in texto
+        assert 6 <= texto.count("\nEjemplo ") <= 10
+        # los ejemplos van después de las reglas (parte fija cacheada)
+        assert texto.index("## Contexto de negocio") < texto.index("\nEjemplo 1")
+    assert haiku._hay_pii(haiku._prompt("gate")[0], haiku._prompt("extract")[0]) is False
+
+
+def test_prompt_version_desconocida(monkeypatch):
+    monkeypatch.setenv("CLASSIFIER_PROMPT_VERSION", "v9")
+    with pytest.raises(haiku.ProveedorNoDisponible):
+        haiku._prompt("gate")
+
+
+def test_prompt_v2_viaja_en_system_cacheado(cliente, monkeypatch):
+    monkeypatch.setenv("CLASSIFIER_PROMPT_VERSION", "v2")
+    c = cliente(_resp({"es_os": False, "tipo_evento": "no_os", "confidence": 0.9, "detalle": "x"}))
+    haiku.gate("a", "b", CTX_REPLY)
+    sistema = c.llamadas[0]["system"][0]
+    assert "## Contexto de negocio" in sistema["text"]
+    assert sistema["cache_control"] == {"type": "ephemeral"}
+
+
+def test_contexto_negocio_sin_datos_internos():
+    import re
+    from pathlib import Path
+    t = (Path(haiku.__file__).resolve().parent.parent / "prompts" / "contexto_negocio.md").read_text(encoding="utf-8")
+    assert "@" not in t and not re.search(r"\d{6,}", t.replace("NNNNNN", ""))

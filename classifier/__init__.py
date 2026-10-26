@@ -34,6 +34,11 @@ from classifier.providers import regex as regex_provider
 # gate no los bloquea.
 DIRECCIONES_BOT = frozenset({"reply_to_bot", "bot"})
 
+# REPARE -> cliente (``outbound`` en ``EMAIL_TYPE.detect_direccion``): la
+# respuesta con el Excel de OS generadas es lo que cierra las filas. Un
+# clasificador externo la vería como ``no_os``; nunca se bloquea.
+DIRECCIONES_REPARE = DIRECCIONES_BOT | {"outbound"}
+
 # Cargador opcional del contexto del hilo: fn(email, ctx_base) -> ThreadCtx.
 # Solo se usa con un proveedor externo (con regex no se consulta nada).
 _cargador_contexto = None
@@ -175,6 +180,7 @@ def decidir_correo(email, customer, etapa, direccion=None) -> tuple[Decision, Th
 
 
 def debe_continuar(decision: Decision, thread_ctx: ThreadCtx) -> bool:
-    """El correo sigue al parser si es OS. Los comandos internos de REPARE
-    (``reply_to_bot``/``bot``) siempre siguen."""
-    return decision.es_os or thread_ctx.direccion in DIRECCIONES_BOT
+    """El correo sigue al parser si es OS. Lo que escribe REPARE (comandos
+    ``reply_to_bot``/``bot`` y la respuesta ``outbound`` al cliente) siempre
+    sigue; solo el inbound del cliente puede detenerse."""
+    return decision.es_os or thread_ctx.direccion in DIRECCIONES_REPARE
