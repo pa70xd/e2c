@@ -160,6 +160,25 @@ def ruta_xls() -> bytes:
     return buf.getvalue()
 
 
+def oculta_primero_xls() -> bytes:
+    """.xls cuya PRIMERA hoja está oculta: los lectores viejos deben tomar la visible."""
+    import xlwt
+
+    wb = xlwt.Workbook()
+    oculta = wb.add_sheet("OCULTA")
+    oculta.visibility = 1
+    oculta.write(0, 0, "COLUMNA OCULTA")
+    oculta.write(1, 0, "x")
+    visible = wb.add_sheet("VISIBLE")
+    for j, v in enumerate(["FOLIO", "No SERIE"]):
+        visible.write(0, j, v)
+    for j, v in enumerate(["F-1", "SER00001"]):
+        visible.write(1, j, v)
+    buf = BytesIO()
+    wb.save(buf)
+    return buf.getvalue()
+
+
 ARCHIVOS = {
     "kof.xlsx": kof_xlsx,
     "ruta.xlsx": ruta_xlsx,
@@ -167,6 +186,7 @@ ARCHIVOS = {
     "encabezado_fila4.xlsx": lambda: encabezado_en_fila(4),
     "penafiel.ods": penafiel_ods,
     "ruta.xls": ruta_xls,
+    "oculta_primero.xls": oculta_primero_xls,
 }
 
 
