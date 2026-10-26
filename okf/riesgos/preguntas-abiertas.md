@@ -41,6 +41,13 @@ tags: [pendientes, negocio]
 * En Torrey, ¿sin factura PDF se rechaza o solo se avisa? ¿El hielo va en un `email_request` aparte? ¿Cuál es el catálogo de modelos de hielo?
 * Penafiel usa el catálogo de Danone (no tiene propio): ¿es correcto?
 
+# KOF (Fase 4, negocio)
+
+* ¿Cuál es el sufijo R de reubicación y el código del ID de servicio "áreas generales" (hoy texto en Observaciones)?
+* ¿Cuáles son los nombres exactos de las columnas de la bitácora y del texto plano?
+* ¿Cuál es el formato real de la respuesta con OS? ¿Una OS vacía es REJECTED en KOF?
+* ¿Se activa la suscripción de KOF?
+
 # Respondidas
 
 Ver también [decisiones](decisiones.md).

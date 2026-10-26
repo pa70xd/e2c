@@ -359,6 +359,11 @@
 * Candado `REDACT_VERSION` verificado en `classifier/registry.py`: el proveedor externo y la sombra quedan bloqueados mientras `redact` no declare versión >= 2.
 * Runbook: cifras 1034/48/1, dependencias nuevas y el problema de `install_layout`, verificar `docker build` con Python 3.14, variables nuevas, candado `REDACT_VERSION`.
 
+## 2026-10-26 · KOF: resumen (Fase 4)
+
+* Rama `claude/e2c-kof` (`b7f6e64`), sin mergear. Verificado: archivos, registro en `src/service.py`, 11 goldens; `pytest -q` → 942 passed, **1 failed** (el test del gate en el parser INIT espera solo Danone y Penafiel; ya reportado por la sesión), 48 skipped, 1 xfailed. `parsers/kof.md` deja de ser stub en el bundle (la base sí lo sigue siendo).
+* Preguntas abiertas de negocio en `riesgos/preguntas-abiertas.md`.
+
 ## 2026-10-24
 
 * Creación del bundle OKF del repositorio `e2c` (rama `claude/admiring-lovelace-3oh7g0`).
