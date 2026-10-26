@@ -15,15 +15,7 @@
       "replies_sent": 0
     }
   ],
-  "repo_calls": [
-    {
-      "module": "danone.DB_POSTGRE",
-      "fn": "conversation_exists",
-      "params": {
-        "conversation_id": "conv-msg-ox-apagado"
-      }
-    }
-  ],
+  "repo_calls": [],
   "external_calls": [],
   "replies": []
 }

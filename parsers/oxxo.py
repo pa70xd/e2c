@@ -31,8 +31,8 @@ Plantillas:
      "Solicitud de Orden de Servicio Oxxo <tienda>" y
      "RE: Solicitud de generación de OS para cliente <X> - OXO". Si el cuerpo
      dice "N OS", el Excel debe traer N filas o el correo va a revisión.
-     PENDIENTE: leer con parsers/core/lector.py cuando llegue a la base
-     (hoy: parsers/oxxo_parse/excel.py).
+     Se lee con el lector común (parsers/core/lector.py, vía
+     parsers/oxxo_parse/excel.py).
 
 Las OS entran sin CP, coordenadas ni distribuidora (la plantilla no los
 trae) y sin pre-sábana: ese enriquecimiento queda pendiente.
@@ -267,7 +267,7 @@ class _GarantiasBase(_Buzon):
         return _respuesta(msj.msj_revision_repare(request_code, [fila]))
 
     # ---- Excel (Lay Out Repare) ---------------------------------------
-    async def _adjuntos_excel(self, client, user_id, mail_id) -> list[bytes]:
+    async def _adjuntos_excel(self, client, user_id, mail_id) -> list[tuple[str, bytes]]:
         respuesta = await (
             client.users.by_user_id(user_id).messages.by_message_id(mail_id).attachments.get()
         )
@@ -279,7 +279,7 @@ class _GarantiasBase(_Buzon):
                 continue
             if contenido.startswith(b"UEs"):  # Base64 de un zip
                 contenido = base64.b64decode(contenido)
-            contenidos.append(contenido)
+            contenidos.append((nombre, contenido))
         return contenidos
 
     async def _excel(self, client, user_id, mail_id, mail, *, es_reply: bool):
@@ -295,8 +295,8 @@ class _GarantiasBase(_Buzon):
 
         filas_excel = []
         try:
-            for contenido in contenidos:
-                filas_excel.extend(lector_excel.leer_filas(contenido))
+            for nombre, contenido in contenidos:
+                filas_excel.extend(lector_excel.leer_filas(nombre, contenido))
         except lector_excel.ExcelIlegible as e:
             print(f"[OXXO][oxxo_garantias][ALERT] Excel ilegible: {e}")
             return _aviso_sin_solicitud(MOTIVO_EXCEL_ILEGIBLE)

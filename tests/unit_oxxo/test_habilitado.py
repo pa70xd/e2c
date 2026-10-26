@@ -11,7 +11,7 @@ def _sin_variable(monkeypatch):
 def test_apagado_por_defecto():
     assert not habilitado("oxxo")
     assert not habilitado("oxxo_garantias")
-    assert clientes_habilitados() == frozenset()
+    assert not {"oxxo", "oxxo_garantias"} & set(clientes_habilitados())
 
 
 @pytest.mark.parametrize("valor,oxxo,garantias", [

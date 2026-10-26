@@ -2,8 +2,8 @@
 # que Imbera; puede ser una línea de cuartos fríos). Encabezado normalizado
 # (sin acentos, mayúsculas, espacios colapsados) -> nombre canónico.
 #
-# Pendiente: cuando parsers/core/lector.py llegue a la base, el lector común
-# resuelve los alias y este archivo se reduce a los nombres canónicos.
+# Las llaves son el vocabulario que se le pasa a parsers/core/lector.py (que
+# normaliza igual los encabezados del archivo).
 
 NAMES_EXCEL = {
     "FOLIO": "FOLIO",
@@ -53,10 +53,8 @@ NAMES_EXCEL = {
     "NUM. TEL": "TELEFONO",
 }
 
-# Con estos dos (o más) alias reconocidos se considera que una fila es el
-# encabezado. Se busca en las primeras filas de la hoja.
+# Con estos (o más) alias reconocidos una fila es el encabezado.
 MIN_ALIAS_ENCABEZADO = 2
-FILAS_BUSQUEDA_ENCABEZADO = 10
 
 # Un Excel con más filas que esto se rechaza a revisión (no es un layout
 # de solicitud, es otra cosa).
