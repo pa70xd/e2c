@@ -7,18 +7,27 @@ tags: [parsers, lector, excel, fase-4]
 
 # Estado
 
-Rama `claude/e2c-lector-excel` (commits `b3e308e` y `717cb96`), **sin mergear**. Verificado en la rama: existe `parsers/core/lector.py` y `odfpy==1.4.1` está en `requirements.txt`. `python -m pytest -q` en la rama → **922 passed, 2 failed, 48 skipped, 1 xfailed** en este contenedor; los 2 fallos son `ModuleNotFoundError: No module named 'odf'` porque no pude instalar `odfpy==1.4.1` aquí (falla al construir la rueda). La sesión reporta 924 passed, 48 skipped, 1 xfailed con la dependencia instalada, lo cual es coherente (922 + 2). Los goldens sin diff es afirmación de la sesión.
+Rama `claude/e2c-lector-excel` (commits `b3e308e`, `717cb96`, `b0758f7`, `41eafbf`), aprobada por la orquestadora y en merge (**no confirmado en la base** al escribir esto). Verificado en la rama: existe `parsers/core/lector.py` y `odfpy==1.4.1` está en `requirements.txt`. `python -m pytest -q` en la rama → **922 passed, 2 failed, 48 skipped, 1 xfailed** en este contenedor; los 2 fallos son `ModuleNotFoundError: No module named 'odf'` porque no pude instalar `odfpy==1.4.1` aquí (falla al construir la rueda). La sesión reporta, con la dependencia instalada y tras los commits finales, 928 passed, 48 skipped, 1 xfailed (no lo repetí tras `41eafbf`). Los goldens sin diff es afirmación de la sesión.
 
 # API
 
 `leer_adjunto(nombre, bytes, vocabulario, hojas_ocultas="si_coinciden"|"nunca"|"siempre", *, claves=(), min_coincidencias=2) -> list[Tabla(archivo, hoja, oculta, fila_encabezado, columnas, df, descartes)]`.
 
-* **Formatos:** `.xlsx`, `.xls`, `.xlsm`, `.ods`. Ojo: `.xls` necesita `xlrd`, que **no está en `requirements.txt`** (verificado: solo aparece `odfpy`).
+* **Formatos:** `.xlsx`, `.xls`, `.xlsm`, `.ods`. También Base64. `xlrd==2.0.2` quedó en `requirements.txt` y `xlwt==1.3.0` solo en `requirements-dev.txt` (verificado en la rama; para el fixture de `.xls`).
 * **Encabezado por vocabulario, no por posición:** busca coincidencias en las primeras 15 filas; los encabezados se normalizan (mayúsculas, sin acentos, saltos de línea y espacios alrededor de "/" colapsados). Resuelve los encabezados de Imbera de 2 a 4 filas ([correos reales](../pruebas/correos-reales.md)).
 * **Hojas ocultas:** `si_coinciden` lee la oculta solo si sus columnas son las de una hoja visible de datos (caso KOF); los catálogos ocultos de Imbera/Torrey se ignoran.
 * **Filas basura** (vacías, de una celda, sin clave, encabezado repetido): se descartan y se cuentan en `Tabla.descartes`, con log `[LECTOR]` sin valores.
 * Archivo ilegible → `AdjuntoIlegible` (`ValueError`); extensión no soportada → `ValueError`.
 * Pruebas con archivos sintéticos: `tests/fixtures/lector/build_lector_fixtures.py` y `tests/unit_core/test_lector.py` (21).
+
+# Bugs de `.xls` encontrados y corregidos en la rama
+
+1. `.xls` figuraba en las listas de extensiones pero `xlrd` no estaba en `requirements.txt`: **nunca abrió un `.xls`**. Corregido con `xlrd==2.0.2` (`b0758f7`).
+2. `parsers/danone_parse/reader.py` y `parsers/gen_parse/reader.py` (este último lo usa Penafiel) usaban `book.sheet_visibility`, que no existe en xlrd 2.x (`AttributeError`). Ahora usan `sheet.visibility == 0` (`41eafbf`; verificado en la rama). Holanda y Heineken no estaban afectados (según la sesión).
+
+# Pendiente: build de `odfpy` con Python 3.14
+
+`odfpy==1.4.1` (nuevo en `requirements.txt`, solo sdist) instaló limpio, según la sesión, en un venv nuevo con Python 3.13 (`pip install --no-cache-dir -r requirements.txt`), pero **no se probó con Python 3.14**, que es la imagen del Dockerfile: **falta verificar el build de la imagen**. En mi contenedor (Python 3.13, `pip` como root, sin venv) la instalación de `odfpy==1.4.1` falló al construir la rueda, así que el riesgo es real y depende del entorno de instalación.
 
 # Lo que NO se migró
 

@@ -337,6 +337,11 @@
 
 * La sesión confirma `a8cf448` como final, aprobada por la orquestadora para merge. Cambios a goldens a propósito (5). Documentado en `riesgos/bugs.md`: sigue "corregido en parte" por los 46 ambiguos; `eval/cobertura_modelos.py` sin correr con datos reales; Penafiel sin catálogo propio (pregunta para el usuario).
 
+## 2026-10-26 · lector-excel: resumen final (Fase 4)
+
+* Rama `claude/e2c-lector-excel` (`b0758f7`, `41eafbf` además de los anteriores), aprobada y en merge. Verificado: `xlrd==2.0.2` en `requirements.txt`, `xlwt==1.3.0` en `requirements-dev.txt`, `sheet.visibility == 0` en los lectores de Danone y gen. Cifra de la sesión: 928 passed, 48 skipped, 1 xfailed.
+* Dos bugs de `.xls` encontrados y corregidos (xlrd ausente y `sheet_visibility`); corrijo lo que había escrito antes ("`.xls` necesita `xlrd` que no está"). Pendiente: verificar el build de `odfpy` con Python 3.14 (imagen del Dockerfile); en mi contenedor falló al construir la rueda.
+
 ## 2026-10-24
 
 * Creación del bundle OKF del repositorio `e2c` (rama `claude/admiring-lovelace-3oh7g0`).
