@@ -388,6 +388,11 @@
 * Rama `claude/e2c-kof` (`295dc97`), aprobada; no la veo en la base aún. Verificado: usa `leer_adjunto` con `si_coinciden`, el buzón está en `email_index.json`. Suite de la sesión: 1088 passed, 0 diff en goldens (no repetido por mí sobre este commit). La suscripción de Graph sigue comentada.
 * Los 9 TODO de negocio quedaron en `riesgos/preguntas-abiertas.md`. Aviso: los fixtures de KOF no vienen de archivos reales; con el primer correo real habrá que ajustar los alias de columnas.
 
+## 2026-10-26 · lector-nan: resumen
+
+* Rama `claude/e2c-lector-nan` (`ba62b70`, `b499447`), aprobada y en merge (sin confirmar en la base). Verificado: `DataFrameLector`, `Tabla.filas()`, `_sin_nan` en `execute_query`; `pytest -q` → 936 passed, 2 failed (falta `odfpy`), 48 skipped, 1 xfailed. Documentado en `parsers/lector.md`, `infrastructure/postgres.md` y `riesgos/bugs.md`.
+* Cambio en la capa de datos: `execute_query` ahora transforma `NaN` en `None` en todos los parámetros. Los sitios viejos con `iterrows` siguen sin arreglar; la red los cubre.
+
 ## 2026-10-24
 
 * Creación del bundle OKF del repositorio `e2c` (rama `claude/admiring-lovelace-3oh7g0`).
