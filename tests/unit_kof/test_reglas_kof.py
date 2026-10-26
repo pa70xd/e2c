@@ -64,8 +64,9 @@ def test_hojas_repetidas_no_duplican_filas():
 
 
 def test_hoja_sin_encabezado_kof_se_ignora():
-    hoja = {"name": "x.xlsx", "hoja": "H", "visible": True,
-            "dataframe": pd.DataFrame([["A", "B", "C"], ["1", "2", "3"]])}
+    hoja = {"name": "x.xlsx", "hoja": "H", "visible": True, "fila_encabezado": 1,
+            "columnas": ["MODELO", "CEDIS", "OBSERVACIONES"],
+            "dataframe": pd.DataFrame([["M", "C", "O"]], columns=["MODELO", "CEDIS", "OBSERVACIONES"], index=[2])}
     assert unir_hojas([hoja]).empty
 
 

@@ -112,8 +112,8 @@ NAMES_COLUMNS = {
     "OS": OS,
 }
 
-# Una fila es encabezado si reconoce al menos estas columnas y alguna llave.
+# Encabezado (lo detecta parsers/core/lector.py): al menos estas columnas del
+# vocabulario, y alguna llave para que la hoja sea de KOF. Una fila sin ningún
+# valor en las llaves es basura.
 MIN_COLUMNAS_ENCABEZADO = 3
 LLAVES_ENCABEZADO = {SERIE, TIPO_MOVIMIENTO, FOLIO, FALLA}
-# Filas revisadas para buscar el encabezado.
-FILAS_BUSQUEDA_ENCABEZADO = 15

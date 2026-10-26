@@ -37,11 +37,6 @@ def columna_canonica(encabezado) -> str | None:
     return _ALIAS.get(normalizar(encabezado))
 
 
-def _es_encabezado(valores) -> bool:
-    canonicas = {columna_canonica(v) for v in valores} - {None}
-    return len(canonicas) >= col.MIN_COLUMNAS_ENCABEZADO and bool(canonicas & col.LLAVES_ENCABEZADO)
-
-
 def _limpia(valor):
     if valor is None or pd.isna(valor):
         return None
@@ -50,30 +45,27 @@ def _limpia(valor):
 
 
 def tabla_de_hoja(hoja: dict) -> pd.DataFrame | None:
-    """Filas de una hoja con columnas canónicas, o None si no hay encabezado."""
-    df = hoja["dataframe"]
-    for i in range(min(len(df), col.FILAS_BUSQUEDA_ENCABEZADO)):
-        if _es_encabezado(df.iloc[i].tolist()):
-            break
-    else:
-        return None
-
+    """Filas de una hoja (ya leída por el lector común) con columnas
+    canónicas, o None si el encabezado no trae ninguna llave de KOF."""
     columnas = {}
-    for posicion, encabezado in enumerate(df.iloc[i].tolist()):
-        canonica = columna_canonica(encabezado)
+    for nombre in hoja["columnas"]:
+        canonica = columna_canonica(nombre)
         # Si dos encabezados caen en la misma columna gana el primero.
         if canonica and canonica not in columnas.values():
-            columnas[posicion] = canonica
+            columnas[nombre] = canonica
+    if not set(columnas.values()) & col.LLAVES_ENCABEZADO:
+        return None
 
     filas = []
-    for j in range(i + 1, len(df)):
-        crudo = df.iloc[j].tolist()
-        if sum(_limpia(v) is not None for v in crudo) < MIN_CELDAS_FILA:
+    for fila_hoja, crudo in hoja["dataframe"].iterrows():
+        fila = {canonica: _limpia(crudo[nombre]) for nombre, canonica in columnas.items()}
+        # El lector ya descarta filas de una celda; las que solo llenan
+        # columnas que KOF no usa también son basura.
+        if sum(v is not None for v in fila.values()) < MIN_CELDAS_FILA:
             continue
-        fila = {canonica: _limpia(crudo[p]) for p, canonica in columnas.items()}
         fila[ARCHIVO] = hoja["name"]
         fila[HOJA] = hoja["hoja"]
-        fila[FILA] = j + 1  # renglón de Excel (1-based)
+        fila[FILA] = int(fila_hoja)  # renglón de Excel (1-based)
         filas.append(fila)
 
     return pd.DataFrame(filas, columns=list(columnas.values()) + [ARCHIVO, HOJA, FILA])
@@ -115,8 +107,8 @@ class KOF_READER:
     async def get_tabla(client, user_id, mail_id, mail=None) -> tuple[pd.DataFrame, bool]:
         """(filas, hubo_excel). Excel adjuntos (todas las hojas); sin Excel y
         con ``mail``, el cuerpo en texto plano."""
-        hojas = await lector_adapter.leer_adjuntos(client, user_id, mail_id)
-        if hojas:
+        hojas, hubo_excel = await lector_adapter.leer_adjuntos(client, user_id, mail_id)
+        if hubo_excel:
             return unir_hojas(hojas), True
         body = getattr(getattr(mail, "unique_body", None), "content", None)
         return tabla_de_texto(body) if mail is not None else pd.DataFrame(), False

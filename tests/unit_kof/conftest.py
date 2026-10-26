@@ -14,7 +14,8 @@ OPERADOR = ("Operador REPARE Ejemplo", BUZON_KOF)
 
 @pytest.fixture
 def kof(harness, monkeypatch):
-    """``harness`` con el buzón inventado de KOF."""
+    """``harness`` con el buzón inventado de KOF, habilitado."""
+    monkeypatch.setenv("E2C_CLIENTES_HABILITADOS", CLIENTE)
     monkeypatch.setitem(service.validator.mailboxes, BUZON_KOF, CLIENTE)
     monkeypatch.setitem(service.CUSTOMER_INDEX, BUZON_KOF, CLIENTE)
     return harness

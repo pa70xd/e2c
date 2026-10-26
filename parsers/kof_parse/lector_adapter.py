@@ -1,47 +1,51 @@
-"""Adaptador de lectura de Excel para KOF.
+"""Adaptador de KOF sobre el lector común ``parsers/core/lector.py``.
 
-TODO(kof): cambiar por el lector común ``parsers/core/lector.py`` cuando esté
-en la base. Este es el único archivo que debe cambiar: el resto del parser
-solo usa ``leer_adjuntos`` y ``leer_libro`` con este contrato:
+La descarga por Graph es del parser; el lector lee cada adjunto ya descargado.
+Hojas ocultas en modo "si_coinciden": KOF esconde hojas con el MISMO
+encabezado que la visible y filas válidas.
+
+Contrato para ``reader.py``:
 
     leer_libro(nombre, contenido) -> [
-        {"name": str, "hoja": str, "visible": bool, "dataframe": DataFrame}
+        {"name": str, "hoja": str, "visible": bool, "fila_encabezado": int,
+         "columnas": [str], "dataframe": DataFrame (índice = fila de la hoja)}
     ]
-
-Una entrada por hoja, visibles y ocultas (KOF esconde hojas con filas válidas),
-con la cuadrícula cruda (``header=None``, ``dtype=str``): el encabezado lo
-busca ``reader.py``.
 """
 
 import base64
-from io import BytesIO
-from pathlib import Path
 
-import pandas as pd
+from config.customers.kof.columns_names import LLAVES_ENCABEZADO, MIN_COLUMNAS_ENCABEZADO, NAMES_COLUMNS
+from parsers.core.lector import AdjuntoIlegible, es_adjunto_soportado, leer_adjunto
 
-EXCEL_EXTENSIONS = (".xlsx", ".xlsm", ".xls")
+VOCABULARIO = tuple(NAMES_COLUMNS)
+CLAVES = tuple(alias for alias, canonica in NAMES_COLUMNS.items() if canonica in LLAVES_ENCABEZADO)
 
 
 def leer_libro(nombre: str, contenido: bytes) -> list[dict]:
-    excel = pd.ExcelFile(BytesIO(contenido))
-    if excel.engine == "openpyxl":
-        estados = {ws.title: ws.sheet_state == "visible" for ws in excel.book.worksheets}
-    else:
-        estados = {}
+    tablas = leer_adjunto(
+        nombre,
+        contenido,
+        VOCABULARIO,
+        hojas_ocultas="si_coinciden",
+        claves=CLAVES,
+        min_coincidencias=MIN_COLUMNAS_ENCABEZADO,
+    )
+    return [
+        {
+            "name": t.archivo,
+            "hoja": t.hoja,
+            "visible": not t.oculta,
+            "fila_encabezado": t.fila_encabezado,
+            "columnas": t.columnas,
+            "dataframe": t.df,
+        }
+        for t in tablas
+    ]
 
-    hojas = []
-    for hoja in excel.sheet_names:
-        df = excel.parse(sheet_name=hoja, header=None, dtype=str)
-        hojas.append({
-            "name": nombre,
-            "hoja": hoja,
-            "visible": estados.get(hoja, True),
-            "dataframe": df,
-        })
-    return hojas
 
-
-async def leer_adjuntos(client, user_id, mail_id) -> list[dict]:
+async def leer_adjuntos(client, user_id, mail_id) -> tuple[list[dict], bool]:
+    """(hojas, hubo_excel): hubo_excel es True si llegó al menos una hoja de
+    cálculo, aunque ninguna tenga un encabezado de KOF."""
     attachments = await (
         client.users
         .by_user_id(user_id)
@@ -51,19 +55,18 @@ async def leer_adjuntos(client, user_id, mail_id) -> list[dict]:
         .get()
     )
 
-    hojas = []
+    hojas, hubo_excel = [], False
     for attachment in attachments.value or []:
         nombre = getattr(attachment, "name", "") or ""
         contenido = getattr(attachment, "content_bytes", None)
-        if not contenido or nombre.startswith("~$"):
-            continue
-        if Path(nombre).suffix.lower() not in EXCEL_EXTENSIONS:
+        if not contenido or not es_adjunto_soportado(nombre):
             continue
         # Algunos archivos llegan codificados en Base64.
         if contenido.startswith(b"UEs"):
             contenido = base64.b64decode(contenido)
+        hubo_excel = True
         try:
             hojas.extend(leer_libro(nombre, contenido))
-        except Exception as e:
-            print(f"[KOF][ERROR] No se pudo leer {nombre!r}: {type(e).__name__}")
-    return hojas
+        except AdjuntoIlegible as e:
+            print(f"[KOF][ERROR] {e}")
+    return hojas, hubo_excel
