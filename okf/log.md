@@ -370,6 +370,11 @@
 * Medición sobre los 21 correos reales (de la sesión, no verificable por mí): nombres 53 → 2; direcciones, coordenadas útiles, montos, correos y URL de mapa → 0.
 * **Al mergear se abre el candado `REDACT_VERSION`**; quedan 2 nombres sin redactar. Dejado como decisión de riesgo del usuario en [classifier/redact.md](classifier/redact.md), `correos-reales.md` y el runbook.
 
+## 2026-10-26 · Oxxo: resumen final
+
+* Rama `claude/e2c-oxxo` (`ecd3c57`), aprobada, en merge (sin confirmar en la base). Verificado: lector común y `cliente_habilitado` en el código; `pytest -q` → 1153 passed, 2 failed (falta `odfpy` aquí), 56 skipped, 1 xfailed.
+* Puntos abiertos en `parsers/oxxo.md` y `riesgos/preguntas-abiertas.md`. Principal: riesgo de duplicado con la PoC; el corte lo decide REPARE.
+
 ## 2026-10-24
 
 * Creación del bundle OKF del repositorio `e2c` (rama `claude/admiring-lovelace-3oh7g0`).

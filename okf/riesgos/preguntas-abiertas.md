@@ -48,6 +48,13 @@ tags: [pendientes, negocio]
 * ¿Cuál es el formato real de la respuesta con OS? ¿Una OS vacía es REJECTED en KOF?
 * ¿Se activa la suscripción de KOF?
 
+# Oxxo (Fase 4)
+
+* ¿Cuándo se apaga la PoC externa para encender los parsers de Oxxo sin duplicar OS? Lo decide REPARE.
+* ¿Cuál es el formato real de "<plaza> <nombre tienda>" en la plantilla de mantenimiento?
+* ¿Debe conciliarse el outbound REPARE → Oxxo?
+* ¿Hay que cubrir la carrera residual que deja un `email_request` huérfano?
+
 # Respondidas
 
 Ver también [decisiones](decisiones.md).
