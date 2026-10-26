@@ -271,6 +271,13 @@
 * Sesiones nuevas: sombra + duda→revisión (opus) · session_01E9q7mT1muX4Ayrtc2z8Bg9 · `claude/e2c-sombra` (variables opcionales `CLASSIFIER_SHADOW`, `CLASSIFIER_SHADOW_SAMPLE`); backfill (sonnet) · session_01F6oVDx61MHMbSLJoHLekdz · `claude/e2c-backfill`. En curso.
 * El usuario compartió 21 correos reales (.eml); la orquestadora los analiza localmente y no se documenta su contenido. Esperando el resumen redactado.
 
+## 2026-10-26 · Análisis de 21 correos reales (resumen redactado)
+
+* Documentado en [pruebas/correos-reales.md](pruebas/correos-reales.md) y `riesgos/bugs.md`, sin contenido de los correos. Cifras de la orquestadora (no tengo los .eml): regex precisión de gate 0.81, 15/21 tipos, 0/5 filas.
+* Verificado en el código: `es_asunto_holanda` exige el asunto exacto, `detect_direccion` mira solo el `To:`, la etapa sale del prefijo "RE:", y `email_index.json` mapea cuatro clientes más un buzón personal. No copié direcciones al bundle.
+* **Bloqueante:** `redact()` dejó pasar 53 nombres, 7 direcciones, 6 coordenadas, 1 URL de mapa, 2 correos y 3 montos. No activar `CLASSIFIER_SHADOW` ni haiku con correos reales hasta mergear `redact-v2` (`session_01GRj3nHJi8AeCXJdsKvwAEY`). Advertencia añadida al runbook.
+* Sesión nueva: fix-holanda-indice · session_01WjEJyAUVg4bTSoA1wXQ8HM · `claude/e2c-fix-holanda-indice` (variable opcional `E2C_TEST_MAILBOX`). Decisión de alcance de buzones pendiente con el usuario.
+
 ## 2026-10-24
 
 * Creación del bundle OKF del repositorio `e2c` (rama `claude/admiring-lovelace-3oh7g0`).

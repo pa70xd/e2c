@@ -79,6 +79,8 @@ Fase 3 (clasificador, mergeada): `classifier/`, `review/` y el proveedor haiku. 
 
 Para repetir la medición de la línea base: `python eval/run_eval.py --provider regex --set eval/sets/sintetico.jsonl` (hoy precisión de gate 0.7419, sale con código 1).
 
+**ADVERTENCIA BLOQUEANTE (PII): no actives `CLASSIFIER_SHADOW` ni haiku con correos reales hasta mergear `redact-v2`** (rama `claude/e2c-redact-v2`). Sobre 21 correos reales, `redact()` dejó pasar nombres, direcciones, coordenadas, correos y montos; el texto se enviaría a un proveedor externo. Ver [correos reales](../pruebas/correos-reales.md).
+
 **ADVERTENCIA: no actives haiku** (`CLASSIFIER_GATE=haiku` o `CLASSIFIER_EXTRACT=haiku`) **sin antes** correr `eval/smoke_haiku.py` con una key real y sin que la evaluación supere **precisión >= 0.95 en gate** (umbral de [decisiones](../riesgos/decisiones.md)). El evaluador está en la base (`eval/`; ver [evaluador](../pruebas/evaluacion.md)): sobre el set sintético, regex da precisión de gate 0.7419 (no cumple) y haiku, según una sesión con key (no verificado por mí), cumple 1.00 sobre ese mismo set sintético. Falta el set real: con eso sigue sin ser suficiente para activar. Además, `review` solo corre con un proveedor externo y manda avisos reales a REPARE.
 
 En entornos cloud la plataforma descarta las variables `ANTHROPIC_*`: la key se guarda como `E2C_ANTHROPIC_API_KEY` y se pasa con `env -u ANTHROPIC_BASE_URL ANTHROPIC_API_KEY="$E2C_ANTHROPIC_API_KEY" python eval/run_eval.py --provider haiku --set <ruta>` (según la orquestadora; no lo ejecuté). Nunca pegues el valor en el repo.

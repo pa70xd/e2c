@@ -64,6 +64,14 @@ tags: [bugs, riesgos]
 * **Holanda `pd.read_excel`**: toma primera hoja aunque esté oculta.
 * **Heineken `MAX(row_number)`**: sin transacción. Concurrencia puede repetir.
 * **Riesgo de la corrección de `\a`→`\b`**: `aviso` ahora sí coincide en `MOVEMENTS`; el harness corroboró que sin guarda un pie "Aviso de privacidad" generaba movimientos falsos. Mitigado en la base con el lookahead `(?!\s+(?:de\s+)?privacidad)`. Otros pies que contengan "aviso" no se probaron.
+* **Hallazgos del análisis de 21 correos reales** (2026-10-26, ver [correos reales](../pruebas/correos-reales.md); cifras de la orquestadora, no verificadas por mí salvo lo indicado):
+  * **Holanda descarta todo** si el asunto lleva fecha: `es_asunto_holanda` exige el asunto exacto (verificado en `parsers/holanda.py:70`). Incluye la conciliación de OS. En curso: rama `claude/e2c-fix-holanda-indice`.
+  * `config/email_index.json` incluye un buzón personal (verificado) y no mapea Imbera, oxxo, oxogar, torrey ni kof: 14 de 21 correos nunca entran. Decisión de alcance pendiente con el usuario.
+  * La etapa sale solo del prefijo "RE:", sin `In-Reply-To` (verificado).
+  * `detect_direccion` mira solo el `To:` (verificado) y confunde correos internos de REPARE.
+  * Excel: `.ods` no se acepta, Holanda no acepta `.xlsm`, encabezados de Imbera de 2 a 4 filas, hojas ocultas de KOF no se leen.
+  * El outbound solo concilia por Excel: las OS en texto se pierden.
+  * `redact()` dejó pasar nombres, direcciones, coordenadas, un URL de mapa, correos y montos: **bloqueante** para sombra y haiku con correos reales.
 * **Hallazgos del harness** (rama `claude/e2c-harness`, sin corregir; ver [harness](../pruebas/harness.md)):
   * Corrobora el riesgo de `\baviso\b`: con el parche hipotético, un pie "Aviso de privacidad" convierte correos sin solicitud en movimientos. Un test documenta el estado actual.
   * `bot.global`: `process_email_request_global` revienta si `created_at` trae `tzinfo` (openpyxl no admite datetimes con zona). Si Postgres devuelve `timestamptz`, en producción cae al `except` y responde sin archivo. No verificado con datos reales.

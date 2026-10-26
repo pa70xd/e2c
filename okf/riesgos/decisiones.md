@@ -32,6 +32,10 @@ Contexto: el usuario compartió 21 correos reales (.eml). La orquestadora los an
 
 Esto responde la decisión pendiente de "ajustar prompt o `CLASSIFIER_MIN_CONFIDENCE`" de la [evaluación](../pruebas/evaluacion.md) solo en parte: define qué pasa con las respuestas dudosas en un hilo, pero no cambia el umbral de confianza ni el de precisión 0.95.
 
+# Alcance de buzones (pendiente con el usuario)
+
+`config/email_index.json` solo mapea danone, holanda, kdrp y hnk; Imbera, oxxo, oxogar, torrey y kof no entran al sistema. Falta decidir si se incorporan. Ver [correos reales](../pruebas/correos-reales.md).
+
 # Pendiente de confirmación del usuario
 
 * classifier-core decidió **por precaución, sin consultar al usuario**, que las filas CANCELLED y REJECTED también van a revisión humana (motivo `estado_no_pending`), además de ACCEPTED. No es una decisión del usuario. Ver [núcleo del clasificador](../classifier/core.md).

@@ -68,6 +68,7 @@ Bundle OKF del repositorio `e2c`: backend FastAPI que recibe correos de clientes
 
 ## Pruebas
 
+* [Análisis de 21 correos reales](pruebas/correos-reales.md) - hallazgos redactados: alcance de buzones, bugs de Holanda y de dirección/etapa, `redact()` insuficiente.
 * [Evaluación del clasificador](pruebas/evaluacion.md) - gate y extract por proveedor contra el umbral 0.95; regex 0.7419, haiku sin medir (mergeado en la base).
 * [Harness de pruebas offline](pruebas/harness.md) - pytest sin red, goldens y xfail de bugs conocidos (mergeado en `claude/admiring-lovelace-3oh7g0`).
 
