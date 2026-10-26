@@ -333,6 +333,10 @@
 * **Discrepancia con el resumen:** el commit `a8cf448` (posterior al resumen) cambia 5 goldens, regenera 4 fixtures y agrega un párrafo "Modelos sin resolver" al correo de respuesta; el resumen decía que los goldens no cambiaron. Documentado en `riesgos/bugs.md`.
 * Pendiente de decisión: cómo llevar el motivo a REPARE (el párrafo de aviso es una solución parcial en la rama).
 
+## 2026-10-26 · modelos: resumen final
+
+* La sesión confirma `a8cf448` como final, aprobada por la orquestadora para merge. Cambios a goldens a propósito (5). Documentado en `riesgos/bugs.md`: sigue "corregido en parte" por los 46 ambiguos; `eval/cobertura_modelos.py` sin correr con datos reales; Penafiel sin catálogo propio (pregunta para el usuario).
+
 ## 2026-10-24
 
 * Creación del bundle OKF del repositorio `e2c` (rama `claude/admiring-lovelace-3oh7g0`).
