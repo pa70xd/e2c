@@ -199,7 +199,7 @@ def listar_caidas(resultados: list[dict]) -> list[dict]:
                     "etapa": etapa,
                     "proveedor": proveedor,
                     "motivo": motivo,
-                    "motivos": [m for m in motivo.split(",") if m] or ["desconocido"],
+                    "motivos": [m.removeprefix(f"{etapa}:") for m in motivo.split(",") if m] or ["desconocido"],
                 }
             )
     return caidas

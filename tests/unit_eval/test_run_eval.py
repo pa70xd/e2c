@@ -160,6 +160,7 @@ def test_resumen_diagnostico_haiku():
     rs = [
         _res("ok", True, "estatus", True, "estatus"),
         _res("fn1", True, "estatus", False, "no_os", ["gate:haiku:haiku_filas_no_cargadas"]),
+        _res("prefijo", True, "estatus", True, "estatus", ["gate:haiku:gate:confianza_baja"]),
         _res("fp1", False, "no_os", True, "estatus", ["extract:haiku:a,b"]),
         _res("amb", True, "estatus", False, "no_os", ambiguo=True),
         _res("tipo", True, "cancelar_filas", True, "modificar_filas"),
@@ -174,11 +175,12 @@ def test_resumen_diagnostico_haiku():
     }
     assert r["caidas_por_motivo"] == {
         "extract:a": 1, "extract:b": 1, "gate:haiku_filas_no_cargadas": 1,
+        "gate:confianza_baja": 1,
     }
     # solo proveedor: sin fn1 (cayó en gate)
     assert r["gate_solo_proveedor"]["casos"] == 4 and r["gate_solo_proveedor"]["fn"] == 1
     assert r["gate"]["fn"] == 2
-    assert r["gate_sin_ambiguos"]["casos"] == 4 and r["gate_sin_ambiguos"]["fn"] == 1
+    assert r["gate_sin_ambiguos"]["casos"] == 5 and r["gate_sin_ambiguos"]["fn"] == 1
 
 
 def test_resumen_regex_no_inventa_caidas():
