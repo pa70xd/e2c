@@ -290,6 +290,12 @@
 * PII: quité del bundle la dirección personal de `clients/index.md`. El historial de git sigue conteniéndola; `subscriptions.py` aún la tiene hardcodeada (según la sesión).
 * Sigue abierto: el lector de Holanda no acepta `.xlsm`.
 
+## 2026-10-26 · Corrección de privacidad en el bundle
+
+* Por indicación de la orquestadora: reemplacé las direcciones de correo personales/de remitente que estaban escritas en `clients/index.md` (ya hecho en el commit anterior) y en `infrastructure/graph-api.md` por marcadores (`<buzón de pruebas personal>`, `<remitente>`). No se repiten aquí. Quedan los buzones de rol `cliente.*` del dominio de REPARE como mapeo funcional; revisión pendiente si se prefieren también omitirlos.
+* Documentado: el buzón de pruebas pasa a `E2C_TEST_MAILBOX` (rama `claude/e2c-fix-holanda-indice`, por mergear). **Siguen dos usos funcionales de esa dirección en código** (verificado): `EMAIL_SENDER` en `infrastructure/graphapi/graphapi.py:44` y el default de `MAIL` en `src/handler.py:26`. No se tocaron porque afectan el envío por Graph; el dev decide moverlos a una `MAIL` obligatoria.
+* El historial de git conserva las direcciones antiguas.
+
 ## 2026-10-24
 
 * Creación del bundle OKF del repositorio `e2c` (rama `claude/admiring-lovelace-3oh7g0`).
