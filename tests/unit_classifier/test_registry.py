@@ -234,3 +234,14 @@ def test_debe_continuar():
     assert classifier.debe_continuar(no_os, ThreadCtx(etapa=ETAPA_REPLY, direccion="bot"))
     si = classifier.Decision(GateResult(True, "estatus", 0.9), "fake", "regex")
     assert classifier.debe_continuar(si, ThreadCtx(etapa=ETAPA_INIT))
+
+
+def test_debe_continuar_outbound_repare_siempre_continua():
+    no_os = classifier.Decision(GateResult(False, "no_os", 0.9), "fake", "regex")
+    assert classifier.debe_continuar(no_os, ThreadCtx(etapa=ETAPA_REPLY, direccion="outbound"))
+
+
+def test_debe_continuar_inbound_cliente_no_os_se_detiene():
+    for tipo in ("no_os", "duplicado"):
+        d = classifier.Decision(GateResult(False, tipo, 0.9), "fake", "regex")
+        assert not classifier.debe_continuar(d, ThreadCtx(etapa=ETAPA_REPLY, direccion="inbound"))

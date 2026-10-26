@@ -129,3 +129,13 @@ def veredicto(precision: float, umbral: float) -> bool:
 def costo_usd(tokens_in: float, tokens_out: float, precio_in: float, precio_out: float) -> float:
     """Precios en USD por millón de tokens."""
     return (tokens_in * precio_in + tokens_out * precio_out) / 1_000_000
+
+
+def agrupar_caidas(caidas: Iterable[dict]) -> dict[str, int]:
+    """Cuenta caídas por ``etapa:motivo`` (cada código de error por separado)."""
+    cuenta: dict[str, int] = {}
+    for c in caidas:
+        for motivo in c["motivos"]:
+            clave = f"{c['etapa']}:{motivo}"
+            cuenta[clave] = cuenta.get(clave, 0) + 1
+    return dict(sorted(cuenta.items(), key=lambda kv: (-kv[1], kv[0])))
