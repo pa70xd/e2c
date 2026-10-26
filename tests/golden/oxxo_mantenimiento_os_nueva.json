@@ -1,0 +1,137 @@
+{
+  "deliveries": [
+    {
+      "message": {
+        "id": "msg-ox-nueva",
+        "subject": "Abierto-Asignado ----> 10000001",
+        "from": "notificaciones@oxxo-sistema.example.com",
+        "to": [
+          "cliente.oxxo@repare.example.com"
+        ],
+        "attachments": []
+      },
+      "result": "recibido",
+      "error": null,
+      "replies_sent": 1
+    }
+  ],
+  "repo_calls": [
+    {
+      "module": "danone.DB_POSTGRE",
+      "fn": "conversation_exists",
+      "params": {
+        "conversation_id": "conv-msg-ox-nueva"
+      }
+    },
+    {
+      "module": "danone.DB_POSTGRE",
+      "fn": "email_init_exist",
+      "params": {
+        "mail_id": "msg-ox-nueva"
+      }
+    },
+    {
+      "module": "oxxo.DB_OXXO",
+      "fn": "get_by_folio",
+      "params": {
+        "folio": "10000001"
+      }
+    },
+    {
+      "module": "danone.DB_POSTGRE",
+      "fn": "save_email_log_init",
+      "params": {
+        "email_model": {
+          "id": null,
+          "request_code": null,
+          "graph_message_id": "msg-ox-nueva",
+          "internet_message_id": "<msg-ox-nueva@mail.example.com>",
+          "conversation_id": "conv-msg-ox-nueva",
+          "conversation_index": "idx-msg-ox-nueva",
+          "parent_message_id": null,
+          "change_key": "ck-msg-ox-nueva",
+          "link_email": "https://mail.example.com/owa/?ItemID=msg-ox-nueva",
+          "direction": "INBOUND",
+          "sender_name": "Sistema Oxxo Ejemplo",
+          "sender_email": "notificaciones@oxxo-sistema.example.com",
+          "recipients_to": [
+            {
+              "name": null,
+              "email": "cliente.oxxo@repare.example.com"
+            }
+          ],
+          "recipients_cc": [],
+          "recipients_bcc": [],
+          "subject": "Abierto-Asignado ----> 10000001",
+          "body": "Buen día,\nLa tienda OXXO 50EJE NORTE TIENDA EJEMPLO UNO, ubicada en Calle Ficticia 100, Colonia Ejemplo, Municipio Ejemplo, nos reportó lo siguiente\nMotivo: El equipo no enfría\nRepresentante Propietario: Persona Ejemplo Uno\nPrestador de Servicio: REPARE - Norte\nCategoria: Refrigeración\nFalla especifica: Cuarto frío sin temperatura. El número de ticket es: 10000001. Prioridad: ALTA\n\nSaludos cordiales,\nSistema de tickets Ejemplo",
+          "has_attachments": false,
+          "attachment_count": 0,
+          "processing_status": "RECEIVED",
+          "processing_message": null,
+          "received_at": "2026-03-02T15:30:00+00:00",
+          "sent_at": "2026-03-02T15:30:00+00:00",
+          "created_at": "<now>",
+          "updated_at": "<now>",
+          "customer": "oxxo"
+        }
+      }
+    },
+    {
+      "module": "danone.DB_POSTGRE",
+      "fn": "send_email_request",
+      "params": {
+        "parametros": {
+          "request_code": "REPARE_000101",
+          "customer": "oxxo",
+          "status": "IN_PROGRESS",
+          "priority": "MEDIUM",
+          "total_coolers": 1,
+          "pending_coolers": 1,
+          "completed_coolers": 0,
+          "failed_coolers": 0,
+          "assigned_to": "NA"
+        }
+      }
+    },
+    {
+      "module": "oxxo.DB_OXXO",
+      "fn": "insert_fila",
+      "params": {
+        "request_code": "REPARE_000101",
+        "row_number": 1,
+        "fila": {
+          "id_cliente": "50EJE",
+          "fecha_solicitud": null,
+          "modelo": null,
+          "serie_fabricante": null,
+          "tipo_servicio": "Refrigeración",
+          "region": "Norte",
+          "plaza": null,
+          "razon_social": "NORTE TIENDA EJEMPLO UNO",
+          "direccion": "Calle Ficticia 100, Colonia Ejemplo, Municipio Ejemplo",
+          "cp": null,
+          "ciudad": null,
+          "colonia": null,
+          "telefono_1": null,
+          "comentarios": "Cuarto frío sin temperatura",
+          "prioridad": "MEDIA",
+          "folio": "10000001",
+          "ticket_solicitud": null,
+          "gestion_observaciones": "Motivo: El equipo no enfría | Representante propietario: Persona Ejemplo Uno | Prioridad: ALTA",
+          "cliente": "OXXO"
+        }
+      }
+    }
+  ],
+  "external_calls": [],
+  "replies": [
+    {
+      "in_reply_to": "msg-ox-nueva",
+      "to": [
+        "cliente.oxxo@repare.example.com"
+      ],
+      "body": "<div style=\" font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; max-width: 680px; color: #24292f; font-size: 14px; line-height: 1.6; \"> <p style=\"font-size: 15px; margin-bottom: 20px;\"> 🤖 Estimado usuario REPARE, </p> <div style=\" border: 1px solid #d0d7de; border-radius: 6px; padding: 20px; background: #f6f8fa; \"> <div style=\"font-size: 14px; font-weight: bold; margin-bottom: 12px;\"> REQUEST RECEIVED </div> <div style=\"color: #57606a;\"> Se registró una <b>OS nueva</b>. </div> </div> <div style=\" margin-top: 18px; padding: 14px 16px; border: 1px solid #d0d7de; border-radius: 6px; background: #ffffff; \"> <div style=\"font-size: 12px; color: #57606a; margin-bottom: 5px;\">FOLIO REPARE</div> <div style=\"font-size: 18px; font-weight: bold; letter-spacing: 1px;\">REPARE_000101</div> </div> <div style=\" margin-top: 18px; padding: 14px 16px; border: 1px solid #d0d7de; border-radius: 6px; background: #ffffff; \"> <div style=\"font-size: 12px; color: #57606a; margin-bottom: 5px;\">TICKET</div> <div style=\"font-size: 18px; font-weight: bold; letter-spacing: 1px;\">10000001</div> </div> <p style=\"color: #57606a; margin-top: 18px;\"> Correo original: <a href=\"https://mail.example.com/owa/?ItemID=msg-ox-nueva\">abrir</a> </p> </div>",
+      "attachments": []
+    }
+  ]
+}

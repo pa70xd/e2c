@@ -1,0 +1,30 @@
+{
+  "deliveries": [
+    {
+      "message": {
+        "id": "msg-og-bot-ayuda",
+        "subject": "RE: Solicitud registrada",
+        "from": "cliente.oxogar@repare.example.com",
+        "to": [
+          "cliente.oxogar@repare.example.com"
+        ],
+        "attachments": []
+      },
+      "result": "recibido",
+      "error": null,
+      "replies_sent": 1
+    }
+  ],
+  "repo_calls": [],
+  "external_calls": [],
+  "replies": [
+    {
+      "in_reply_to": "msg-og-bot-ayuda",
+      "to": [
+        "cliente.oxogar@repare.example.com"
+      ],
+      "body": "<div style=\" font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; max-width: 680px; color: #24292f; font-size: 14px; line-height: 1.6; \"> <p style=\"font-size: 15px; margin-bottom: 20px;\"> 🤖 Estimado usuario REPARE, </p> <div style=\" border: 1px solid #d0d7de; border-radius: 6px; padding: 20px; background: #f6f8fa; \"> <div style=\" font-size: 14px; font-weight: bold; margin-bottom: 16px; \"> AVAILABLE COMMANDS </div> <div style=\"color: #57606a;\"> <b>[bot.help]</b><br> Consulta los comandos disponibles.<br><br> <b>[bot.estatus]</b><br> Consulta el estatus actual de una solicitud.<br><br> <b>[bot.cancelar]</b><br> Solicita la cancelación de una solicitud.<br><br> <b>[bot.finalizar]</b><br> Solicita la finalización de una solicitud.<br><br> <b>[bot.global]</b><br> Solicita el documento con el estatus global de solicitudes. </div> </div> <p style=\" color: #57606a; margin-top: 18px; \"> <b>Importante:</b> Responde únicamente al correo del bot para ejecutar los comandos. </p> </div>",
+      "attachments": []
+    }
+  ]
+}
