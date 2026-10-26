@@ -101,3 +101,12 @@ def test_veredicto_incluye_el_umbral():
 
 def test_costo_usd():
     assert metrics.costo_usd(1_000_000, 1_000_000, 0.10, 0.50) == pytest.approx(0.60)
+
+
+def test_agrupar_caidas():
+    caidas = [
+        {"etapa": "gate", "motivos": ["x"]},
+        {"etapa": "gate", "motivos": ["x", "y"]},
+        {"etapa": "extract", "motivos": ["x"]},
+    ]
+    assert metrics.agrupar_caidas(caidas) == {"gate:x": 2, "extract:x": 1, "gate:y": 1}
