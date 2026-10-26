@@ -30,6 +30,7 @@ Bundle OKF del repositorio `e2c`: backend FastAPI que recibe correos de clientes
 ## Parsers
 
 * [Base gen_parse](parsers/gen-base.md) - librería compartida.
+* [Lector común de adjuntos](parsers/lector.md) - `leer_adjunto`: encabezado por vocabulario, hojas ocultas, `.ods`/`.xlsm` (rama `claude/e2c-lector-excel`, sin mergear).
 * [Danone](parsers/danone.md)
 * [Penafiel](parsers/penafiel.md)
 * [Holanda](parsers/holanda.md)

@@ -17,6 +17,8 @@ Fuente: `config/email_index.json`.
 | `cliente.hnk@repare.com.mx` | heineken | [Heineken](../parsers/heineken.md) | Mapeado, suscripción comentada en `subscriptions.py` |
 | `<buzón de pruebas personal>` (dirección omitida; en la rama `claude/e2c-fix-holanda-indice` sale del índice y pasa a `E2C_TEST_MAILBOX`) | test | `test_*` | Buzón de prueba |
 
+**Fase 4, en la rama `claude/e2c-lector-excel` (sin mergear; verificado en `config/email_index.json` de la rama):** se agregan los buzones de rol `cliente.imbera`, `cliente.kof`, `cliente.torrey`, `cliente.oxxo` y `cliente.oxogar` (todos del dominio de REPARE), mapeados a los clientes `imbera`, `kof`, `torrey`, `oxxo` y `oxxo_garantias`. Detrás del flag `E2C_CLIENTES_HABILITADOS` (ver [despliegue](../deploy/despliegue.md)): sin definirla solo corren danone, holanda, penafiel (alias kdrp) y heineken (alias hnk). Cada cliente nuevo necesita su parser en `PARSERS_INIT`/`PARSERS_REPLY` de `src/service.py`; sin parser, el correo se ignora con log y no hay respuesta. **`oxogar`/`oxxo_garantias` quedó mapeado aunque no estaba en la lista aprobada** el 2026-10-26: el flag lo mantiene apagado, pero hay que confirmarlo con el usuario.
+
 KOF: sin buzón mapeado, sin parser conectado. Ver [KOF](../parsers/kof.md).
 
 # Cuenta distinta del cliente

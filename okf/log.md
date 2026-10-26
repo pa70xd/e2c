@@ -321,6 +321,12 @@
 * Documentado en [classifier/redact.md](classifier/redact.md): marcadores nuevos, criterios y límites.
 * **El bloqueo de sombra/haiku con correos reales sigue vigente:** falta re-probar con los 21 correos reales dentro del contenedor y mergear la rama.
 
+## 2026-10-26 · lector-excel + flag de clientes: resumen (Fase 4)
+
+* Rama `claude/e2c-lector-excel` (`b3e308e`, `717cb96`), sin mergear. Verificado: `parsers/core/lector.py`, `odfpy==1.4.1` en `requirements.txt`, mapeo de 5 buzones nuevos en `email_index.json`, `E2C_CLIENTES_HABILITADOS` en `src/email_type.py`. `pytest -q` → 922 passed, 2 failed, 48 skipped, 1 xfailed: los 2 fallos por no poder instalar `odfpy` en este contenedor (la sesión reporta 924 passed).
+* Documentado en [parsers/lector.md](parsers/lector.md), `clients/index.md`, `deploy/despliegue.md`, `decisiones.md`, `bugs.md`.
+* Dos cosas que señalo: `oxogar`→`oxxo_garantias` quedó mapeado sin estar en la lista aprobada (apagado por el flag), y `.xls` necesita `xlrd` que no está en `requirements.txt`. Los lectores actuales no están migrados al lector común.
+
 ## 2026-10-24
 
 * Creación del bundle OKF del repositorio `e2c` (rama `claude/admiring-lovelace-3oh7g0`).
