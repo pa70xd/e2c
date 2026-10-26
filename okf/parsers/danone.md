@@ -25,7 +25,7 @@ tags: [danone, bonafont, piloto]
 
 # Problemas verificados
 
-* `calcula_modelo` era un stub (en la rama `claude/e2c-modelos`, sin mergear, `parsers/core/modelos.py` llena modelo, categoría y línea; ver [bugs](../riesgos/bugs.md)).
+* `calcula_modelo` era un stub (en la base (rama `claude/e2c-modelos`, `fa3ec71`), `parsers/core/modelos.py` llena modelo, categoría y línea; ver [bugs](../riesgos/bugs.md)).
 * (Antes) `calcula_modelo` es stub. Modelo, categoría y línea quedan NULL. Ver [bugs](../riesgos/bugs.md).
 * `convertir_html_a_texto` quita stopwords antes de evaluar regex de propósito. Si los patrones contienen stopwords, no matchean. Impacto por probar con correos reales.
 * `bot.cancelar` no cancela coolers. Un outbound posterior reabre la solicitud. Corregido mergeado en `claude/admiring-lovelace-3oh7g0` (rama `claude/e2c-fix-parsers`).

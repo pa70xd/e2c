@@ -45,7 +45,7 @@ Correos de salida de REPARE; notificaciones de sistemas del cliente (tickets de 
 
 ## `redact()` dejó pasar datos personales (BLOQUEANTE)
 
-Sobre los 21 correos, `redact()` no cubrió: 53 nombres, 7 direcciones, 6 coordenadas, 1 URL de mapa, 2 correos y 3 montos (patrones F1-F9). **No activar `CLASSIFIER_SHADOW` ni haiku con correos reales hasta mergear `redact-v2` y re-probarlo con los 21 correos** (rama `claude/e2c-redact-v2` lista, sin mergear; ver [redact](../classifier/redact.md)) (`session_01GRj3nHJi8AeCXJdsKvwAEY`, rama `claude/e2c-redact-v2`). Consecuencia: el [modo sombra](../riesgos/decisiones.md) y cualquier corrida con key sobre correos reales mandarían datos personales a un proveedor externo. Ya había un límite conocido en [redact](../classifier/redact.md) (nombres sin despedida ni etiqueta no se detectan).
+Sobre los 21 correos, `redact()` no cubrió: 53 nombres, 7 direcciones, 6 coordenadas, 1 URL de mapa, 2 correos y 3 montos (patrones F1-F9). **No activar `CLASSIFIER_SHADOW` ni haiku con correos reales hasta mergear `redact-v2` y re-probarlo con los 21 correos** (rama `claude/e2c-redact-v2` lista, sin mergear; hasta entonces `REDACT_VERSION` bloquea la sombra y haiku; ver [redact](../classifier/redact.md)) (`session_01GRj3nHJi8AeCXJdsKvwAEY`, rama `claude/e2c-redact-v2`). Consecuencia: el [modo sombra](../riesgos/decisiones.md) y cualquier corrida con key sobre correos reales mandarían datos personales a un proveedor externo. Ya había un límite conocido en [redact](../classifier/redact.md) (nombres sin despedida ni etiqueta no se detectan).
 
 # Relación con otros documentos
 

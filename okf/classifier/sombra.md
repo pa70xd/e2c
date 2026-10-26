@@ -1,13 +1,13 @@
 ---
 type: Module
 title: Modo sombra (classifier/shadow.py)
-description: Corre un segundo gate en paralelo, solo para registrar su decisión y compararla con la real; nunca bloquea, aplica ni manda correos. Rama claude/e2c-sombra, sin mergear.
+description: Corre un segundo gate en paralelo, solo para registrar su decisión y compararla con la real; nunca bloquea, aplica ni manda correos. Mergeado en la base (claude/e2c-sombra).
 tags: [classifier, sombra, shadow, fase-3]
 ---
 
 # Estado
 
-Rama `claude/e2c-sombra` (commits `7b86977` y `ca00f10`), **sin mergear**. Verificado en la rama: existen `classifier/shadow.py`, `eval/shadow_report.py` y `msj_clasificacion_dudosa` en `messages.py`; `python -m pytest -q` → **872 passed, 48 skipped, 1 xfailed**. Aprobado por el usuario el 2026-10-26 ([decisiones](../riesgos/decisiones.md)).
+Rama `claude/e2c-sombra` (commits `7b86977` y `ca00f10`), **mergeada en la base** (`27ccc22`). Verificado en la rama: existen `classifier/shadow.py`, `eval/shadow_report.py` y `msj_clasificacion_dudosa` en `messages.py`; `python -m pytest -q` → **872 passed, 48 skipped, 1 xfailed**. Aprobado por el usuario el 2026-10-26 ([decisiones](../riesgos/decisiones.md)).
 
 > **BLOQUEANTE:** no activar `CLASSIFIER_SHADOW` con correos reales hasta mergear `redact-v2`. La sombra manda texto redactado a un proveedor externo y `redact()` actual dejó pasar datos personales en 21 correos reales ([correos reales](../pruebas/correos-reales.md)).
 

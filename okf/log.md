@@ -352,6 +352,13 @@
 * Rama `claude/e2c-imbera-torrey` (`07f3fea`, `b4cb7ac`), sin mergear. Verificado: archivos, entradas en `src/service.py`, 17 goldens de Imbera/Torrey, `pytest -q` → 938 passed, 48 skipped, 1 xfailed. Que ningún golden existente cambió es afirmación de la sesión.
 * Nuevo concepto [parsers/imbera-torrey.md](parsers/imbera-torrey.md); TODOs de negocio en `riesgos/preguntas-abiertas.md`. Usa un adaptador de lectura propio hasta que el lector común esté en la base; la rama no mapea los buzones en `email_index.json`.
 
+## 2026-10-26 · Base 3732c25 y runbook actualizado
+
+* Base `claude/admiring-lovelace-3oh7g0` en `3732c25` mergeada en mi rama. Verificado: `pytest -q` → 1028 passed, 6 failed, 48 skipped, 1 xfailed en mi contenedor; los 6 fallos son por falta de `odfpy`/`xlrd` (con `xlrd` quedan 2, por `odfpy`), y 1028 + 6 = 1034, la cifra del orquestador.
+* Mergeados en la base: sombra `27ccc22`, modelos `fa3ec71`, lector-excel `3732c25`. Siguen sin mergear: redact-v2, oxxo, imbera-torrey, KOF.
+* Candado `REDACT_VERSION` verificado en `classifier/registry.py`: el proveedor externo y la sombra quedan bloqueados mientras `redact` no declare versión >= 2.
+* Runbook: cifras 1034/48/1, dependencias nuevas y el problema de `install_layout`, verificar `docker build` con Python 3.14, variables nuevas, candado `REDACT_VERSION`.
+
 ## 2026-10-24
 
 * Creación del bundle OKF del repositorio `e2c` (rama `claude/admiring-lovelace-3oh7g0`).

@@ -37,7 +37,7 @@ Esto responde la decisión pendiente de "ajustar prompt o `CLASSIFIER_MIN_CONFID
 Aprobada por el usuario el 2026-10-26 (relayada por la orquestadora): **entran Imbera, KOF, Torrey y Oxxo.** Esto responde la pregunta de alcance abierta tras el [análisis de correos reales](../pruebas/correos-reales.md), que mostró que `config/email_index.json` solo mapeaba danone, holanda, kdrp y hnk. Oxgar (oxogar) no figura en la lista aprobada: sigue fuera de alcance, sin decisión explícita.
 
 * **Oxxo queda apagado por defecto.** Tiene una PoC automatizada fuera del repo, con riesgo de duplicado (dos sistemas generando solicitudes del mismo origen). Sin verificar por mí.
-* Variable nueva: `E2C_CLIENTES_HABILITADOS`. Sin ella solo corren los 4 clientes actuales (verificada en código, rama `claude/e2c-lector-excel`, sin mergear).
+* Variable nueva: `E2C_CLIENTES_HABILITADOS`. Sin ella solo corren los 4 clientes actuales (verificada en código; mergeada en la base).
 * **El buzón de garantías `oxogar` → `oxxo_garantias`** no se nombró en la lista aprobada, pero el parser de Oxxo lo trata como parte de Oxxo (garantías) y la sesión de Oxxo lo implementa ([Oxxo](../parsers/oxxo.md)). Queda apagado por el flag. Pendiente de que el usuario lo confirme.
 * Sesiones (en curso): lector-excel + flag de clientes (sonnet) `session_01Hij48ERTesNyVTDdyWeyPH` · `claude/e2c-lector-excel`; KOF (opus) `session_01UEpkYP4VR6wHShaKZL9biN` · `claude/e2c-kof`; Imbera + Torrey (opus) `session_01RhmhtzWqP56UdKESrWfBkt` · `claude/e2c-imbera-torrey`; Oxxo (sonnet) `session_01E8Gh3qWbaaqB8cksMj4s5n` · `claude/e2c-oxxo` (parser de plantillas sin LLM).
 * Orden: lector-excel primero; KOF e Imbera/Torrey se adaptan a él; Oxxo corre en paralelo.

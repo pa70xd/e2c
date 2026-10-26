@@ -21,7 +21,7 @@ tags: [flujo, parseo, excel, validacion]
 
 # Nota sobre modelo y línea
 
-En Danone y Penafiel, `calcula_modelo` era un stub (corregido en parte en la rama `claude/e2c-modelos`, sin mergear: ver [bugs](../riesgos/bugs.md)): solo agrega columnas `*_GEN` vacías. Modelo, categoría y línea quedan NULL. Ver [bugs](../riesgos/bugs.md#modelo-categoria-y-linea-no-se-llenan).
+En Danone y Penafiel, `calcula_modelo` era un stub (corregido en parte, mergeado en la base (rama `claude/e2c-modelos`): ver [bugs](../riesgos/bugs.md)): solo agrega columnas `*_GEN` vacías. Modelo, categoría y línea quedan NULL. Ver [bugs](../riesgos/bugs.md#modelo-categoria-y-linea-no-se-llenan).
 
 # Orden de escritura (riesgo)
 

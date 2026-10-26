@@ -21,12 +21,14 @@ Qué cambia con `DEBUG=true` (verificado en `src/service.py`, `parsers/*.py`):
 
 # 1. Instalación y suite offline
 
+**Dependencias nuevas en `requirements.txt`** (UTF-16 LE): `odfpy==1.4.1` (solo sdist), `xlrd==2.0.2` y `anthropic==2.3.0`. Si `pip install` falla con "install_layout" (setuptools de Debian parchado), usa un venv nuevo y ejecuta `pip install -U pip setuptools wheel` antes. En mi contenedor, sin venv, `odfpy` falló al construir la rueda y sin `odfpy`/`xlrd` fallan 6 pruebas (con `xlrd` instalado quedan 2, por `odfpy`); la suma coincide con las 1034 del orquestador. **Verifica `docker build` antes de desplegar** (la imagen usa Python 3.14, que nadie ha probado con estas dependencias).
+
 ```
 pip install -r requirements.txt -r requirements-dev.txt
 python -m pytest -q
 ```
 
-Usa `python -m pytest`, no el binario `pytest`: puede ser de otro intérprete. Esperado en la base con la Fase 3 completa (`003853d`): **794 passed, 48 skipped, 1 xfailed** (448/24/1 en `9564d90`, antes de la Fase 3) (el xfail es "stopwords antes del regex" en Danone; los 48 skip son el SQL contra Postgres de abajo). La suite no usa red, credenciales ni producción. Detalle en [pruebas/harness.md](../pruebas/harness.md).
+Usa `python -m pytest`, no el binario `pytest`: puede ser de otro intérprete. Esperado en la base (`3732c25`): **1034 passed, 48 skipped, 1 xfailed** (448/24/1 en `9564d90`, antes de la Fase 3) (el xfail es "stopwords antes del regex" en Danone; los 48 skip son el SQL contra Postgres de abajo). La suite no usa red, credenciales ni producción. Detalle en [pruebas/harness.md](../pruebas/harness.md).
 
 # 2. Pruebas SQL opcionales (Postgres local desechable)
 
@@ -79,9 +81,9 @@ Fase 3 (clasificador, mergeada): `classifier/`, `review/` y el proveedor haiku. 
 
 Para repetir la medición de la línea base: `python eval/run_eval.py --provider regex --set eval/sets/sintetico.jsonl` (hoy precisión de gate 0.7419, sale con código 1).
 
-**ADVERTENCIA BLOQUEANTE (PII): no actives `CLASSIFIER_SHADOW` ni haiku con correos reales hasta mergear `redact-v2` y re-probarlo con los 21 correos reales** (rama `claude/e2c-redact-v2`, lista pero sin mergear y sin esa re-prueba; ver [redact](../classifier/redact.md)). Sobre 21 correos reales, `redact()` dejó pasar nombres, direcciones, coordenadas, correos y montos; el texto se enviaría a un proveedor externo. Ver [correos reales](../pruebas/correos-reales.md).
+**ADVERTENCIA BLOQUEANTE (PII): no actives `CLASSIFIER_SHADOW` ni haiku con correos reales hasta mergear `redact-v2` y re-probarlo con los 21 correos reales.** Hay un candado en el código: un proveedor externo (gate, extract o sombra) solo corre si `classifier.redact.REDACT_VERSION >= 2` (`MIN_REDACT_VERSION = 2` en `classifier/registry.py`; sin la constante cuenta como 1). Hoy `redact.py` de la base no la define, así que quedan bloqueados; (rama `claude/e2c-redact-v2`, lista pero sin mergear y sin esa re-prueba; ver [redact](../classifier/redact.md)). Sobre 21 correos reales, `redact()` dejó pasar nombres, direcciones, coordenadas, correos y montos; el texto se enviaría a un proveedor externo. Ver [correos reales](../pruebas/correos-reales.md).
 
-Modo sombra (`CLASSIFIER_SHADOW`, `CLASSIFIER_SHADOW_SAMPLE`; rama `claude/e2c-sombra`, sin mergear): ver [sombra](../classifier/sombra.md) para variables, el log `[CLASSIFIER_SHADOW]` y cómo exportarlo y medirlo con `eval/shadow_report.py`. Sigue sujeto a la advertencia de PII de arriba.
+Modo sombra (`CLASSIFIER_SHADOW`, `CLASSIFIER_SHADOW_SAMPLE`; mergeado en la base): ver [sombra](../classifier/sombra.md) para variables, el log `[CLASSIFIER_SHADOW]` y cómo exportarlo y medirlo con `eval/shadow_report.py`. Sigue sujeto a la advertencia de PII de arriba.
 
 **ADVERTENCIA: no actives haiku** (`CLASSIFIER_GATE=haiku` o `CLASSIFIER_EXTRACT=haiku`) **sin antes** correr `eval/smoke_haiku.py` con una key real y sin que la evaluación supere **precisión >= 0.95 en gate** (umbral de [decisiones](../riesgos/decisiones.md)). El evaluador está en la base (`eval/`; ver [evaluador](../pruebas/evaluacion.md)): sobre el set sintético, regex da precisión de gate 0.7419 (no cumple) y haiku, según una sesión con key (no verificado por mí), cumple 1.00 sobre ese mismo set sintético. Falta el set real: con eso sigue sin ser suficiente para activar. Además, `review` solo corre con un proveedor externo y manda avisos reales a REPARE.
 

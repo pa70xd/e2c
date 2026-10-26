@@ -30,7 +30,7 @@ Bundle OKF del repositorio `e2c`: backend FastAPI que recibe correos de clientes
 ## Parsers
 
 * [Base gen_parse](parsers/gen-base.md) - librería compartida.
-* [Lector común de adjuntos](parsers/lector.md) - `leer_adjunto`: encabezado por vocabulario, hojas ocultas, `.ods`/`.xlsm` (rama `claude/e2c-lector-excel`, sin mergear).
+* [Lector común de adjuntos](parsers/lector.md) - `leer_adjunto`: encabezado por vocabulario, hojas ocultas, `.ods`/`.xlsm` (mergeado en la base).
 * [Danone](parsers/danone.md)
 * [Penafiel](parsers/penafiel.md)
 * [Holanda](parsers/holanda.md)
@@ -66,7 +66,7 @@ Bundle OKF del repositorio `e2c`: backend FastAPI que recibe correos de clientes
 
 * [Revisión por hilo](classifier/revision.md) - aplica cambios en filas PENDING y manda el resto a revisión humana por correo (mergeado en la base).
 * [Núcleo del clasificador](classifier/core.md) - contratos, validación, registro, proveedor regex y gate en el flujo (mergeado en la base).
-* [Modo sombra](classifier/sombra.md) - segundo gate en paralelo que solo registra (rama `claude/e2c-sombra`, sin mergear; bloqueado hasta `redact-v2`).
+* [Modo sombra](classifier/sombra.md) - segundo gate en paralelo que solo registra (mergeado en la base; bloqueado por `REDACT_VERSION` hasta `redact-v2`).
 * [Proveedor Haiku](classifier/provider-haiku.md) - `gate()` y `extract()` con Claude Haiku 5.5, opcional (mergeado en la base).
 * [Redacción de PII](classifier/redact.md) - `redact()`, obligatoria antes de cualquier proveedor externo (mergeado en la base).
 

@@ -1,13 +1,13 @@
 ---
 type: Module
 title: Lector común de adjuntos (parsers/core/lector.py)
-description: Lector único de Excel/ODS por vocabulario de encabezados, con manejo de hojas ocultas y filas basura. Fase 4, rama claude/e2c-lector-excel, sin mergear.
+description: Lector único de Excel/ODS por vocabulario de encabezados, con manejo de hojas ocultas y filas basura. Fase 4, mergeado en la base (claude/e2c-lector-excel).
 tags: [parsers, lector, excel, fase-4]
 ---
 
 # Estado
 
-Rama `claude/e2c-lector-excel` (commits `b3e308e`, `717cb96`, `b0758f7`, `41eafbf`), aprobada por la orquestadora y en merge (**no confirmado en la base** al escribir esto). Verificado en la rama: existe `parsers/core/lector.py` y `odfpy==1.4.1` está en `requirements.txt`. `python -m pytest -q` en la rama → **922 passed, 2 failed, 48 skipped, 1 xfailed** en este contenedor; los 2 fallos son `ModuleNotFoundError: No module named 'odf'` porque no pude instalar `odfpy==1.4.1` aquí (falla al construir la rueda). La sesión reporta, con la dependencia instalada y tras los commits finales, 928 passed, 48 skipped, 1 xfailed (no lo repetí tras `41eafbf`). Los goldens sin diff es afirmación de la sesión.
+Rama `claude/e2c-lector-excel` (commits `b3e308e`, `717cb96`, `b0758f7`, `41eafbf`), **mergeada en la base** (`3732c25`). Verificado en la rama: existe `parsers/core/lector.py` y `odfpy==1.4.1` está en `requirements.txt`. `python -m pytest -q` en la rama → **922 passed, 2 failed, 48 skipped, 1 xfailed** en este contenedor; los 2 fallos son `ModuleNotFoundError: No module named 'odf'` porque no pude instalar `odfpy==1.4.1` aquí (falla al construir la rueda). La sesión reporta, con la dependencia instalada y tras los commits finales, 928 passed, 48 skipped, 1 xfailed (no lo repetí tras `41eafbf`). Los goldens sin diff es afirmación de la sesión.
 
 # API
 
