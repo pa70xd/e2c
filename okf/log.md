@@ -227,6 +227,11 @@
 * Estado a "mergeado" en `pruebas/evaluacion.md`, `deploy/despliegue.md`, runbook (cifras 794/48/1, comando de línea base) e índice.
 * Abierto: haiku sin medir (no hay key); falta el set real de correos redactados; preguntas de la Fase 3 sin responder.
 
+## 2026-10-26 · Fase 3: parada por falta de key
+
+* Una sesión que no estaba en mi tabla (session_0134X31KeMJTxbNAeRRz2P34) reporta que la Fase 3 está parada: falta `ANTHROPIC_API_KEY` en la sesión de ejecución. No se corrió `eval/smoke_haiku.py` ni la evaluación de haiku. Ya avisó a la orquestadora; se espera que se configure la key. No lo verifiqué: es solo lo que reporta esa sesión; su rol exacto no me consta.
+* Consecuencia para el bundle: sin cambios. Haiku sigue sin medir y la activación sigue bloqueada por el umbral de precisión >= 0.95 en gate (ver [evaluación](pruebas/evaluacion.md)).
+
 ## 2026-10-24
 
 * Creación del bundle OKF del repositorio `e2c` (rama `claude/admiring-lovelace-3oh7g0`).
