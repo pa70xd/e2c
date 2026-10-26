@@ -36,8 +36,23 @@ Corrí el evaluador sobre el set sintético en la rama:
 
 Activar un proveedor externo exige correos reales redactados (set real fuera del repo) y una corrida con key real. El set sintético sirve para regresión y para comparar proveedores, no para decidir la activación (lo señala también la orquestadora).
 
+# Resultado reportado: haiku sobre el set sintético (NO verificado por mí)
+
+Lo reporta la sesión `session_01Jnc7eVXwXyKjsou32zFdCn` (2026-10-26), que tenía `ANTHROPIC_API_KEY`; yo no tengo key y **no repetí la medición**. El reporte completo se envió a la orquestadora; no lo he visto.
+
+* Smoke (`eval/smoke_haiku.py`): OK.
+* Gate (67 casos sintéticos): precisión 1.00, recall 1.00, F1 1.00, 0 falsos positivos; el umbral de 0.95 **se cumple** sobre este set.
+* Extract: 95.1 % por fila (39 de 41).
+* Caída a regex: gate 1.5 %, extract 2.2 %.
+* Latencia: media 2.0 s, p95 3.2 s. Tokens: ~128 k de entrada, ~7.7 k de salida.
+* Comparación: regex en el mismo set, precisión 0.74 con 16 falsos positivos (no cumple).
+* Pendiente señalado por la sesión: los motivos de la caída a regex no se imprimen en `run_eval`.
+
+**Cómo leerlo:** el set sintético tiene 21 negativos, así que una precisión de 1.00 es compatible con un error real bastante mayor. Este resultado **no basta para activar** haiku: hacen falta correos reales redactados (set real) y la corrida con key sobre ellos. Que el umbral se cumpla en el sintético no equivale a cumplirlo en producción.
+
 # Lo que NO está medido
 
-* **Haiku no se ha corrido**: sin key, ni `eval/smoke_haiku.py` ni la evaluación con `--provider haiku`. No hay ninguna cifra de precisión de haiku.
-* Solo hay set sintético; el set real no existe todavía (espera los correos de ejemplo). Con 67 casos y 21 negativos (16 FP + 5 TN), la precisión es una estimación gruesa: no sustituye una evaluación con correos reales.
+* Haiku sobre correos reales. No existe el set real (espera los correos de ejemplo).
+* Costo en USD: depende de `EVAL_PRICE_IN` y `EVAL_PRICE_OUT`; el reporte que me llegó solo da tokens.
+* El set sintético son 67 casos; es una estimación gruesa.
 * La línea base regex mide la lógica heredada, no una activación nueva: el umbral aplica a activar un proveedor externo.
