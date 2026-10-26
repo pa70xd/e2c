@@ -28,6 +28,7 @@
 # Por ahora solo se procesan correos con este asunto; se compara sin
 # mayúsculas, sin espacios sobrantes, sin prefijos RE:/RV:/FW:/FWD: y sin
 # etiquetas entre corchetes (p. ej. "[holanda]" del modo de prueba).
+# Admite además una fecha o sufijo numérico final ("Casos REPARE 04052026").
 ASUNTO_HOLANDA = "casos repare"
 
 # Identificador del cliente en las tablas compartidas: email_request usa
