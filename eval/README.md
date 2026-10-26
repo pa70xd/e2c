@@ -47,6 +47,8 @@ Opciones: `--buzones` (default: los de `config/email_index.json`), `--desde`/`--
 
 **`--tablas prod` exige `--confirmo-solo-lectura`.** Úsalo solo con un usuario de base de solo lectura, si existe. El script ya fuerza READ ONLY, pero un usuario sin permisos de escritura es la garantía real. `qa` lee `*_qa`, que puede tener poca historia.
 
+**Candado de redacción:** el script aborta (código 5) si `classifier.redact.REDACT_VERSION` es menor que 2 (o no existe): el `redact` v1 deja escapar nombres y direcciones en correos reales. `--permitir-redact-v1` lo salta y es solo para pruebas.
+
 Salida:
 
 * `backfill_<fecha>.jsonl`: todos los casos, en el formato de `schema.md` más `split`, `etiqueta_fuente`, `evidencia` (filas generadas y sus estados), `adjuntos` (nombre, tipo, hojas, filas, encabezados; nunca el contenido) e `ids` en hash. Asunto, cuerpo, nombres de adjunto y encabezados pasan por `classifier.redact` antes de escribirse.

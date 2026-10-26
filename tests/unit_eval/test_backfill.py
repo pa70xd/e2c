@@ -218,9 +218,34 @@ class Entorno:
         return self.casos()[backfill.hash_id(f"AAMk-m{n}")]
 
 
+@pytest.fixture(autouse=True)
+def _redact_v2(monkeypatch):
+    """Por defecto simula un redact v2; los tests del candado lo cambian."""
+    monkeypatch.setattr(backfill._modulo_redact, "REDACT_VERSION", 2, raising=False)
+
+
 @pytest.fixture
 def entorno(tmp_path):
     return Entorno(tmp_path)
+
+
+def test_aborta_con_redact_v1_sin_tocar_graph_ni_base(entorno, monkeypatch, capsys):
+    monkeypatch.delattr(backfill._modulo_redact, "REDACT_VERSION")
+    assert entorno.correr() == 5
+    assert "REDACT" in capsys.readouterr().err.upper()
+    assert entorno.http.llamadas == [] and entorno.conn.sentencias == []
+    assert not os.path.exists(entorno.salida)
+
+
+def test_redact_version_1_explicita_tambien_aborta(entorno, monkeypatch):
+    monkeypatch.setattr(backfill._modulo_redact, "REDACT_VERSION", 1)
+    assert entorno.correr() == 5
+
+
+def test_permitir_redact_v1_deja_correr(entorno, monkeypatch):
+    monkeypatch.delattr(backfill._modulo_redact, "REDACT_VERSION")
+    assert entorno.correr("--permitir-redact-v1") == 0
+    assert os.path.exists(entorno.salida)
 
 
 # ------------------------------------------------------------------ solo lectura: SQL

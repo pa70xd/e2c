@@ -25,7 +25,9 @@ Privacidad: asunto, cuerpo, nombres de adjuntos y encabezados pasan por
 los adjuntos no se guardan (solo nombre, tipo, hojas, filas y encabezados).
 
 Código de salida: 0 ok; 2 argumentos o confirmación faltante; 3 aborto por
-consulta no permitida o lectura no permitida; 4 fallo de Graph o de la base.
+consulta no permitida o lectura no permitida; 4 fallo de Graph o de la base;
+5 ``classifier.redact`` es anterior a REDACT_VERSION 2 (con correos reales deja
+escapar nombres y direcciones; ``--permitir-redact-v1`` solo para pruebas).
 """
 
 from __future__ import annotations
@@ -45,6 +47,7 @@ import time
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 
+import classifier.redact as _modulo_redact  # noqa: E402
 from classifier.redact import redact  # noqa: E402
 
 QUERYS_DIR = os.path.join(ROOT, "eval", "querys")
@@ -80,6 +83,7 @@ CAMBIO_MINIMO = dt.timedelta(seconds=2)
 VENTANA_INIT = dt.timedelta(minutes=15)
 PASO_SESGO = dt.timedelta(minutes=15)
 SESGO_MAXIMO = dt.timedelta(hours=14)
+REDACT_VERSION_MINIMA = 2
 
 HISTORICO = "historico"
 SIN_EVIDENCIA = "sin_evidencia"
@@ -735,6 +739,7 @@ def parsear(argv, hoy: dt.date):
     ap.add_argument("--corte", help=f"YYYY-MM-DD: desde esta fecha el split es examen (default: últimos {DIAS_EXAMEN} días)")
     ap.add_argument("--salida", help="JSONL de salida (default eval/sets/real/backfill_<fecha>.jsonl)")
     ap.add_argument("--config", default=EMAIL_INDEX, help=argparse.SUPPRESS)
+    ap.add_argument("--permitir-redact-v1", action="store_true", help="solo para pruebas: permite redact anterior a la versión 2")
     ap.add_argument("--hash", dest="hash_id", help="imprime el hash de un id de mensaje y sale")
     args = ap.parse_args(argv)
     if args.hash_id:
@@ -766,6 +771,14 @@ def main(argv=None, *, graph: LectorGraph | None = None, abrir_pg=None, hoy: dt.
     if args.hash_id:
         print(hash_id(args.hash_id))
         return 0
+    version = getattr(_modulo_redact, "REDACT_VERSION", 1)
+    if version < REDACT_VERSION_MINIMA and not args.permitir_redact_v1:
+        print(
+            f"ABORTADO: classifier.redact es versión {version} (< {REDACT_VERSION_MINIMA}) y deja escapar "
+            "nombres y direcciones en correos reales. Actualiza redact o usa --permitir-redact-v1 (solo pruebas).",
+            file=sys.stderr,
+        )
+        return 5
     if graph is None:
         from infrastructure.graphapi.graphapi import getToken
 
