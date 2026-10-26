@@ -278,6 +278,11 @@
 * **Bloqueante:** `redact()` dejó pasar 53 nombres, 7 direcciones, 6 coordenadas, 1 URL de mapa, 2 correos y 3 montos. No activar `CLASSIFIER_SHADOW` ni haiku con correos reales hasta mergear `redact-v2` (`session_01GRj3nHJi8AeCXJdsKvwAEY`). Advertencia añadida al runbook.
 * Sesión nueva: fix-holanda-indice · session_01WjEJyAUVg4bTSoA1wXQ8HM · `claude/e2c-fix-holanda-indice` (variable opcional `E2C_TEST_MAILBOX`). Decisión de alcance de buzones pendiente con el usuario.
 
+## 2026-10-26 · backfill: resumen
+
+* Rama `claude/e2c-backfill` (`25a9c34`), sin mergear. Verificado: `eval/backfill.py`, flags, transacción `READ ONLY`, guarda contra escritura, `--tablas prod` exige confirmación; `pytest -q` → 851 passed, 48 skipped, 1 xfailed. No se corrió contra datos ni esquema reales (afirmación de la sesión y consistente con el código).
+* Añadido el paso 7 (opcional, solo lectura) al runbook y la sección en [pruebas/evaluacion.md](pruebas/evaluacion.md). Riesgo anotado: el backfill redacta con `redact()` v1, insuficiente; tratar el set como sensible hasta `redact-v2`.
+
 ## 2026-10-24
 
 * Creación del bundle OKF del repositorio `e2c` (rama `claude/admiring-lovelace-3oh7g0`).

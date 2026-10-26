@@ -106,6 +106,10 @@ Commits `60d4376` y `719504c`, sobre `sintetico_v2`. Verificado en la rama: `pyt
 
 **Pendiente de decisión:** ajustar el prompt o `CLASSIFIER_MIN_CONFIDENCE` (hoy 0.7). Ajustar sobre el mismo set que se mide infla el resultado; el umbral se fijó antes de evaluar ([decisiones](../riesgos/decisiones.md)).
 
+# Backfill para el set real (rama `claude/e2c-backfill`, sin mergear)
+
+Commit `25a9c34`. `eval/backfill.py` arma el set real de solo lectura desde los buzones históricos y etiqueta automáticamente con lo que quedó en `emails_log`/`email_request`/`cooler_request` (la señal: las series que entran y salen de la sábana). Comando, etiquetas y revisión manual en el [runbook, paso 7](../deploy/runbook-lunes.md). Verificado: lectura en transacción `READ ONLY` y suite 851 passed, 48 skipped, 1 xfailed; **no se corrió contra datos ni esquema reales**. Las etiquetas son automáticas y aproximadas: "sin rastro" no es `no_os`, así que no hay negativos fiables sin revisión manual. Medir con ese set no autoriza la activación mientras `redact()` siga insuficiente.
+
 # Lo que NO está medido
 
 * Haiku sobre correos reales (sobre `sintetico_v2` ya hay una medición reportada, arriba). No existe el set real (espera los correos de ejemplo).

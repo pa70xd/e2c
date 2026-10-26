@@ -98,3 +98,27 @@ Variables nuevas, todas opcionales y sin valores en el repo: `CLASSIFIER_GATE`, 
 * El aviso de "requiere revisión" vive solo en logs; no hay cola de revisión (ticket de la Fase 3). Sigue abierto si un hilo puede cancelar filas ya aceptadas.
 * Datos personales en el historial de git y CSV con datos reales; ver [seguridad](../riesgos/seguridad.md).
 * Todo el resto de [bugs](../riesgos/bugs.md) marcado "reportado".
+
+# 7. Opcional, solo lectura: armar el set real con backfill
+
+Rama `claude/e2c-backfill` (commit `25a9c34`), **sin mergear**. Verificado en la rama: `eval/backfill.py` y `eval/querys/*.sql` existen; el código abre PostgreSQL con `SET TRANSACTION READ ONLY`, tiene una guarda contra sentencias de escritura y `--tablas prod` exige `--confirmo-solo-lectura`; `python -m pytest -q` → 851 passed, 48 skipped, 1 xfailed. Lee los buzones de `config/email_index.json` (Graph solo GET) y los cruza con `emails_log`, `email_request` y `cooler_request` (solo SELECT).
+
+Con tus credenciales de siempre (`CLIENT_ID`, `CLIENT_SECRET`, `TENANT_ID`, `SECRET_PG_ACC`, `DB_HOST`, `DB_NAME`, `DB_PORT`; sin valores aquí):
+
+```
+python eval/backfill.py --tablas qa --desde 2026-07-01 --hasta 2026-10-26 --maximo 100
+```
+
+* `--tablas prod` exige `--confirmo-solo-lectura`; conviene un usuario de base de solo lectura.
+* Salida: `eval/sets/real/backfill_<fecha>.jsonl` (ignorado por git) y `_revision.jsonl` con lo que no tiene evidencia.
+* Etiquetas automáticas: filas generadas → `nueva_solicitud`; en un hilo, cambios de filas dentro de 10 minutos → agregar/modificar/cancelar; REPARE con OS adjuntas → categoría `cierre` (no es un tipo del clasificador: `tipo_evento` nulo); sin rastro → `es_os` nulo, **nunca `no_os`**.
+* Split ajuste|examen por `--corte` (default: últimos 30 días a examen).
+* Evaluar: `python eval/run_eval.py --provider regex --set <archivo> --solo-etiquetados --split examen`.
+
+**Revisar a mano:** todo `_revision.jsonl`; el PII residual en los textos redactados; `thread_ctx` (reconstruido, aproximado); el desfase de huso entre `cooler_request` y `emails_log`.
+
+**Advertencias:**
+
+* **Aún no se ha corrido contra datos reales ni contra el esquema real**: las columnas salen de los SQL del repo y los valores de `direction` se asumen de `detect_direccion`.
+* **`redact()` es insuficiente** ([correos reales](../pruebas/correos-reales.md)): el backfill redacta con la versión actual, así que el set generado puede traer nombres, direcciones o montos. Trátalo como dato sensible, no lo subas al repo ni lo mandes a un proveedor externo hasta mergear `redact-v2`.
+* Haiku sigue sin medirse sobre correos reales.
