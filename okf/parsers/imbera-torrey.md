@@ -7,7 +7,7 @@ tags: [parsers, imbera, torrey, fase-4]
 
 # Estado
 
-Rama `claude/e2c-imbera-torrey` (commits `07f3fea`, `b4cb7ac` y `01bf07a`, con la base `3732c25` ya mergeada en la rama), **sin mergear**. Verificado en la rama: existen `parsers/imbera.py`, `parsers/torrey.py`, `parsers/imbera_parse/` (lector, layout, clasificación, business, sabana, process_data, conciliación, mensajes, flujo, perfil), `parsers/torrey_parse/hielo.py`, `config/customers/{imbera,torrey}/`, `repository/imbera/` (con 2 SQL de OS) y las entradas `IMBERA_INIT/REPLY` y `TORREY_INIT/REPLY` en `src/service.py`; `python -m pytest -q` → **1081 passed, 2 failed, 48 skipped, 1 xfailed** en mi contenedor (los 2 fallos son por falta de `odfpy`; 1081 + 2 = 1083, la cifra de la sesión); hay 17 archivos golden de Imbera/Torrey (la sesión dice que son nuevos y que ninguno de los existentes cambió; no lo comparé). Ambos clientes están detrás de `E2C_CLIENTES_HABILITADOS` ([despliegue](../deploy/despliegue.md)). Ningún golden existente cambió (afirmación de la sesión).
+Rama `claude/e2c-imbera-torrey` (commits `07f3fea`, `b4cb7ac` y `01bf07a`, con la base `3732c25` ya mergeada en la rama), **sin mergear**. Verificado en la rama: existen `parsers/imbera.py`, `parsers/torrey.py`, `parsers/imbera_parse/` (lector, layout, clasificación, business, sabana, process_data, conciliación, mensajes, flujo, perfil), `parsers/torrey_parse/hielo.py`, `config/customers/{imbera,torrey}/`, `repository/imbera/` (con 2 SQL de OS) y las entradas `IMBERA_INIT/REPLY` y `TORREY_INIT/REPLY` en `src/service.py`; `python -m pytest -q` → **1081 passed, 2 failed, 48 skipped, 1 xfailed** (la orquestadora aprobó la rama `01bf07a` para merge) en mi contenedor (los 2 fallos son por falta de `odfpy`; 1081 + 2 = 1083, la cifra de la sesión); hay 17 archivos golden de Imbera/Torrey (la sesión dice que son nuevos y que ninguno de los existentes cambió; no lo comparé). Ambos clientes están detrás de `E2C_CLIENTES_HABILITADOS` ([despliegue](../deploy/despliegue.md)). Ningún golden existente cambió (afirmación de la sesión).
 
 # Lectura
 
@@ -23,6 +23,10 @@ Rama `claude/e2c-imbera-torrey` (commits `07f3fea`, `b4cb7ac` y `01bf07a`, con l
 * **Rechazos:** serie vacía, modelo vacío, serie repetida y retiro/traslado. Las filas rechazadas se persisten como `REJECTED` con su motivo, y la respuesta lista aceptadas y rechazadas sin datos personales.
 * **Outbound:** la OS se toma del Excel (por serie) o del texto ("orden generada: <n>"); esto último se puede apagar por cliente. Si la OS no se asigna a una sola fila, no se aplica (revisión). "Espera de pieza" se trata como `no_os`.
 * **Torrey:** la máquina de hielo queda con cliente IMBERA y se contesta en el hilo de Torrey. Si falta la factura PDF, se avisa en la respuesta.
+
+# Nota técnica sobre el lector común
+
+Al iterar `Tabla.df` con `iterrows()`, una celda vacía llegó como `NaN` y no como `None` (en el `df` directo sí es `None`). El adaptador de Imbera lo cubre; el tema está asignado a la sesión del lector (sin confirmar corrección). Ver [lector](lector.md).
 
 # Pendientes
 

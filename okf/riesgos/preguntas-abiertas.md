@@ -35,11 +35,21 @@ tags: [pendientes, negocio]
 
 # Imbera y Torrey (Fase 4, negocio)
 
-* ¿Cómo se nombra en la base el sub-cliente de Imbera (hoy va a `cbu`)?
-* ¿Cuál es el criterio exacto de garantía y la lista de clientes institucionales?
-* ¿Cuál es el formato de la OS (¿403?)?
-* En Torrey, ¿sin factura PDF se rechaza o solo se avisa? ¿El hielo va en un `email_request` aparte? ¿Cuál es el catálogo de modelos de hielo?
-* Penafiel usa el catálogo de Danone (no tiene propio): ¿es correcto?
+La orquestadora los lleva al usuario; la sesión no inventó nada. Archivos: `config/customers/imbera/reglas_imbera.py` y `config/customers/torrey/reglas_torrey.py`.
+
+Imbera:
+
+1. ¿Cómo se nombra al sub-cliente en la base? Hoy va a `cooler_request.cbu` tal como viene en el asunto o el cuerpo; solo se reconocen JUMEX, PISA y ELECTROLIT. Sin catálogo no se separa el cliente de la plaza en "SOLICITUD DE OS PARA <distribuidor> <plaza>".
+2. ¿Cuál es el criterio exacto de garantía? Hoy cualquier señal la marca: la palabra en el asunto, un PDF adjunto (cualquier PDF cuenta como factura), la foto de la placa (solo se reconoce por el nombre del archivo), un equipo nuevo dañado o el buzón de garantías. La validación es de la etapa 2.
+3. ¿Qué clientes son institucionales? La lista está vacía, así que la instalación no se restringe.
+4. ¿Cuál es el formato de la OS de REPARE para Imbera y Torrey (¿prefijo 403 como Danone?)? Hoy cualquier OS concilia la fila como ACCEPTED.
+5. Los seguimientos y las consultas de estatus sin Excel se ignoran y no se responden. ¿Debe responderse?
+
+Torrey:
+
+6. ¿La falta de factura PDF debe rechazar la solicitud? Hoy solo se avisa en la respuesta.
+7. Las máquinas de hielo quedan con `cooler_request.cliente = IMBERA` dentro del `email_request` de Torrey. ¿Deben ir en un `email_request` aparte con customer imbera?
+8. Falta un catálogo de modelos de máquinas de hielo; hoy solo se detectan por el texto ("máquina/fábrica de hielo", "ice maker").
 
 # KOF (Fase 4, negocio)
 

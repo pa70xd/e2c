@@ -379,6 +379,10 @@
 
 * Rama `claude/e2c-imbera-torrey` (`01bf07a`), sin mergear. Verificado: usan `leer_adjunto` con `si_coinciden`, los buzones están en `email_index.json`, `pytest -q` → 1081 passed, 2 failed (falta `odfpy`), 48 skipped, 1 xfailed. Reemplaza lo anotado sobre el adaptador propio.
 
+## 2026-10-26 · Imbera y Torrey: resumen final
+
+* Rama `claude/e2c-imbera-torrey` (`01bf07a`) aprobada para merge, sin confirmar en la base. Los 8 TODO de negocio quedaron detallados en `riesgos/preguntas-abiertas.md`. Anotada la nota técnica del lector (`NaN` vs `None` en `iterrows()`).
+
 ## 2026-10-24
 
 * Creación del bundle OKF del repositorio `e2c` (rama `claude/admiring-lovelace-3oh7g0`).
