@@ -12,6 +12,18 @@ Uso:
   ``src/service.py`` (mensajes de hilo y ``init`` de Holanda y Heineken).
 * ``debe_continuar(decision, thread_ctx)``: si el correo sigue al parser.
 
+Duda del modelo (usuario, 2026-10-26): en etapa ``reply``, si el gate externo
+cae SOLO por confianza baja (``gate:confianza_baja``), la decisión de regex no
+se usa para aplicar cambios por texto: la ``Decision`` sale sin filas y con
+``motivo_revision = "clasificación dudosa"`` (``review`` avisa a REPARE). El
+gate sigue siendo el de regex para que el parser (Excel, comandos bot,
+outbound) corra exactamente igual que antes. En ``init`` la duda cae a regex
+como siempre: ahí decide el Excel del parser, el texto no se aplica. Las demás
+caídas (timeout, error de API, sin key, PII sin redactar, salida inválida)
+siguen cayendo a regex sin aviso. ``extract`` no reporta confianza en el
+contrato; si algún proveedor llegara a caer por ``confianza_baja`` en el
+extract, aplica la misma regla.
+
 La ``Decision`` viaja como valor de retorno; no hay estado global (varios
 correos se procesan en paralelo). ``src/service.py`` la deja en el parser del
 correo como ``parser.classifier_decision`` (``Decision.filas_revision`` para
@@ -23,6 +35,8 @@ from __future__ import annotations
 from classifier import registry, validate
 from classifier.contracts import (
     ETAPA_INIT,
+    ETAPA_REPLY,
+    MOTIVO_CLASIFICACION_DUDOSA,
     PROVEEDOR_REGEX,
     Decision,
     ProveedorNoDisponible,
@@ -57,6 +71,11 @@ def _codigo_error(e: BaseException) -> str:
     return type(e).__name__
 
 
+def _es_duda(errores) -> bool:
+    """El proveedor respondió bien pero con confianza baja (y nada más)."""
+    return bool(errores) and all(e.endswith(":confianza_baja") for e in errores)
+
+
 def _log(decision: Decision, ctx: ThreadCtx) -> None:
     print(
         f"[CLASSIFIER] etapa={ctx.etapa} cliente={ctx.customer} "
@@ -64,7 +83,7 @@ def _log(decision: Decision, ctx: ThreadCtx) -> None:
         f"tipo={decision.tipo_evento} es_os={decision.es_os} "
         f"confidence={decision.gate.confidence:.2f} extract={decision.proveedor_extract} "
         f"filas={len(decision.rows)} revision={len(decision.filas_revision)} "
-        f"fallbacks={list(decision.fallbacks)}"
+        f"fallbacks={list(decision.fallbacks)} motivo_revision={decision.motivo_revision}"
     )
 
 
@@ -78,6 +97,9 @@ def decidir(subject, body, thread_ctx: ThreadCtx) -> Decision:
     nombre_extract = registry.nombre_extract()
     fallbacks: list[str] = []
     redactado: tuple | None = None
+    # Duda del modelo en un hilo: revisión humana en lugar de regex.
+    duda = False
+    puede_dudar = thread_ctx.etapa == ETAPA_REPLY
 
     def texto_redactado():
         nonlocal redactado
@@ -106,6 +128,7 @@ def decidir(subject, body, thread_ctx: ThreadCtx) -> Decision:
             errores = validate.validar_gate(resultado, thread_ctx, registry.min_confidence())
             if errores:
                 fallbacks.append(f"gate:{nombre_gate}:{','.join(errores)}")
+                duda = puede_dudar and _es_duda(errores)
             else:
                 gate, proveedor_gate = resultado, nombre_gate
         except Exception as e:
@@ -116,7 +139,7 @@ def decidir(subject, body, thread_ctx: ThreadCtx) -> Decision:
     rows = None
     invalidas: tuple = ()
     proveedor_extract = PROVEEDOR_REGEX
-    if gate.es_os and nombre_extract != PROVEEDOR_REGEX:
+    if gate.es_os and nombre_extract != PROVEEDOR_REGEX and not duda:
         try:
             proveedor = registry.cargar(nombre_extract)
             _, b = texto_redactado()
@@ -126,6 +149,7 @@ def decidir(subject, body, thread_ctx: ThreadCtx) -> Decision:
             errores, validas, invalidas = validate.separar_invalidas(salida, gate, thread_ctx)
             if errores:
                 fallbacks.append(f"extract:{nombre_extract}:{','.join(errores[:10])}")
+                duda = puede_dudar and _es_duda(errores)
             else:
                 rows, proveedor_extract = validas, nombre_extract
         except Exception as e:
@@ -133,8 +157,12 @@ def decidir(subject, body, thread_ctx: ThreadCtx) -> Decision:
     if rows is None:
         rows = tuple(regex_provider.extract(body, thread_ctx, gate=gate)) if gate.es_os else ()
 
-    aplicables, revision = validate.separar_revision(rows, gate, thread_ctx)
-    revision = invalidas + revision
+    if duda:
+        # Nada por texto: ni filas de regex ni las reglas de cancelar_solicitud.
+        rows, aplicables, revision = (), (), ()
+    else:
+        aplicables, revision = validate.separar_revision(rows, gate, thread_ctx)
+        revision = invalidas + revision
     decision = Decision(
         gate=gate,
         proveedor_gate=proveedor_gate,
@@ -143,6 +171,7 @@ def decidir(subject, body, thread_ctx: ThreadCtx) -> Decision:
         filas_aplicables=aplicables,
         filas_revision=revision,
         fallbacks=tuple(fallbacks),
+        motivo_revision=MOTIVO_CLASIFICACION_DUDOSA if duda else None,
     )
 
     if nombre_gate != PROVEEDOR_REGEX or nombre_extract != PROVEEDOR_REGEX:

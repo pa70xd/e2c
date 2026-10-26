@@ -16,7 +16,7 @@ import re
 
 class HOLANDA_READER:
     NAMES_COLUMNS = NAMES_COLUMNS
-    EXCEL_EXTENSIONS = (".xlsx", ".xls")
+    EXCEL_EXTENSIONS = (".xlsx", ".xls", ".xlsm", ".ods")
 
     @staticmethod
     async def get_adjuntos(
