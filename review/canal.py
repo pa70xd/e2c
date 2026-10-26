@@ -30,6 +30,9 @@ def debe_atender(decision: Decision, ctx: ThreadCtx, email) -> bool:
         return False
     if decision is None or ctx is None:
         return False
+    if decision.motivo_revision is not None:
+        # Clasificación dudosa: nada por texto (ver ``debe_avisar_duda``).
+        return False
     if ctx.direccion != "inbound" or not ctx.request_code:
         return False
     if getattr(email, "has_attachments", False):
@@ -39,6 +42,33 @@ def debe_atender(decision: Decision, ctx: ThreadCtx, email) -> bool:
     if decision.tipo_evento == CANCELAR_SOLICITUD:
         return ctx.filas is not None
     return bool(decision.filas_aplicables or decision.filas_revision)
+
+
+def debe_avisar_duda(decision: Decision, ctx: ThreadCtx, email) -> bool:
+    """El clasificador dudó (``Decision.motivo_revision``) sobre un inbound
+    del cliente sin Excel. Con Excel decide el Excel y el texto no se aplica,
+    igual que en ``debe_atender``. Lo que escribe REPARE no se avisa."""
+    if decision is None or ctx is None or decision.motivo_revision is None:
+        return False
+    if ctx.direccion != "inbound":
+        return False
+    return not getattr(email, "has_attachments", False)
+
+
+async def avisar_duda(decision: Decision, ctx: ThreadCtx, enviar) -> bool:
+    """Manda a REPARE, en el hilo, el aviso "requiere revisión" por
+    clasificación dudosa. No aplica nada ni detiene al parser. True si se
+    envió."""
+    print(
+        f"[REVIEW] cliente={ctx.customer} request_code={ctx.request_code} "
+        f"motivo={decision.motivo_revision} tipo={decision.tipo_evento}"
+    )
+    try:
+        await enviar(msj.msj_clasificacion_dudosa(ctx.request_code))
+    except Exception as e:
+        print(f"[REVIEW][ERROR] aviso de clasificación dudosa no enviado: {type(e).__name__}")
+        return False
+    return True
 
 
 def _filas_mensaje(filas):

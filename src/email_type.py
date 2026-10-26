@@ -19,6 +19,30 @@ def with_test_mailbox(mailboxes: dict) -> dict:
     return mailboxes
 
 
+# Variable de entorno opcional con los clientes habilitados, separados por
+# comas. Sin ella valen SOLO los clientes de siempre. Con ella se suman los que
+# indique (los de siempre no se pueden apagar por aquí). Un cliente del índice
+# que no esté habilitado se registra en el log y se ignora (sin respuesta).
+CLIENTES_HABILITADOS_ENV = "E2C_CLIENTES_HABILITADOS"
+CLIENTES_BASE = ("danone", "holanda", "penafiel", "heineken")
+ALIAS_CLIENTES = {"kdrp": "penafiel", "hnk": "heineken"}
+
+
+def clientes_habilitados() -> set[str]:
+    """Clientes que el servicio atiende (se lee en cada llamada)."""
+    habilitados = set(CLIENTES_BASE)
+    for item in os.getenv(CLIENTES_HABILITADOS_ENV, "").split(","):
+        item = item.strip().lower()
+        if item:
+            habilitados.add(ALIAS_CLIENTES.get(item, item))
+    return habilitados
+
+
+def cliente_habilitado(cliente: str) -> bool:
+    # El buzón de pruebas ("test") lo gobierna E2C_TEST_MAILBOX, no este flag.
+    return cliente == "test" or cliente in clientes_habilitados()
+
+
 class EMAIL_TYPE:
 
     def __init__(self, config_path: str = "config/email_index.json"):
@@ -165,7 +189,8 @@ class EMAIL_TYPE:
             address = recipient.email_address.address.lower().strip()
 
             if address in self.mailboxes:
-                return self.mailboxes[address]
+                if self._habilitado(self.mailboxes[address]):
+                    return self.mailboxes[address]
 
         # Si no lo encuentra, intenta identificar por remitente
         sender = email.from_
@@ -175,9 +200,26 @@ class EMAIL_TYPE:
             address = sender.email_address.address.lower().strip()
 
             if address in self.mailboxes:
-                return self.mailboxes[address]
+                if self._habilitado(self.mailboxes[address]):
+                    return self.mailboxes[address]
 
         return None
+
+    def _habilitado(self, cliente: str) -> bool:
+        if cliente_habilitado(cliente):
+            return True
+        print(
+            f"[INFO] Cliente '{cliente}' no habilitado "
+            f"({CLIENTES_HABILITADOS_ENV}); correo ignorado"
+        )
+        return False
+
+    def _buzones_habilitados(self) -> dict:
+        return {
+            address: cliente
+            for address, cliente in self.mailboxes.items()
+            if cliente_habilitado(cliente)
+        }
 
     def detect_direccion(self, email):
 
@@ -198,9 +240,15 @@ class EMAIL_TYPE:
         body = (email.unique_body.content or "").lower()
         body = re.sub(r"\s+", " ", body)
 
-        sender_is_repare = sender_address in self.mailboxes
+        buzones = self._buzones_habilitados()
+        if len(buzones) < len(self.mailboxes):
+            for address in [sender_address, *recipient_addresses]:
+                if address in self.mailboxes and address not in buzones:
+                    self._habilitado(self.mailboxes[address])
+
+        sender_is_repare = sender_address in buzones
         recipient_is_repare = any(
-            addr in self.mailboxes
+            addr in buzones
             for addr in recipient_addresses
         )
 
@@ -210,20 +258,20 @@ class EMAIL_TYPE:
             and recipient_is_repare
             and "estimado usuario repare" in body
         ):
-            return self.mailboxes[sender_address], "bot"
+            return buzones[sender_address], "bot"
 
         # REPARE -> REPARE, respuesta a un correo del bot
         elif sender_is_repare and recipient_is_repare:
-            return self.mailboxes[sender_address], "reply_to_bot"
+            return buzones[sender_address], "reply_to_bot"
 
         # Cliente -> REPARE
         for address in recipient_addresses:
-            if address in self.mailboxes:
-                return self.mailboxes[address], "inbound"
+            if address in buzones:
+                return buzones[address], "inbound"
 
         # REPARE -> Cliente
         if sender_is_repare:
-            return self.mailboxes[sender_address], "outbound"
+            return buzones[sender_address], "outbound"
 
         return None
 

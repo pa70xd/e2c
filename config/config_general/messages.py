@@ -928,6 +928,53 @@ class MENSAJES_REPARE:
         </div>
         """
 
+    def msj_clasificacion_dudosa(self, request_code):
+        """Aviso a REPARE: el clasificador dudó sobre un mensaje del cliente;
+        no se aplicó nada por texto y requiere revisión humana."""
+        from html import escape
+
+        referencia = escape(str(request_code)) if request_code else "SIN SOLICITUD"
+
+        return f"""
+        <div style="
+            font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Monaco,
+                        Consolas, 'Liberation Mono', 'Courier New', monospace;
+            max-width: 680px;
+            color: #24292f;
+            font-size: 14px;
+            line-height: 1.6;
+        ">
+
+            <p style="font-size: 15px; margin-bottom: 20px;">
+                🤖 Estimado usuario REPARE,
+            </p>
+
+            <div style="
+                border: 1px solid #d0d7de;
+                border-radius: 6px;
+                padding: 20px;
+                background: #f6f8fa;
+            ">
+
+                <div style="
+                    font-size: 14px;
+                    font-weight: bold;
+                    margin-bottom: 12px;
+                ">
+                    REVIEW REQUIRED · {referencia}
+                </div>
+
+                <div style="color: #57606a;">
+                    Clasificación dudosa: no fue posible determinar con
+                    seguridad qué pide este mensaje. No se aplicó ningún
+                    cambio por texto; el mensaje <b>requiere revisión</b>.
+                </div>
+
+            </div>
+
+        </div>
+        """
+
     def msj_cambios_hilo(self, request_code: str, aplicadas, revision, sin_cambios=()):
         """Respuesta al mensaje del hilo: qué se aplicó y qué quedó en revisión."""
         from html import escape

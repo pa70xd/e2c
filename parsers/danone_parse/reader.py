@@ -21,7 +21,7 @@ from parsers.gen_parse.reader import GEN_READER
 
 class DANONE_READER:
     NAMES_COLUMNS = NAMES_COLUMNS
-    EXCEL_EXTENSIONS = (".xlsx", ".xls")
+    EXCEL_EXTENSIONS = (".xlsx", ".xls", ".xlsm", ".ods")
 
     @staticmethod
     async def get_adjuntos(
@@ -89,12 +89,9 @@ class DANONE_READER:
                 ]
             elif excel_file.engine == "xlrd":
                 visible_sheets = [
-                    sheet_name
-                    for sheet_name, visibility in zip(
-                        excel_file.sheet_names,
-                        excel_file.book.sheet_visibility
-                    )
-                    if visibility == 0
+                    sheet.name
+                    for sheet in excel_file.book.sheets()
+                    if sheet.visibility == 0
                 ]
             else:
                 visible_sheets = excel_file.sheet_names

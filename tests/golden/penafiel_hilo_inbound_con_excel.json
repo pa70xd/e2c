@@ -53,7 +53,7 @@
           "fecha_completado": null,
           "id_cliente": "2000011",
           "fecha_solicitud": "2026-03-02",
-          "modelo": "MODELO-P200",
+          "modelo": "CH170",
           "serie_fabricante": null,
           "serie_dnn_bnf": "PEN-S-0011",
           "tipo_servicio": "INSTALACION",
@@ -96,7 +96,7 @@
           "fecha_completado": null,
           "id_cliente": "2000012",
           "fecha_solicitud": "2026-03-02",
-          "modelo": "MODELO-P200",
+          "modelo": null,
           "serie_fabricante": null,
           "serie_dnn_bnf": "PEN-S-0012",
           "tipo_servicio": "RETIRO",
@@ -151,7 +151,7 @@
       "to": [
         "cliente.penafiel@repare.example.com"
       ],
-      "body": "<div style=\" font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; max-width: 680px; color: #24292f; font-size: 14px; line-height: 1.6; \"> <p style=\"font-size: 15px; margin-bottom: 20px;\"> 🤖 Estimado usuario REPARE, </p> <div style=\" border: 1px solid #d0d7de; border-radius: 6px; padding: 20px; background: #f6f8fa; \"> <div style=\" font-size: 14px; font-weight: bold; margin-bottom: 12px; \"> REQUEST UPDATED </div> <div style=\"color: #57606a;\"> Se ha detectado una nueva solicitud o actualización y se ha generado la <b>pre-sábana</b> correspondiente. </div> </div> <div style=\" margin-top: 18px; padding: 14px 16px; border: 1px solid #d0d7de; border-radius: 6px; background: #ffffff; \"> <div style=\" font-size: 12px; color: #57606a; margin-bottom: 5px; \"> FOLIO </div> <div style=\" font-size: 18px; font-weight: bold; letter-spacing: 1px; \"> REPARE_000042 </div> </div> </div>",
+      "body": "<div style=\" font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; max-width: 680px; color: #24292f; font-size: 14px; line-height: 1.6; \"> <p style=\"font-size: 15px; margin-bottom: 20px;\"> 🤖 Estimado usuario REPARE, </p> <div style=\" border: 1px solid #d0d7de; border-radius: 6px; padding: 20px; background: #f6f8fa; \"> <div style=\" font-size: 14px; font-weight: bold; margin-bottom: 12px; \"> REQUEST UPDATED </div> <div style=\"color: #57606a;\"> Se ha detectado una nueva solicitud o actualización y se ha generado la <b>pre-sábana</b> correspondiente. </div> </div> <div style=\" margin-top: 18px; padding: 14px 16px; border: 1px solid #d0d7de; border-radius: 6px; background: #ffffff; \"> <div style=\" font-size: 12px; color: #57606a; margin-bottom: 5px; \"> FOLIO </div> <div style=\" font-size: 18px; font-weight: bold; letter-spacing: 1px; \"> REPARE_000042 </div> </div> <p style=\"color: #57606a; margin-top: 12px;\">Modelos sin resolver: 1 equipo sin modelo; 1 modelo ambiguo.</p> </div>",
       "attachments": [
         {
           "name": "REPARE_000042|SABANA_MOVIMIENTO.xlsx",
@@ -529,7 +529,7 @@
                   "D001 | DISTRIBUIDORA EJEMPLO",
                   null,
                   null,
-                  "MODELO-P200",
+                  "CH170",
                   null,
                   "PEN-S-0011",
                   null,
@@ -894,7 +894,7 @@
                   "D001 | DISTRIBUIDORA EJEMPLO",
                   null,
                   null,
-                  "MODELO-P200",
+                  null,
                   null,
                   "PEN-S-0012",
                   null,
@@ -1343,7 +1343,7 @@
                 [
                   "2000011",
                   "2026-03-02",
-                  "MODELO-P200",
+                  "CH170",
                   "PEN-S-0011",
                   "INSTALACION",
                   "Abarrotes Ejemplo 11",
@@ -1362,7 +1362,7 @@
                 [
                   "2000012",
                   "2026-03-02",
-                  "MODELO-P200",
+                  null,
                   "PEN-S-0012",
                   "RETIRO",
                   "Abarrotes Ejemplo 12",
