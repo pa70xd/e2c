@@ -110,3 +110,18 @@ def test_calcula_modelo_llena_modelo_real():
         assert con.execute(
             'SELECT "MODELO_GEN","CATEGORIA_GEN","LINEA_GEN","MODELO_GEN_MOTIVO","ACTIVO_GEN","SERIE_GEN" FROM t'
         ).fetchone() == (unico, cat, lin, "exacto", "A1", "S1")
+
+
+def test_aviso_modelos_y_html():
+    con = duckdb.connect()
+    con.execute('CREATE TABLE t ("MODELO_GEN_MOTIVO" VARCHAR)')
+    con.execute("INSERT INTO t VALUES ('exacto'),('normalizado')")
+    assert modelos.aviso_modelos(con, "t") is None  # todo resuelto: no hay aviso
+    con.execute("INSERT INTO t VALUES ('no_en_catalogo'),('no_en_catalogo'),('no_en_catalogo'),('ambiguo'),('sin_modelo')")
+    aviso = modelos.aviso_modelos(con, "t")
+    assert aviso == "3 equipos sin modelo en catálogo; 1 equipo sin modelo; 1 modelo ambiguo"
+    html = modelos.agregar_aviso("<div><div>x</div></div>", aviso)
+    assert html.endswith("</div>") and aviso in html
+    assert modelos.agregar_aviso("<div>x</div>", None) == "<div>x</div>"
+    con.execute("CREATE TABLE sin_col (a INT)")
+    assert modelos.aviso_modelos(con, "sin_col") is None

@@ -14,6 +14,7 @@ from bot import commands as bot_commands
 from bot.perfiles import perfil_danone
 
 
+from parsers.core.modelos import aviso_modelos, agregar_aviso
 import os
 from dotenv import load_dotenv
 
@@ -192,7 +193,7 @@ class DANONE_INIT :
 
         if attachments or temporary_files:
             return {
-                "mensaje": msj.msj_send_presabana(request_code, link_email),
+                "mensaje": agregar_aviso(msj.msj_send_presabana(request_code, link_email), aviso_modelos(self.duckConn, table)),
                 "attachments": attachments,
                 "temporary_files": temporary_files,
             }
@@ -355,7 +356,7 @@ class DANONE_REPLY:
        
                 if attachments or temporary_files:
                     return {
-                        "mensaje": msj.msj_add_cliente(request_code, link_email),
+                        "mensaje": agregar_aviso(msj.msj_add_cliente(request_code, link_email), aviso_modelos(self.duckConn, table)),
                         "attachments": attachments,
                         "temporary_files": temporary_files,
                     }

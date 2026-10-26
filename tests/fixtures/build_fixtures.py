@@ -72,9 +72,9 @@ DANONE_HEADERS = [
 ]
 
 
-def _danone_row(n, servicio, cbu="DANONE", lat="19.4301", lon="-99.1301", fab=None, dnn=None, cp="06000"):
+def _danone_row(n, servicio, cbu="DANONE", lat="19.4301", lon="-99.1301", fab=None, dnn=None, cp="06000", modelo="MODELO-A100"):
     return [
-        f"10000{n:02d}", "2026-03-02", "MODELO-A100",
+        f"10000{n:02d}", "2026-03-02", modelo,
         fab if fab is not None else f"FAB-D-{n:04d}",
         dnn if dnn is not None else f"DNN-D-{n:04d}",
         servicio, "TRADICIONAL", "CENTRO", "CEDIS NORTE",
@@ -86,8 +86,8 @@ def _danone_row(n, servicio, cbu="DANONE", lat="19.4301", lon="-99.1301", fab=No
 def build_danone(out: Path) -> None:
     d = out / "danone"
     _write_xlsx(d / "solicitud_servicios.xlsx", DANONE_HEADERS, [
-        _danone_row(1, "INSTALACIÓN"),
-        _danone_row(2, "RETIRO", cbu="BONAFONT"),
+        _danone_row(1, "INSTALACIÓN", modelo="AVANT40"),            # catálogo: exacto
+        _danone_row(2, "RETIRO", cbu="BONAFONT", modelo="AT 200"),  # catálogo: normalizado (AT-200)
         _danone_row(3, "REPARACION"),
         _danone_row(4, "INSTALACION", cbu="CBU-DESCONOCIDO"),   # rechazo: CBU
         _danone_row(5, "TRASLADO"),                              # rechazo: tipo (bug conocido, ver okf/riesgos/bugs.md)
@@ -95,8 +95,8 @@ def build_danone(out: Path) -> None:
         _danone_row(7, "INSTALACION", fab="", dnn=""),           # rechazo: sin serie
     ])
     _write_xlsx(d / "ampliacion_servicios.xlsx", DANONE_HEADERS, [
-        _danone_row(11, "INSTALACION"),
-        _danone_row(12, "RETIRO"),
+        _danone_row(11, "INSTALACION", modelo="CH170"),            # catálogo: ambiguo
+        _danone_row(12, "RETIRO", modelo=""),                      # sin modelo
     ])
     _write_xlsx(
         d / "respuesta_os.xlsx",
@@ -151,9 +151,9 @@ PENAFIEL_HEADERS = [
 ]
 
 
-def _penafiel_row(n, servicio, serie=None, id_cliente=None, lat="19.4402", lon="-99.1402"):
+def _penafiel_row(n, servicio, serie=None, id_cliente=None, lat="19.4402", lon="-99.1402", modelo="MODELO-P200"):
     return [
-        id_cliente if id_cliente is not None else f"20000{n:02d}", "2026-03-02", "MODELO-P200",
+        id_cliente if id_cliente is not None else f"20000{n:02d}", "2026-03-02", modelo,
         serie if serie is not None else f"PEN-S-{n:04d}", servicio,
         f"Abarrotes Ejemplo {n}", f"Avenida Inventada {200 + n}", "Calle Uno", "Calle Dos", "06100",
         "Ciudad Ejemplo", "Colonia Muestra", lat, lon, _tel(n + 100), f"Falla sintetica {n}", "TRADICIONAL",
@@ -163,16 +163,16 @@ def _penafiel_row(n, servicio, serie=None, id_cliente=None, lat="19.4402", lon="
 def build_penafiel(out: Path) -> None:
     d = out / "penafiel"
     _write_xlsx(d / "solicitud_servicios.xlsx", PENAFIEL_HEADERS, [
-        _penafiel_row(1, "INSTALACION"),
-        _penafiel_row(2, "RETIRO"),
+        _penafiel_row(1, "INSTALACION", modelo="AVANT40"),            # catálogo: exacto
+        _penafiel_row(2, "RETIRO", modelo="AT 200"),                 # catálogo: normalizado (AT-200)
         _penafiel_row(3, "REPARACION"),
         _penafiel_row(4, "INSTALACION", serie=""),     # rechazo: serie vacía (conserva MODELO para no ser descartado por el reader)
         _penafiel_row(5, "TRASLADOS"),
         _penafiel_row(6, "RETIRO", id_cliente=""),   # rechazo: ID de cliente vacío
     ])
     _write_xlsx(d / "ampliacion_servicios.xlsx", PENAFIEL_HEADERS, [
-        _penafiel_row(11, "INSTALACION"),
-        _penafiel_row(12, "RETIRO"),
+        _penafiel_row(11, "INSTALACION", modelo="CH170"),           # catálogo: ambiguo
+        _penafiel_row(12, "RETIRO", modelo=""),                     # sin modelo
     ])
     _write_xlsx(
         d / "respuesta_os.xlsx",

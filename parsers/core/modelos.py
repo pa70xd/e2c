@@ -3,6 +3,9 @@
 Sin fuzzy matching ni LLM: un modelo mal asignado es peor que uno vacío.
 Orden: exacto (trim + mayúsculas) -> normalizado (sin espacios, guiones,
 puntos ni barras) -> vacío con motivo.
+
+Nota: Peñafiel no tiene catálogo propio y usa el de Danone
+(config/customers/danone/model_line_cat.py). Pendiente de confirmar con el usuario.
 """
 
 import logging
@@ -180,3 +183,44 @@ def llenar_modelo(duck_conn, table: str, col_activo: str, col_serie: str) -> Non
         ''')
     finally:
         duck_conn.unregister("_modelos_resueltos")
+
+
+def conteo_motivos(duck_conn, table: str) -> dict:
+    """Filas de la tabla de trabajo por MODELO_GEN_MOTIVO (vacío si la columna no existe)."""
+    try:
+        filas = duck_conn.execute(
+            f'SELECT "MODELO_GEN_MOTIVO", COUNT(*) FROM "{table}" '
+            'WHERE "MODELO_GEN_MOTIVO" IS NOT NULL GROUP BY 1'
+        ).fetchall()
+    except Exception:
+        return {}
+    return {m: n for m, n in filas}
+
+
+def aviso_modelos(duck_conn, table: str) -> str | None:
+    """Línea para la respuesta por correo con lo que no se resolvió, o None si
+    todo resolvió (en ese caso la respuesta no cambia)."""
+    c = conteo_motivos(duck_conn, table)
+    partes = []
+    if c.get(NO_EN_CATALOGO):
+        n = c[NO_EN_CATALOGO]
+        partes.append(f"{n} {'equipo' if n == 1 else 'equipos'} sin modelo en catálogo")
+    if c.get(SIN_MODELO):
+        n = c[SIN_MODELO]
+        partes.append(f"{n} {'equipo' if n == 1 else 'equipos'} sin modelo")
+    if c.get(AMBIGUO):
+        n = c[AMBIGUO]
+        partes.append(f"{n} {'modelo ambiguo' if n == 1 else 'modelos ambiguos'}")
+    return "; ".join(partes) or None
+
+
+def agregar_aviso(html: str, aviso: str | None) -> str:
+    """Inserta el aviso como último párrafo, antes del cierre del contenedor."""
+    if not aviso:
+        return html
+    bloque = (
+        '<p style="color: #57606a; margin-top: 12px;">'
+        f"Modelos sin resolver: {aviso}.</p>\n"
+    )
+    i = html.rfind("</div>")
+    return html[:i] + bloque + html[i:] if i >= 0 else html + bloque
