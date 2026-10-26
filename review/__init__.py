@@ -12,6 +12,10 @@ Recibe la ``Decision`` y el ``ThreadCtx`` que devuelve
   en lugar del parser. Solo con ``CLASSIFIER_EXTRACT`` distinto de ``regex``.
 * ``atender(decision, ctx, repo, enviar)``: aplica, avisa a REPARE las filas
   que requieren revisión y devuelve la respuesta del hilo.
+* ``debe_avisar_duda(decision, ctx, email)`` / ``avisar_duda(decision, ctx,
+  enviar)``: si el gate externo dudó en un inbound sin Excel
+  (``Decision.motivo_revision``), avisa a REPARE "requiere revisión" sin
+  aplicar nada; el parser corre igual que siempre.
 
 Reglas de negocio (usuario, 2026-10-25):
 
@@ -23,7 +27,7 @@ Reglas de negocio (usuario, 2026-10-25):
 """
 
 from review.aplicador import FilaAplicada, FilaEnRevision, Resultado, aplicar
-from review.canal import atender, debe_atender
+from review.canal import atender, avisar_duda, debe_atender, debe_avisar_duda
 from review.contexto import cargador
 
 __all__ = [
@@ -32,6 +36,8 @@ __all__ = [
     "Resultado",
     "aplicar",
     "atender",
+    "avisar_duda",
     "cargador",
     "debe_atender",
+    "debe_avisar_duda",
 ]
