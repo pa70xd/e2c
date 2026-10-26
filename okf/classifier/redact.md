@@ -20,7 +20,25 @@ Rama `claude/e2c-redact` (commit `0d8fc00`), **mergeada en la base** `claude/adm
 * `[FIRMA]`: bloque tras una despedida (Saludos, Atentamente, Atte., Quedo atento/a, Gracias, Slds, Cordialmente, Best regards...), "--", "Enviado desde mi...", y pies legales (Aviso de privacidad, "Este correo es confidencial...").
 * `[ID]`: RFC/CURP con fecha AAMMDD válida o etiquetados, nombre en la línea de despedida, nombre antes de `<correo>`, cabeceras De/Para/Cc, "Contacto:/Responsable:/Solicitante:".
 
-# Qué NO redacta
+# redact v2 (rama `claude/e2c-redact-v2`, sin mergear)
+
+Commit `ae4da5e`. Verificado en la rama: `pytest -q` → **993 passed, 48 skipped, 1 xfailed**; `eval/run_eval.py --provider regex` sobre `sintetico.jsonl` sin cambios (gate 0.7419); y una prueba mía con texto inventado: cabeceras De/Para, saludo con nombre, firma sin despedida conocida (nombre en mayúsculas + cargo + Cel), coordenadas, URL de mapa y monto quedan redactados, y folio, serie y modelo intactos; idempotente.
+
+Amplía `redact()` con los patrones F1-F9 (según la sesión):
+
+* Nombres en cabeceras De/Para/CC (minúsculas, comillas, "Apellido, Nombre", línea siguiente, mitad de línea), "Nombre [mailto:]", "El … Nombre escribió:".
+* Correos con espacios; campos etiquetados (se redacta el valor, no la etiqueta); tablas con barras/tabuladores y aplanadas (N encabezados + N valores).
+* Coordenadas y URLs de mapas; firmas sin despedida conocida; saludos con nombre; montos.
+* Marcadores nuevos: `[UBICACION]`, `[MONTO]`, `[DIRECCION]`. Corrige el falso positivo "Atención: El dominio … va a …" → `[ID]`.
+* API igual: `redact(text, conservar=())`, solo stdlib, idempotente.
+
+**Criterios nuevos:** no se tocan folios, tickets, series, IDs tipo `IMB-070526_4960`, modelos, tipos de servicio, cadenas (OXXO/Jumex/KOF), razones sociales ni valores genéricos. Un nombre de tienda con nombre de persona se conserva como dato del punto de venta, pero se redacta tras etiqueta de persona, saludo o firma. "Dirección:"/"Domicilio:" sin calificar y las líneas de punto de venta **no** se redactan: solo envío, entrega, garantía, facturación, fiscal, "ubicada en" y columnas calle/colonia/CP.
+
+**Límites (de la sesión):** nombres sin contexto siguen sin detectarse; tablas aplanadas de una sola fila.
+
+> **El bloqueo sigue vigente.** La sesión aún no re-probó `redact` v2 con la batería real de los 21 correos dentro del contenedor, y yo no los tengo. Hasta que se haga y se mergee, no activar `CLASSIFIER_SHADOW` ni haiku con correos reales. Con una muestra de 21, además, "0 fugas" no prueba cobertura general: la redacción por patrones puede dejar pasar nombres sin contexto.
+
+# Qué NO redacta (v1, sigue valiendo en v2 salvo lo indicado arriba)
 
 Folios, series (p. ej. `ABC123456`, `E64190100186`, 12/18 dígitos), modelos (p. ej. `FVC14-E1`), tipo de servicio, acciones (alta/baja/retiro/cancelar/cambio), direcciones de punto de venta, asunto, fechas.
 

@@ -79,7 +79,7 @@ Fase 3 (clasificador, mergeada): `classifier/`, `review/` y el proveedor haiku. 
 
 Para repetir la medición de la línea base: `python eval/run_eval.py --provider regex --set eval/sets/sintetico.jsonl` (hoy precisión de gate 0.7419, sale con código 1).
 
-**ADVERTENCIA BLOQUEANTE (PII): no actives `CLASSIFIER_SHADOW` ni haiku con correos reales hasta mergear `redact-v2`** (rama `claude/e2c-redact-v2`). Sobre 21 correos reales, `redact()` dejó pasar nombres, direcciones, coordenadas, correos y montos; el texto se enviaría a un proveedor externo. Ver [correos reales](../pruebas/correos-reales.md).
+**ADVERTENCIA BLOQUEANTE (PII): no actives `CLASSIFIER_SHADOW` ni haiku con correos reales hasta mergear `redact-v2` y re-probarlo con los 21 correos reales** (rama `claude/e2c-redact-v2`, lista pero sin mergear y sin esa re-prueba; ver [redact](../classifier/redact.md)). Sobre 21 correos reales, `redact()` dejó pasar nombres, direcciones, coordenadas, correos y montos; el texto se enviaría a un proveedor externo. Ver [correos reales](../pruebas/correos-reales.md).
 
 Modo sombra (`CLASSIFIER_SHADOW`, `CLASSIFIER_SHADOW_SAMPLE`; rama `claude/e2c-sombra`, sin mergear): ver [sombra](../classifier/sombra.md) para variables, el log `[CLASSIFIER_SHADOW]` y cómo exportarlo y medirlo con `eval/shadow_report.py`. Sigue sujeto a la advertencia de PII de arriba.
 

@@ -315,6 +315,12 @@
 
 * Variable nueva `E2C_CLIENTES_HABILITADOS` (sin ella solo corren los 4 clientes actuales); aún no verificada en código. Orden: lector-excel primero; KOF e Imbera/Torrey se adaptan a él; Oxxo en paralelo.
 
+## 2026-10-26 · redact-v2: resumen
+
+* Rama `claude/e2c-redact-v2` (`ae4da5e`), sin mergear. Verificado: `pytest -q` → 993 passed, 48 skipped, 1 xfailed; eval regex sin cambios (0.7419); prueba propia con texto inventado (cabeceras, saludo, firma, coordenadas, URL de mapa y monto redactados; folio, serie y modelo intactos; idempotente).
+* Documentado en [classifier/redact.md](classifier/redact.md): marcadores nuevos, criterios y límites.
+* **El bloqueo de sombra/haiku con correos reales sigue vigente:** falta re-probar con los 21 correos reales dentro del contenedor y mergear la rama.
+
 ## 2026-10-24
 
 * Creación del bundle OKF del repositorio `e2c` (rama `claude/admiring-lovelace-3oh7g0`).
