@@ -33,8 +33,12 @@ emails = [
     #"cliente.imbera@repare.com.mx",
     "cliente.kdrp@repare.com.mx",
     #"cliente.torrey@repare.com.mx"
-    "yael.hurtado@imberacooling.com"
 ]
+
+# Buzón de pruebas opcional (mismo que usa src/email_type.py).
+_test_mailbox = os.getenv("E2C_TEST_MAILBOX", "").strip()
+if _test_mailbox:
+    emails.append(_test_mailbox)
 
 def getToken():
     # Get OAuth Token
