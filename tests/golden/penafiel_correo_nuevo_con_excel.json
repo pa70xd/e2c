@@ -123,7 +123,7 @@
           "fecha_completado": null,
           "id_cliente": "2000001",
           "fecha_solicitud": "2026-03-02",
-          "modelo": "MODELO-P200",
+          "modelo": "AVANT40",
           "serie_fabricante": null,
           "serie_dnn_bnf": "PEN-S-0001",
           "tipo_servicio": "INSTALACION",
@@ -166,7 +166,7 @@
           "fecha_completado": null,
           "id_cliente": "2000002",
           "fecha_solicitud": "2026-03-02",
-          "modelo": "MODELO-P200",
+          "modelo": "AT 200",
           "serie_fabricante": null,
           "serie_dnn_bnf": "PEN-S-0002",
           "tipo_servicio": "RETIRO",
@@ -387,7 +387,7 @@
       "to": [
         "cliente.penafiel@repare.example.com"
       ],
-      "body": "<div style=\" font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; max-width: 680px; color: #24292f; font-size: 14px; line-height: 1.6; \"> <p style=\"font-size: 15px; margin-bottom: 20px;\"> 🤖 Estimado usuario REPARE, </p> <div style=\" border: 1px solid #d0d7de; border-radius: 6px; padding: 20px; background: #f6f8fa; \"> <div style=\" font-size: 14px; font-weight: bold; margin-bottom: 12px; \"> REQUEST RECEIVED </div> <div style=\"color: #57606a;\"> Hemos recibido su solicitud y ha iniciado el <b>proceso de validación</b>. </div> </div> <div style=\" margin-top: 18px; padding: 14px 16px; border: 1px solid #d0d7de; border-radius: 6px; background: #ffffff; \"> <div style=\" font-size: 12px; color: #57606a; margin-bottom: 5px; \"> FOLIO </div> <div style=\" font-size: 18px; font-weight: bold; letter-spacing: 1px; \"> REPARE_000101 </div> </div> <p style=\" color: #57606a; margin-top: 18px; \"> Se adjunta la <b>pre-sábana</b> correspondiente a su solicitud. </p> </div>",
+      "body": "<div style=\" font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; max-width: 680px; color: #24292f; font-size: 14px; line-height: 1.6; \"> <p style=\"font-size: 15px; margin-bottom: 20px;\"> 🤖 Estimado usuario REPARE, </p> <div style=\" border: 1px solid #d0d7de; border-radius: 6px; padding: 20px; background: #f6f8fa; \"> <div style=\" font-size: 14px; font-weight: bold; margin-bottom: 12px; \"> REQUEST RECEIVED </div> <div style=\"color: #57606a;\"> Hemos recibido su solicitud y ha iniciado el <b>proceso de validación</b>. </div> </div> <div style=\" margin-top: 18px; padding: 14px 16px; border: 1px solid #d0d7de; border-radius: 6px; background: #ffffff; \"> <div style=\" font-size: 12px; color: #57606a; margin-bottom: 5px; \"> FOLIO </div> <div style=\" font-size: 18px; font-weight: bold; letter-spacing: 1px; \"> REPARE_000101 </div> </div> <p style=\" color: #57606a; margin-top: 18px; \"> Se adjunta la <b>pre-sábana</b> correspondiente a su solicitud. </p> <p style=\"color: #57606a; margin-top: 12px;\">Modelos sin resolver: 2 equipos sin modelo en catálogo.</p> </div>",
       "attachments": [
         {
           "name": "REPARE_000101|SABANA_MOVIMIENTO.xlsx",
@@ -763,9 +763,9 @@
                 ],
                 [
                   "D001 | DISTRIBUIDORA EJEMPLO",
-                  null,
-                  null,
-                  "MODELO-P200",
+                  "13 | BARRIL",
+                  "OTROS",
+                  "AVANT40",
                   null,
                   "PEN-S-0001",
                   null,
@@ -1128,9 +1128,9 @@
                 ],
                 [
                   "D001 | DISTRIBUIDORA EJEMPLO",
-                  null,
-                  null,
-                  "MODELO-P200",
+                  "16 | CONGELADOR",
+                  "OTROS",
+                  "AT-200",
                   null,
                   "PEN-S-0002",
                   null,
@@ -2056,7 +2056,7 @@
                 [
                   "2000001",
                   "2026-03-02",
-                  "MODELO-P200",
+                  "AVANT40",
                   "PEN-S-0001",
                   "INSTALACION",
                   "Abarrotes Ejemplo 1",
@@ -2076,7 +2076,7 @@
                 [
                   "2000002",
                   "2026-03-02",
-                  "MODELO-P200",
+                  "AT 200",
                   "PEN-S-0002",
                   "RETIRO",
                   "Abarrotes Ejemplo 2",

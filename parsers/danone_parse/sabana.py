@@ -294,7 +294,7 @@ class DANONE_SABANA:
                     COALESCE("DISTRIBUIDORA_GEN",'') as Distribuidora,
                     "CATEGORIA_GEN" as Categoria,
                     "LINEA_GEN" as Linea,
-                    "MODELO" as Modelo,
+                    COALESCE("MODELO_GEN", "MODELO") as Modelo,
                     "SERIE FABRICANTE"  as Numero_Activo,
                     "SERIE DNN/BNF" as Serie,
                     '' as Numero_Puertas,
@@ -390,7 +390,7 @@ class DANONE_SABANA:
                 COALESCE("DISTRIBUIDORA_GEN",'') as Distribuidora,
                 "CATEGORIA_GEN" as Categoria,
                 "LINEA_GEN" as Linea,
-                "MODELO" as Modelo,
+                COALESCE("MODELO_GEN", "MODELO") as Modelo,
                 "SERIE FABRICANTE"  as Numero_Activo,
                 "SERIE DNN/BNF" as Serie,
 
