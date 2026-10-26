@@ -24,7 +24,10 @@ Solo si `CLASSIFIER_GATE` o `CLASSIFIER_EXTRACT` es distinto de `regex`. Con el 
 | **Alta sin Excel** (desde texto) | No se inserta; va a revisión: "alta sin Excel; requiere datos completos". Decisión de la orquestadora, sin confirmar por el usuario: una fila sin distribuidora ni geocodificación rompe las sábanas y Tableau. |
 | Alta con serie ya registrada | "Sin cambios", sin aviso. |
 | Fila **inválida o inexistente** | Va a revisión con su código como motivo (`classifier.validate.separar_invalidas`); el resto del correo se aplica. |
+| **Clasificación dudosa** en un hilo (el gate externo cae **solo** por confianza baja, `< CLASSIFIER_MIN_CONFIDENCE`) | Decisión del usuario (2026-10-26): no se aplica nada por texto; la `Decision` queda con `motivo_revision = "clasificación dudosa"` y sin filas. Si es un inbound sin Excel, se avisa a REPARE en el hilo ("requiere revisión", `msj_clasificacion_dudosa`). El parser corre igual que hoy. Mergeado en la base. |
 | `cancelar_solicitud` | Cancela las filas PENDING; la solicitud solo se cancela si no quedó nada en revisión (primero `update_email_request`, luego `cancel_email_request`). |
+
+En **init** la duda cae a regex (decide el Excel). Las demás caídas (timeout, API, sin key, PII, salida inválida) siguen cayendo a regex sin aviso.
 
 Los errores globales, una fila que no es `RowExtraida`, una acción desconocida o `filas_no_cargadas` hacen caer **toda** la decisión a regex.
 

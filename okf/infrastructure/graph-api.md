@@ -24,7 +24,7 @@ tags: [graph, microsoft, correo]
 
 # Problemas
 
-* Remitente hardcodeado `solkos@imberacooling.com`, ignora la variable `MAIL`.
+* Remitente hardcodeado (`EMAIL_SENDER` en `graphapi.py:44`; dirección omitida del bundle: `<remitente>`), ignora la variable `MAIL`. El default de `MAIL` en `src/handler.py:26` es esa misma dirección. Son dos usos funcionales del envío por Graph, sin tocar; pendiente que el dev decida moverlos a una variable `MAIL` obligatoria.
 * Fuerza content-type xlsx en todos los adjuntos.
 * Un token obtenido sin uso en `getTemplate`.
 

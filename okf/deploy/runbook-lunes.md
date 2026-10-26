@@ -21,12 +21,14 @@ Qué cambia con `DEBUG=true` (verificado en `src/service.py`, `parsers/*.py`):
 
 # 1. Instalación y suite offline
 
+**Dependencias nuevas en `requirements.txt`** (UTF-16 LE): `odfpy==1.4.1` (solo sdist), `xlrd==2.0.2` y `anthropic==2.3.0`. Si `pip install` falla con "install_layout" (setuptools de Debian parchado), usa un venv nuevo y ejecuta `pip install -U pip setuptools wheel` antes. En mi contenedor, sin venv, `odfpy` falló al construir la rueda y sin `odfpy`/`xlrd` fallan 6 pruebas (con `xlrd` instalado quedan 2, por `odfpy`); la suma coincide con las 1034 del orquestador. **Verifica `docker build` antes de desplegar** (la imagen usa Python 3.14, que nadie ha probado con estas dependencias).
+
 ```
 pip install -r requirements.txt -r requirements-dev.txt
 python -m pytest -q
 ```
 
-Usa `python -m pytest`, no el binario `pytest`: puede ser de otro intérprete. Esperado en la base con la Fase 3 completa (`003853d`): **794 passed, 48 skipped, 1 xfailed** (448/24/1 en `9564d90`, antes de la Fase 3) (el xfail es "stopwords antes del regex" en Danone; los 48 skip son el SQL contra Postgres de abajo). La suite no usa red, credenciales ni producción. Detalle en [pruebas/harness.md](../pruebas/harness.md).
+Usa `python -m pytest`, no el binario `pytest`: puede ser de otro intérprete. Esperado en la base (`3732c25`): **1034 passed, 48 skipped, 1 xfailed** (448/24/1 en `9564d90`, antes de la Fase 3) (el xfail es "stopwords antes del regex" en Danone; los 48 skip son el SQL contra Postgres de abajo). La suite no usa red, credenciales ni producción. Detalle en [pruebas/harness.md](../pruebas/harness.md).
 
 # 2. Pruebas SQL opcionales (Postgres local desechable)
 
@@ -79,6 +81,10 @@ Fase 3 (clasificador, mergeada): `classifier/`, `review/` y el proveedor haiku. 
 
 Para repetir la medición de la línea base: `python eval/run_eval.py --provider regex --set eval/sets/sintetico.jsonl` (hoy precisión de gate 0.7419, sale con código 1).
 
+**ADVERTENCIA BLOQUEANTE (PII): no actives `CLASSIFIER_SHADOW` ni haiku con correos reales hasta mergear `redact-v2`.** Re-probado por la sesión sobre los 21 correos: nombres 53 → 2, el resto 0; quedan 2 nombres sin redactar (límites en [redact](../classifier/redact.md)). Al mergear, el candado `REDACT_VERSION` se abre solo; el usuario debe aceptar esa fuga residual antes de usar correos reales. Hay un candado en el código: un proveedor externo (gate, extract o sombra) solo corre si `classifier.redact.REDACT_VERSION >= 2` (`MIN_REDACT_VERSION = 2` en `classifier/registry.py`; sin la constante cuenta como 1). Hoy `redact.py` de la base no la define, así que quedan bloqueados; (rama `claude/e2c-redact-v2`, `c15543e`, aprobada pero sin mergear; ver [redact](../classifier/redact.md)). Sobre 21 correos reales, `redact()` dejó pasar nombres, direcciones, coordenadas, correos y montos; el texto se enviaría a un proveedor externo. Ver [correos reales](../pruebas/correos-reales.md).
+
+Modo sombra (`CLASSIFIER_SHADOW`, `CLASSIFIER_SHADOW_SAMPLE`; mergeado en la base): ver [sombra](../classifier/sombra.md) para variables, el log `[CLASSIFIER_SHADOW]` y cómo exportarlo y medirlo con `eval/shadow_report.py`. Sigue sujeto a la advertencia de PII de arriba.
+
 **ADVERTENCIA: no actives haiku** (`CLASSIFIER_GATE=haiku` o `CLASSIFIER_EXTRACT=haiku`) **sin antes** correr `eval/smoke_haiku.py` con una key real y sin que la evaluación supere **precisión >= 0.95 en gate** (umbral de [decisiones](../riesgos/decisiones.md)). El evaluador está en la base (`eval/`; ver [evaluador](../pruebas/evaluacion.md)): sobre el set sintético, regex da precisión de gate 0.7419 (no cumple) y haiku, según una sesión con key (no verificado por mí), cumple 1.00 sobre ese mismo set sintético. Falta el set real: con eso sigue sin ser suficiente para activar. Además, `review` solo corre con un proveedor externo y manda avisos reales a REPARE.
 
 En entornos cloud la plataforma descarta las variables `ANTHROPIC_*`: la key se guarda como `E2C_ANTHROPIC_API_KEY` y se pasa con `env -u ANTHROPIC_BASE_URL ANTHROPIC_API_KEY="$E2C_ANTHROPIC_API_KEY" python eval/run_eval.py --provider haiku --set <ruta>` (según la orquestadora; no lo ejecuté). Nunca pegues el valor en el repo.
@@ -96,3 +102,27 @@ Variables nuevas, todas opcionales y sin valores en el repo: `CLASSIFIER_GATE`, 
 * El aviso de "requiere revisión" vive solo en logs; no hay cola de revisión (ticket de la Fase 3). Sigue abierto si un hilo puede cancelar filas ya aceptadas.
 * Datos personales en el historial de git y CSV con datos reales; ver [seguridad](../riesgos/seguridad.md).
 * Todo el resto de [bugs](../riesgos/bugs.md) marcado "reportado".
+
+# 7. Opcional, solo lectura: armar el set real con backfill
+
+Rama `claude/e2c-backfill` (commit `25a9c34`), **sin mergear**. Verificado en la rama: `eval/backfill.py` y `eval/querys/*.sql` existen; el código abre PostgreSQL con `SET TRANSACTION READ ONLY`, tiene una guarda contra sentencias de escritura y `--tablas prod` exige `--confirmo-solo-lectura`; `python -m pytest -q` → 851 passed, 48 skipped, 1 xfailed. Lee los buzones de `config/email_index.json` (Graph solo GET) y los cruza con `emails_log`, `email_request` y `cooler_request` (solo SELECT).
+
+Con tus credenciales de siempre (`CLIENT_ID`, `CLIENT_SECRET`, `TENANT_ID`, `SECRET_PG_ACC`, `DB_HOST`, `DB_NAME`, `DB_PORT`; sin valores aquí):
+
+```
+python eval/backfill.py --tablas qa --desde 2026-07-01 --hasta 2026-10-26 --maximo 100
+```
+
+* `--tablas prod` exige `--confirmo-solo-lectura`; conviene un usuario de base de solo lectura.
+* Salida: `eval/sets/real/backfill_<fecha>.jsonl` (ignorado por git) y `_revision.jsonl` con lo que no tiene evidencia.
+* Etiquetas automáticas: filas generadas → `nueva_solicitud`; en un hilo, cambios de filas dentro de 10 minutos → agregar/modificar/cancelar; REPARE con OS adjuntas → categoría `cierre` (no es un tipo del clasificador: `tipo_evento` nulo); sin rastro → `es_os` nulo, **nunca `no_os`**.
+* Split ajuste|examen por `--corte` (default: últimos 30 días a examen).
+* Evaluar: `python eval/run_eval.py --provider regex --set <archivo> --solo-etiquetados --split examen`.
+
+**Revisar a mano:** todo `_revision.jsonl`; el PII residual en los textos redactados; `thread_ctx` (reconstruido, aproximado); el desfase de huso entre `cooler_request` y `emails_log`.
+
+**Advertencias:**
+
+* **Aún no se ha corrido contra datos reales ni contra el esquema real**: las columnas salen de los SQL del repo y los valores de `direction` se asumen de `detect_direccion`.
+* **`redact()` es insuficiente** ([correos reales](../pruebas/correos-reales.md)): el backfill redacta con la versión actual, así que el set generado puede traer nombres, direcciones o montos. Trátalo como dato sensible, no lo subas al repo ni lo mandes a un proveedor externo hasta mergear `redact-v2`.
+* Haiku sigue sin medirse sobre correos reales.

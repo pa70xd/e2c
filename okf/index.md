@@ -30,11 +30,14 @@ Bundle OKF del repositorio `e2c`: backend FastAPI que recibe correos de clientes
 ## Parsers
 
 * [Base gen_parse](parsers/gen-base.md) - librería compartida.
+* [Lector común de adjuntos](parsers/lector.md) - `leer_adjunto`: encabezado por vocabulario, hojas ocultas, `.ods`/`.xlsm` (mergeado en la base).
 * [Danone](parsers/danone.md)
 * [Penafiel](parsers/penafiel.md)
 * [Holanda](parsers/holanda.md)
 * [Heineken](parsers/heineken.md)
-* [KOF (stub)](parsers/kof.md)
+* [Imbera y Torrey](parsers/imbera-torrey.md) - "Lay Out Repare", multi-cliente y hielo (rama `claude/e2c-imbera-torrey`, sin mergear).
+* [Oxxo](parsers/oxxo.md) - mantenimiento y garantías, apagado por defecto (rama `claude/e2c-oxxo`, sin mergear).
+* [KOF](parsers/kof.md) - parser real en la rama `claude/e2c-kof` (sin mergear); en la base sigue siendo un stub.
 
 ## Clientes
 
@@ -63,11 +66,13 @@ Bundle OKF del repositorio `e2c`: backend FastAPI que recibe correos de clientes
 
 * [Revisión por hilo](classifier/revision.md) - aplica cambios en filas PENDING y manda el resto a revisión humana por correo (mergeado en la base).
 * [Núcleo del clasificador](classifier/core.md) - contratos, validación, registro, proveedor regex y gate en el flujo (mergeado en la base).
+* [Modo sombra](classifier/sombra.md) - segundo gate en paralelo que solo registra (mergeado en la base; bloqueado por `REDACT_VERSION` hasta `redact-v2`).
 * [Proveedor Haiku](classifier/provider-haiku.md) - `gate()` y `extract()` con Claude Haiku 5.5, opcional (mergeado en la base).
 * [Redacción de PII](classifier/redact.md) - `redact()`, obligatoria antes de cualquier proveedor externo (mergeado en la base).
 
 ## Pruebas
 
+* [Análisis de 21 correos reales](pruebas/correos-reales.md) - hallazgos redactados: alcance de buzones, bugs de Holanda y de dirección/etapa, `redact()` insuficiente.
 * [Evaluación del clasificador](pruebas/evaluacion.md) - gate y extract por proveedor contra el umbral 0.95; regex 0.7419, haiku sin medir (mergeado en la base).
 * [Harness de pruebas offline](pruebas/harness.md) - pytest sin red, goldens y xfail de bugs conocidos (mergeado en `claude/admiring-lovelace-3oh7g0`).
 

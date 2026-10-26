@@ -63,9 +63,56 @@ Lo reportan la sesión `session_01Jnc7eVXwXyKjsou32zFdCn` y la orquestadora (202
 
 **Cómo leerlo:** el set sintético tiene 21 negativos, así que una precisión de 1.00 es compatible con un error real bastante mayor. Este resultado **no basta para activar** haiku: hacen falta correos reales redactados (set real) y la corrida con key sobre ellos. Que el umbral se cumpla en el sintético no equivale a cumplirlo en producción.
 
+# Set sintético v2 (rama `claude/e2c-eval-set-v2`, sin mergear)
+
+Rama `claude/e2c-eval-set-v2` (commit `225b457`): `eval/sets/sintetico_v2.jsonl`, 41 casos inventados "difíciles" con 18 negativos y 21 filas esperadas (verifiqué esas tres cifras). La sesión dice que son 4 ambiguos y que lo escribió sin leer los prompts ni `haiku.py`, para no sesgarlo; eso no lo puedo comprobar.
+
+* **Regex (medido por mí en la rama):** precisión de gate 0.5610, recall 1.0000, F1 0.7188 — **no cumple** 0.95; extract 0 de 21 filas. Regex marca todo como OS.
+* **Haiku sobre v2:** al escribir esto no estaba corrido; ahora hay 4 corridas reportadas (sección siguiente de resultados). Lo que sigue explica por qué importaba: v2 tiene casi el doble de proporción de negativos (18 de 41 frente a 21 de 67) y fue escrito sin ver el prompt.
+* La sesión no pudo correr `pytest` en su contenedor (falta `msgraph`); el evaluador sí corrió en mi entorno.
+* Sigue siendo sintético: no sustituye el set real.
+
+# Haiku: 4 corridas de prompt v1 vs v2 (reporte de la sesión prompt-v2, NO verificado por mí)
+
+Reporta `session_01XYEn1Va9jA5mi2dFpmyQfG` (2026-10-26; v1 = gate-v1/extract-v2, v2 = gate-v2/extract-v3; el prompt no se ajustó tras ver resultados). No las repetí: no uso la key. El detalle vive en la rama `claude/e2c-prompt-v2` (`301461b`, sin mergear).
+
+| Set | Prompt | Gate precisión | Recall | F1 | Cumple 0.95 | Extract por fila | Caída a regex (gate) |
+|---|---|---|---|---|---|---|---|
+| sintetico (67) | v1 | 0.9787 | 1.0000 | 0.9892 | sí | 0.951 | 3.0 % |
+| sintetico (67) | v2 | 0.9783 | 0.9783 | 0.9783 | sí | 0.951 | 4.5 % |
+| sintetico_v2 (41) | v1 | 0.9167 | 0.9565 | 0.9362 | **no** | 0.905 | 19.5 % |
+| sintetico_v2 (41) | v2 | 0.9200 | 1.0000 | 0.9583 | **no** | 0.952 | 14.6 % |
+
+* **Nota:** esta corrida da en `sintetico` precisión 0.9787 con v1, no 1.00 como en el reporte anterior de la primera evaluación; la diferencia no está explicada (el LLM no es determinista, o cambió el código/prompt entre corridas). No la puedo resolver sin repetir.
+* Sin los 4 casos ambiguos de `sintetico_v2` (cálculo a mano de la sesión): v1 0.9524, v2 0.9545, que cumplen por poco.
+* Latencia media ~2.0-2.1 s, p95 3.2-3.6 s. Tokens de entrada de v2: +67 a +88 % frente a v1 (parte cacheada).
+* **Conclusión de la sesión:** v2 no mejora de forma medible (dentro del ruido). Persisten `imb-noos-01`, `hol-dup-01` y 2 casos `nueva_solicitud` → `modificar_filas`.
+* **Lectura:** sobre el set más difícil, haiku **no cumple** el umbral de 0.95. Además la caída a regex del gate (hasta 19.5 %) contamina la medición: parte de las respuestas que cuentan son de regex, no de haiku. La activación sigue sin autorizarse.
+* ~~Pendiente: `run_eval` no imprime falsos negativos, errores de tipo ni el motivo de la caída a regex~~ Resuelto en la rama `claude/e2c-eval-diagnostico` (ver abajo).
+
+# Diagnóstico del evaluador (rama `claude/e2c-eval-diagnostico`, sin mergear)
+
+Commits `60d4376` y `719504c`, sobre `sintetico_v2`. Verificado en la rama: `pytest -q` → 798 passed, 48 skipped, 1 xfailed; `run_eval.py` ahora imprime falsos negativos, errores de `tipo_evento`, cada caída a regex (id, etapa, motivo) y métricas de gate **solo-proveedor** y **sin ambiguos**. Con regex en `sintetico_v2` comprobé que imprime "Gate sin casos ambiguos (37 casos)": precisión 0.5405, recall 1.0 (TP 20, FP 17, FN 0, TN 0), lo que confirma 4 casos ambiguos de 41. Regex en el set completo: TP 23, FP 18, TN 0.
+
+**Corrida de haiku v1 sobre `sintetico_v2`, reportada por la sesión (NO verificada por mí, necesita key):**
+
+* Gate: precisión 0.9167, recall 0.9565, **no cumple 0.95**.
+* **7 caídas a regex (17.1 %), todas por `gate:confianza_baja`**; 0 caídas de extract.
+* **Solo-haiku (34 casos, sin las caídas): precisión 1.00, recall 0.944.**
+* Extract: 18 de 21 filas.
+* Hipótesis descartada: `haiku_filas_no_cargadas`. Los 24 casos `reply` traen `thread_ctx.filas`.
+
+**Inferencia mía, no de la sesión:** las cifras sugieren que el incumplimiento de 0.95 viene de las respuestas de baja confianza que caen a regex (que acierta poco), no de errores de haiku en las que contesta. Habría que confirmarlo; cambiar `CLASSIFIER_MIN_CONFIDENCE` mueve esas caídas y también el riesgo de aceptar respuestas dudosas.
+
+**Pendiente de decisión:** ajustar el prompt o `CLASSIFIER_MIN_CONFIDENCE` (hoy 0.7). Ajustar sobre el mismo set que se mide infla el resultado; el umbral se fijó antes de evaluar ([decisiones](../riesgos/decisiones.md)).
+
+# Backfill para el set real (rama `claude/e2c-backfill`, sin mergear)
+
+Commit `25a9c34`. `eval/backfill.py` arma el set real de solo lectura desde los buzones históricos y etiqueta automáticamente con lo que quedó en `emails_log`/`email_request`/`cooler_request` (la señal: las series que entran y salen de la sábana). Comando, etiquetas y revisión manual en el [runbook, paso 7](../deploy/runbook-lunes.md). Verificado: lectura en transacción `READ ONLY` y suite 851 passed, 48 skipped, 1 xfailed; **no se corrió contra datos ni esquema reales**. Las etiquetas son automáticas y aproximadas: "sin rastro" no es `no_os`, así que no hay negativos fiables sin revisión manual. Medir con ese set no autoriza la activación mientras `redact()` siga insuficiente.
+
 # Lo que NO está medido
 
-* Haiku sobre correos reales. No existe el set real (espera los correos de ejemplo).
+* Haiku sobre correos reales (sobre `sintetico_v2` ya hay una medición reportada, arriba). No existe el set real (espera los correos de ejemplo).
 * Costo en USD: depende de `EVAL_PRICE_IN` y `EVAL_PRICE_OUT`; el reporte que me llegó solo da tokens.
 * El set sintético son 67 casos; es una estimación gruesa.
 * La línea base regex mide la lógica heredada, no una activación nueva: el umbral aplica a activar un proveedor externo.

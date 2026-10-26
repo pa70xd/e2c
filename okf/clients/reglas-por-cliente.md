@@ -21,7 +21,7 @@ tags: [reglas, negocio]
 
 # Holanda
 
-* Asunto válido: `casos repare`.
+* Asunto válido: `casos repare`; en la rama `claude/e2c-fix-holanda-indice` (sin mergear) también con fecha o sufijo numérico.
 * Origen por sufijo de CASO2: `H` → HELADIO, `G` → GDR. Otro origen rechaza la fila.
 * Canal fijo `SC | Sin Canal`.
 * Marca de duplicado: `DUPLICADO`. Un equipo es duplicado mientras tenga otro caso sin OS.

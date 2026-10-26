@@ -243,6 +243,133 @@
 * La orquestadora confirma la primera evaluación real de haiku (set sintético, 67 casos): gate P=1.00/R=1.00/0 FP, extract 39/41 con 2 confusiones de tipo (`cancelar_filas`→`modificar_filas`, `cancelar_solicitud`→`estatus`), latencia media 2.0 s (p95 3.2 s), regex 0.74. Veredicto: cumple en el sintético, **NO se activa** (21 negativos, escrito por un modelo, falta el set real). Sigue sin ser verificado por mí.
 * Documentado en [pruebas/evaluacion.md](pruebas/evaluacion.md), runbook y `despliegue.md`: la plataforma descarta `ANTHROPIC_*`, la key va en `E2C_ANTHROPIC_API_KEY` y se pasa con `env -u ANTHROPIC_BASE_URL ANTHROPIC_API_KEY="$E2C_ANTHROPIC_API_KEY"` (solo el nombre de la variable).
 
+## 2026-10-26 · eval-set-v2: resumen
+
+* Rama `claude/e2c-eval-set-v2` (`225b457`), sin mergear. Verificado: `sintetico_v2.jsonl` con 41 casos, 18 negativos y 21 filas esperadas; regex: precisión de gate 0.5610 (NO CUMPLE), extract 0/21. Los "4 ambiguos" y que se escribió sin leer los prompts son afirmación de la sesión.
+* Haiku no corrido sobre v2. Documentado en [pruebas/evaluacion.md](pruebas/evaluacion.md).
+
+## 2026-10-26 · prompt-v2: resumen (Fase 3)
+
+* Rama `claude/e2c-prompt-v2` (`14ca237`), sin mergear. Verificado: prompts nuevos, `CLASSIFIER_PROMPT_VERSION` en `haiku.py`, cambio en `debe_continuar`; `pytest -q` → 801 passed, 48 skipped, 1 xfailed. Goldens sin diff: afirmación de la sesión.
+* Corrección: el outbound (REPARE→cliente) siempre continúa. Documentada en [classifier/core.md](classifier/core.md); prompts v2 en [classifier/provider-haiku.md](classifier/provider-haiku.md).
+* Pendiente: medir las 4 corridas sobre `sintetico_v2`; no hay cifras de v2.
+
+## 2026-10-26 · prompt-v2: 4 corridas de haiku (reporte)
+
+* La sesión `session_01XYEn1Va9jA5mi2dFpmyQfG` reporta 4 corridas (v1/v2 × sintetico/sintetico_v2); tabla completa en [pruebas/evaluacion.md](pruebas/evaluacion.md). Resumen: sobre `sintetico`, precisión de gate 0.9787 (v1) y 0.9783 (v2); sobre `sintetico_v2`, 0.9167 (v1) y 0.9200 (v2) → **no cumple 0.95**. v2 no mejora de forma medible. Caída a regex del gate hasta 19.5 % en `sintetico_v2`.
+* **No verificado por mí.** Hay una discrepancia sin explicar con la primera evaluación (1.00 vs 0.9787 en el mismo set). Rama `claude/e2c-prompt-v2` (`301461b`) sin mergear.
+
+## 2026-10-26 · eval-diagnostico: resumen
+
+* Rama `claude/e2c-eval-diagnostico` (`719504c`), sin mergear. Verificado: 798 passed, 48 skipped, 1 xfailed; el evaluador imprime FN, errores de tipo, caídas a regex y métricas solo-proveedor/sin ambiguos (probado con regex: 37 casos sin ambiguos).
+* Reporte de la sesión (no verificado, requiere key): haiku v1 sobre `sintetico_v2` gate 0.9167, 7 caídas a regex (17.1 %) todas `confianza_baja`; solo-haiku P 1.00, R 0.944; extract 18/21; hipótesis `filas_no_cargadas` descartada. Mi inferencia: el incumplimiento viene de las caídas, no de haiku; anotada como inferencia en [pruebas/evaluacion.md](pruebas/evaluacion.md).
+* Pendiente de decisión: ajustar prompt o `CLASSIFIER_MIN_CONFIDENCE` (0.7), con el riesgo de sobreajustar al set que se mide.
+
+## 2026-10-26 · Decisiones: duda a revisión, modo sombra y backfill; sesiones nuevas
+
+* Registradas en [riesgos/decisiones.md](riesgos/decisiones.md): (1) en un hilo, haiku con confianza baja va a revisión humana, no a regex (en init sigue a regex); (2) se aprueba el modo sombra; (3) se aprueba el backfill de solo lectura con etiquetas automáticas del histórico (las series que entran y salen de la sábana).
+* Sesiones nuevas: sombra + duda→revisión (opus) · session_01E9q7mT1muX4Ayrtc2z8Bg9 · `claude/e2c-sombra` (variables opcionales `CLASSIFIER_SHADOW`, `CLASSIFIER_SHADOW_SAMPLE`); backfill (sonnet) · session_01F6oVDx61MHMbSLJoHLekdz · `claude/e2c-backfill`. En curso.
+* El usuario compartió 21 correos reales (.eml); la orquestadora los analiza localmente y no se documenta su contenido. Esperando el resumen redactado.
+
+## 2026-10-26 · Análisis de 21 correos reales (resumen redactado)
+
+* Documentado en [pruebas/correos-reales.md](pruebas/correos-reales.md) y `riesgos/bugs.md`, sin contenido de los correos. Cifras de la orquestadora (no tengo los .eml): regex precisión de gate 0.81, 15/21 tipos, 0/5 filas.
+* Verificado en el código: `es_asunto_holanda` exige el asunto exacto, `detect_direccion` mira solo el `To:`, la etapa sale del prefijo "RE:", y `email_index.json` mapea cuatro clientes más un buzón personal. No copié direcciones al bundle.
+* **Bloqueante:** `redact()` dejó pasar 53 nombres, 7 direcciones, 6 coordenadas, 1 URL de mapa, 2 correos y 3 montos. No activar `CLASSIFIER_SHADOW` ni haiku con correos reales hasta mergear `redact-v2` (`session_01GRj3nHJi8AeCXJdsKvwAEY`). Advertencia añadida al runbook.
+* Sesión nueva: fix-holanda-indice · session_01WjEJyAUVg4bTSoA1wXQ8HM · `claude/e2c-fix-holanda-indice` (variable opcional `E2C_TEST_MAILBOX`). Decisión de alcance de buzones pendiente con el usuario.
+
+## 2026-10-26 · backfill: resumen
+
+* Rama `claude/e2c-backfill` (`25a9c34`), sin mergear. Verificado: `eval/backfill.py`, flags, transacción `READ ONLY`, guarda contra escritura, `--tablas prod` exige confirmación; `pytest -q` → 851 passed, 48 skipped, 1 xfailed. No se corrió contra datos ni esquema reales (afirmación de la sesión y consistente con el código).
+* Añadido el paso 7 (opcional, solo lectura) al runbook y la sección en [pruebas/evaluacion.md](pruebas/evaluacion.md). Riesgo anotado: el backfill redacta con `redact()` v1, insuficiente; tratar el set como sensible hasta `redact-v2`.
+
+## 2026-10-26 · fix-holanda-indice: resumen
+
+* Rama `claude/e2c-fix-holanda-indice` (`330763f`, `707d0b5`), sin mergear. Verificado: `pytest -q` → 829 passed, 48 skipped, 1 xfailed; `es_asunto_holanda` acepta "Casos REPARE" con fecha o sufijo y rechaza frase embebida o texto tras la fecha; `email_index.json` queda con 4 claves; `E2C_TEST_MAILBOX` se lee en `src/email_type.py`.
+* Documentado en `parsers/holanda.md`, `clients/reglas-por-cliente.md`, `infrastructure/subscriptions.md`, `deploy/despliegue.md`, `riesgos/bugs.md` y `riesgos/seguridad.md`.
+* PII: quité del bundle la dirección personal de `clients/index.md`. El historial de git sigue conteniéndola; `subscriptions.py` aún la tiene hardcodeada (según la sesión).
+* Sigue abierto: el lector de Holanda no acepta `.xlsm`.
+
+## 2026-10-26 · Corrección de privacidad en el bundle
+
+* Por indicación de la orquestadora: reemplacé las direcciones de correo personales/de remitente que estaban escritas en `clients/index.md` (ya hecho en el commit anterior) y en `infrastructure/graph-api.md` por marcadores (`<buzón de pruebas personal>`, `<remitente>`). No se repiten aquí. Quedan los buzones de rol `cliente.*` del dominio de REPARE como mapeo funcional; revisión pendiente si se prefieren también omitirlos.
+* Documentado: el buzón de pruebas pasa a `E2C_TEST_MAILBOX` (rama `claude/e2c-fix-holanda-indice`, por mergear). **Siguen dos usos funcionales de esa dirección en código** (verificado): `EMAIL_SENDER` en `infrastructure/graphapi/graphapi.py:44` y el default de `MAIL` en `src/handler.py:26`. No se tocaron porque afectan el envío por Graph; el dev decide moverlos a una `MAIL` obligatoria.
+* El historial de git conserva las direcciones antiguas.
+
+## 2026-10-26 · sombra + duda→revisión: resumen
+
+* Rama `claude/e2c-sombra` (`7b86977`, `ca00f10`), sin mergear. Verificado: `classifier/shadow.py`, `eval/shadow_report.py`, `msj_clasificacion_dudosa`, `Decision.motivo_revision`; `pytest -q` → 872 passed, 48 skipped, 1 xfailed. El comportamiento del thread/timeout, el contenido del log y los comandos de exportación son descripción de la sesión.
+* Nuevo concepto [classifier/sombra.md](classifier/sombra.md); fila de "clasificación dudosa" en [flows/revision-por-hilo.md](flows/revision-por-hilo.md); variables en `deploy/despliegue.md`; runbook al día.
+* Bloqueo vigente: sombra con correos reales espera `redact-v2`. Límite: el init de Danone y Penafiel no pasa por la sombra.
+
+## 2026-10-26 · Fase 4 iniciada: Imbera, KOF, Torrey y Oxxo
+
+* Aprobada por el usuario (según la orquestadora). Registrada en [riesgos/decisiones.md](riesgos/decisiones.md): entran Imbera, KOF, Torrey y Oxxo; **Oxxo apagado por defecto** (PoC automatizada fuera del repo, riesgo de duplicado). Oxgar no figura: sigue fuera de alcance.
+
+| Sesión | Modelo | Rama | ID |
+|---|---|---|---|
+| lector-excel + flag de clientes | sonnet | `claude/e2c-lector-excel` | session_01Hij48ERTesNyVTDdyWeyPH (en curso) |
+| KOF | opus | `claude/e2c-kof` | session_01UEpkYP4VR6wHShaKZL9biN (en curso) |
+| Imbera + Torrey | opus | `claude/e2c-imbera-torrey` | session_01RhmhtzWqP56UdKESrWfBkt (en curso) |
+| Oxxo (parser de plantillas sin LLM) | sonnet | `claude/e2c-oxxo` | session_01E8Gh3qWbaaqB8cksMj4s5n (en curso) |
+
+* Variable nueva `E2C_CLIENTES_HABILITADOS` (sin ella solo corren los 4 clientes actuales); aún no verificada en código. Orden: lector-excel primero; KOF e Imbera/Torrey se adaptan a él; Oxxo en paralelo.
+
+## 2026-10-26 · redact-v2: resumen
+
+* Rama `claude/e2c-redact-v2` (`ae4da5e`), sin mergear. Verificado: `pytest -q` → 993 passed, 48 skipped, 1 xfailed; eval regex sin cambios (0.7419); prueba propia con texto inventado (cabeceras, saludo, firma, coordenadas, URL de mapa y monto redactados; folio, serie y modelo intactos; idempotente).
+* Documentado en [classifier/redact.md](classifier/redact.md): marcadores nuevos, criterios y límites.
+* **El bloqueo de sombra/haiku con correos reales sigue vigente:** falta re-probar con los 21 correos reales dentro del contenedor y mergear la rama.
+
+## 2026-10-26 · lector-excel + flag de clientes: resumen (Fase 4)
+
+* Rama `claude/e2c-lector-excel` (`b3e308e`, `717cb96`), sin mergear. Verificado: `parsers/core/lector.py`, `odfpy==1.4.1` en `requirements.txt`, mapeo de 5 buzones nuevos en `email_index.json`, `E2C_CLIENTES_HABILITADOS` en `src/email_type.py`. `pytest -q` → 922 passed, 2 failed, 48 skipped, 1 xfailed: los 2 fallos por no poder instalar `odfpy` en este contenedor (la sesión reporta 924 passed).
+* Documentado en [parsers/lector.md](parsers/lector.md), `clients/index.md`, `deploy/despliegue.md`, `decisiones.md`, `bugs.md`.
+* Dos cosas que señalo: `oxogar`→`oxxo_garantias` quedó mapeado sin estar en la lista aprobada (apagado por el flag), y `.xls` necesita `xlrd` que no está en `requirements.txt`. Los lectores actuales no están migrados al lector común.
+
+## 2026-10-26 · modelos: bug 2 corregido en parte
+
+* Rama `claude/e2c-modelos` (`ee6c3a0`, `a8cf448`), sin mergear. Verificado: `parsers/core/modelos.py`, `eval/cobertura_modelos.py`, `eval/reportes/modelos_ambiguos.md` (46 ambiguos de 803); `pytest -q` → 916 passed, 48 skipped, 1 xfailed.
+* **Discrepancia con el resumen:** el commit `a8cf448` (posterior al resumen) cambia 5 goldens, regenera 4 fixtures y agrega un párrafo "Modelos sin resolver" al correo de respuesta; el resumen decía que los goldens no cambiaron. Documentado en `riesgos/bugs.md`.
+* Pendiente de decisión: cómo llevar el motivo a REPARE (el párrafo de aviso es una solución parcial en la rama).
+
+## 2026-10-26 · modelos: resumen final
+
+* La sesión confirma `a8cf448` como final, aprobada por la orquestadora para merge. Cambios a goldens a propósito (5). Documentado en `riesgos/bugs.md`: sigue "corregido en parte" por los 46 ambiguos; `eval/cobertura_modelos.py` sin correr con datos reales; Penafiel sin catálogo propio (pregunta para el usuario).
+
+## 2026-10-26 · lector-excel: resumen final (Fase 4)
+
+* Rama `claude/e2c-lector-excel` (`b0758f7`, `41eafbf` además de los anteriores), aprobada y en merge. Verificado: `xlrd==2.0.2` en `requirements.txt`, `xlwt==1.3.0` en `requirements-dev.txt`, `sheet.visibility == 0` en los lectores de Danone y gen. Cifra de la sesión: 928 passed, 48 skipped, 1 xfailed.
+* Dos bugs de `.xls` encontrados y corregidos (xlrd ausente y `sheet_visibility`); corrijo lo que había escrito antes ("`.xls` necesita `xlrd` que no está"). Pendiente: verificar el build de `odfpy` con Python 3.14 (imagen del Dockerfile); en mi contenedor falló al construir la rueda.
+
+## 2026-10-26 · Oxxo: resumen (Fase 4)
+
+* Rama `claude/e2c-oxxo` (`0278796`), sin mergear. Verificado: archivos, 7 SQL, 4 clases en `src/service.py`, flag en `habilitado.py`, `email_index.json` de la rama sin buzones de Oxxo; `pytest -q` → 1009 passed, 56 skipped, 1 xfailed. SQL contra PG16 local: afirmación de la sesión.
+* Nuevo concepto [parsers/oxxo.md](parsers/oxxo.md). **Apagado por defecto** por la PoC externa (riesgo de duplicar OS). Aclarado que `oxogar` es el buzón de garantías de Oxxo; sigue pendiente de confirmar por el usuario.
+
+## 2026-10-26 · Imbera y Torrey: resumen (Fase 4)
+
+* Rama `claude/e2c-imbera-torrey` (`07f3fea`, `b4cb7ac`), sin mergear. Verificado: archivos, entradas en `src/service.py`, 17 goldens de Imbera/Torrey, `pytest -q` → 938 passed, 48 skipped, 1 xfailed. Que ningún golden existente cambió es afirmación de la sesión.
+* Nuevo concepto [parsers/imbera-torrey.md](parsers/imbera-torrey.md); TODOs de negocio en `riesgos/preguntas-abiertas.md`. Usa un adaptador de lectura propio hasta que el lector común esté en la base; la rama no mapea los buzones en `email_index.json`.
+
+## 2026-10-26 · Base 3732c25 y runbook actualizado
+
+* Base `claude/admiring-lovelace-3oh7g0` en `3732c25` mergeada en mi rama. Verificado: `pytest -q` → 1028 passed, 6 failed, 48 skipped, 1 xfailed en mi contenedor; los 6 fallos son por falta de `odfpy`/`xlrd` (con `xlrd` quedan 2, por `odfpy`), y 1028 + 6 = 1034, la cifra del orquestador.
+* Mergeados en la base: sombra `27ccc22`, modelos `fa3ec71`, lector-excel `3732c25`. Siguen sin mergear: redact-v2, oxxo, imbera-torrey, KOF.
+* Candado `REDACT_VERSION` verificado en `classifier/registry.py`: el proveedor externo y la sombra quedan bloqueados mientras `redact` no declare versión >= 2.
+* Runbook: cifras 1034/48/1, dependencias nuevas y el problema de `install_layout`, verificar `docker build` con Python 3.14, variables nuevas, candado `REDACT_VERSION`.
+
+## 2026-10-26 · KOF: resumen (Fase 4)
+
+* Rama `claude/e2c-kof` (`b7f6e64`), sin mergear. Verificado: archivos, registro en `src/service.py`, 11 goldens; `pytest -q` → 942 passed, **1 failed** (el test del gate en el parser INIT espera solo Danone y Penafiel; ya reportado por la sesión), 48 skipped, 1 xfailed. `parsers/kof.md` deja de ser stub en el bundle (la base sí lo sigue siendo).
+* Preguntas abiertas de negocio en `riesgos/preguntas-abiertas.md`.
+
+## 2026-10-26 · redact v2: resumen final
+
+* Rama `claude/e2c-redact-v2` (`c15543e`), aprobada para merge, **sin mergear**. Verificado: `REDACT_VERSION = 2`, iteración a punto fijo, `pytest -q` → 1062 passed, 48 skipped, 1 xfailed; reproduje con texto inventado el límite (1) (nombre mayúsculo aislado sin contexto queda sin redactar).
+* Medición sobre los 21 correos reales (de la sesión, no verificable por mí): nombres 53 → 2; direcciones, coordenadas útiles, montos, correos y URL de mapa → 0.
+* **Al mergear se abre el candado `REDACT_VERSION`**; quedan 2 nombres sin redactar. Dejado como decisión de riesgo del usuario en [classifier/redact.md](classifier/redact.md), `correos-reales.md` y el runbook.
+
 ## 2026-10-24
 
 * Creación del bundle OKF del repositorio `e2c` (rama `claude/admiring-lovelace-3oh7g0`).
