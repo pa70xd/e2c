@@ -1,13 +1,13 @@
 ---
 type: Module
 title: Oxxo (mantenimiento y garantías)
-description: Parsers deterministas (sin LLM) para los buzones de Oxxo, apagados por defecto. Fase 4, rama claude/e2c-oxxo, sin mergear.
+description: Parsers deterministas (sin LLM) para los buzones de Oxxo, apagados por defecto. Fase 4, mergeado en la base (claude/e2c-oxxo).
 tags: [parsers, oxxo, fase-4]
 ---
 
 # Estado
 
-Rama `claude/e2c-oxxo` (commit `0278796`), **sin mergear**. Verificado en la rama: existen `parsers/oxxo.py`, `parsers/oxxo_parse/{plantillas,excel,process_data,habilitado}.py`, `repository/oxxo/` (con 7 SQL) y 4 clases registradas en `src/service.py` (`OXXO_INIT`, `OXXO_REPLY`, `OXXO_GARANTIAS_INIT`, `OXXO_GARANTIAS_REPLY`); `python -m pytest -q` → **1009 passed, 56 skipped, 1 xfailed**. Los 56 skip incluyen tests contra PostgreSQL; la sesión dice haber verificado además el SQL de Oxxo contra un PG16 local desechable (10 de 10): no lo repetí.
+Rama `claude/e2c-oxxo` (commits `0278796` y `ecd3c57`), **mergeada en la base** (`e7a5b8c`). Verificado en la rama: existen `parsers/oxxo.py`, `parsers/oxxo_parse/{plantillas,excel,process_data,habilitado}.py`, `repository/oxxo/` (con 7 SQL) y 4 clases registradas en `src/service.py` (`OXXO_INIT`, `OXXO_REPLY`, `OXXO_GARANTIAS_INIT`, `OXXO_GARANTIAS_REPLY`); `python -m pytest -q` en la rama → **1153 passed, 2 failed, 56 skipped, 1 xfailed** en mi contenedor; los 2 fallos son por no tener `odfpy` (1153 + 2 = 1155, la cifra de la sesión). Los 56 skip incluyen tests contra PostgreSQL; la sesión dice haber verificado además el SQL de Oxxo contra un PG16 local desechable (10 de 10): no lo repetí.
 
 # Apagado por defecto
 
@@ -26,7 +26,21 @@ Solo corre si `oxxo` / `oxxo_garantias` están en `E2C_CLIENTES_HABILITADOS` (li
 * **Dedupe** por ticket/folio entre ambos buzones (`INSERT ... WHERE NOT EXISTS` sobre `folio` en `cooler_request`, cliente OXXO/OXXO_GARANTIAS) más `email_init_exist` por mensaje.
 * Mapeo a `cooler_request` documentado en el encabezado de `repository/oxxo/consultas_postgre.py`. Datos personales solo en campos ya previstos; el correo del solicitante no se guarda; no se loguea nada.
 
-# Límites y pendientes
+# Actualización final (`ecd3c57`)
+
+* El Excel de garantías ya se lee con el [lector común](lector.md) (`parsers/oxxo_parse/excel.py`, verificado), con hojas ocultas `nunca` para no duplicar OS.
+* El interruptor delega en `src.email_type.cliente_habilitado` (verificado en `habilitado.py`): una sola fuente de verdad, `E2C_CLIENTES_HABILITADOS`.
+
+# Puntos abiertos (de la sesión)
+
+1. **Duplicado con la PoC:** si se enciende `oxxo`/`oxxo_garantias` mientras la PoC externa siga leyendo el mismo buzón, cada ticket/folio genera dos OS. El dedupe del repo solo protege de reprocesos propios. **El corte lo decide REPARE.**
+2. Las OS entran sin CP, coordenadas, distribuidora ni pre-sábana; sábanas y Tableau no las verán completas.
+3. Plaza vacía: la plantilla junta "<plaza> <nombre tienda>" sin delimitador; todo va en `razon_social` y `plaza` queda NULL (no se inventó el corte). Falta confirmar el formato con Oxxo.
+4. El outbound REPARE → Oxxo no se concilia (devuelve `None`).
+5. **Carrera residual:** entre `get_by_folio` y el INSERT otra instancia puede ganar el folio; el INSERT no duplica la fila, pero queda un `email_request` huérfano (total 1, sin fila).
+6. Los buzones de Oxxo vienen en `email_index.json` de la rama del lector (ya en la base); la prioridad se guarda MEDIA (la de la plantilla va en `gestion_observaciones`) y el correo del solicitante no se guarda.
+
+# Límites anteriores
 
 * El **lector común** (`parsers/core/lector.py`) aún no está en la base: `excel.py` es provisional con `openpyxl`.
 * `config/email_index.json` de esta rama **no** tiene los buzones de Oxxo (verificado: 0 coincidencias); vienen en `claude/e2c-lector-excel`.

@@ -8,7 +8,7 @@ tags: [graph, suscripciones, script]
 
 # Qué hace
 
-* `test`: crea suscripción sobre `users/{email}/messages`. La dirección de prueba sigue hardcodeada en `subscriptions.py`, aunque en la rama `claude/e2c-fix-holanda-indice` (sin mergear) ya sale de `email_index.json` y se toma de `E2C_TEST_MAILBOX` (según la sesión; pendiente).
+* `test`: crea suscripción sobre `users/{email}/messages`. La dirección de prueba sigue hardcodeada en `subscriptions.py`, aunque en la rama `claude/e2c-fix-holanda-indice` (mergeada en la base) ya sale de `email_index.json` y se toma de `E2C_TEST_MAILBOX` (según la sesión; pendiente).
 * `list_subscriptions`, `delete_subscription`, `delete_all_subscriptions`.
 * Buzones activos: danone, holanda, kdrp. Heineken, KOF, Imbera y Torrey comentados.
 

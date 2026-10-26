@@ -370,6 +370,37 @@
 * Medición sobre los 21 correos reales (de la sesión, no verificable por mí): nombres 53 → 2; direcciones, coordenadas útiles, montos, correos y URL de mapa → 0.
 * **Al mergear se abre el candado `REDACT_VERSION`**; quedan 2 nombres sin redactar. Dejado como decisión de riesgo del usuario en [classifier/redact.md](classifier/redact.md), `correos-reales.md` y el runbook.
 
+## 2026-10-26 · Oxxo: resumen final
+
+* Rama `claude/e2c-oxxo` (`ecd3c57`), aprobada, en merge (sin confirmar en la base). Verificado: lector común y `cliente_habilitado` en el código; `pytest -q` → 1153 passed, 2 failed (falta `odfpy` aquí), 56 skipped, 1 xfailed.
+* Puntos abiertos en `parsers/oxxo.md` y `riesgos/preguntas-abiertas.md`. Principal: riesgo de duplicado con la PoC; el corte lo decide REPARE.
+
+## 2026-10-26 · Imbera y Torrey: actualización
+
+* Rama `claude/e2c-imbera-torrey` (`01bf07a`), sin mergear. Verificado: usan `leer_adjunto` con `si_coinciden`, los buzones están en `email_index.json`, `pytest -q` → 1081 passed, 2 failed (falta `odfpy`), 48 skipped, 1 xfailed. Reemplaza lo anotado sobre el adaptador propio.
+
+## 2026-10-26 · Imbera y Torrey: resumen final
+
+* Rama `claude/e2c-imbera-torrey` (`01bf07a`) aprobada para merge, sin confirmar en la base. Los 8 TODO de negocio quedaron detallados en `riesgos/preguntas-abiertas.md`. Anotada la nota técnica del lector (`NaN` vs `None` en `iterrows()`).
+
+## 2026-10-26 · KOF: resumen final
+
+* Rama `claude/e2c-kof` (`295dc97`), aprobada; no la veo en la base aún. Verificado: usa `leer_adjunto` con `si_coinciden`, el buzón está en `email_index.json`. Suite de la sesión: 1088 passed, 0 diff en goldens (no repetido por mí sobre este commit). La suscripción de Graph sigue comentada.
+* Los 9 TODO de negocio quedaron en `riesgos/preguntas-abiertas.md`. Aviso: los fixtures de KOF no vienen de archivos reales; con el primer correo real habrá que ajustar los alias de columnas.
+
+## 2026-10-26 · lector-nan: resumen
+
+* Rama `claude/e2c-lector-nan` (`ba62b70`, `b499447`), aprobada y en merge (sin confirmar en la base). Verificado: `DataFrameLector`, `Tabla.filas()`, `_sin_nan` en `execute_query`; `pytest -q` → 936 passed, 2 failed (falta `odfpy`), 48 skipped, 1 xfailed. Documentado en `parsers/lector.md`, `infrastructure/postgres.md` y `riesgos/bugs.md`.
+* Cambio en la capa de datos: `execute_query` ahora transforma `NaN` en `None` en todos los parámetros. Los sitios viejos con `iterrows` siguen sin arreglar; la red los cubre.
+
+## 2026-10-26 · Fase 4 cerrada en código (base 6d60cc8)
+
+* Base `claude/admiring-lovelace-3oh7g0` en `6d60cc8`: mergeada en mi rama. Verificado: `pytest -q` → 1523 passed, 2 failed (falta `odfpy`), 56 skipped, 1 xfailed (1525 en un entorno completo, como reporta la orquestadora); `REDACT_VERSION = 2`; todas las ramas `claude/e2c-*` de código están contenidas en la base.
+* Merges (según la orquestadora): redact-v2 `32e7fbd`, okf `660024c`, oxxo `e7a5b8c`, imbera-torrey `594ca0d`, kof `5f3a511`, lector-nan `6d60cc8`.
+* Hecho: estados de todo a "mergeado"; conceptos `parsers/{kof,imbera,torrey,oxxo}.md` (apagados por defecto); `riesgos/preguntas-abiertas.md` reescrito y agrupado por cliente con responsable propuesto (REPARE operación, catálogo, dev, usuario); runbook con 1525/56/1 y orden recomendado de encendido (sombra al 20 %, luego clientes uno por uno).
+* **Cambio de estado del bloqueo de PII:** el candado `REDACT_VERSION` ya está abierto por el merge; lo que queda es una decisión de riesgo del usuario sobre 2 nombres sin redactar.
+* Corrección: al reescribir `preguntas-abiertas.md` rescaté la sección de Oxxo, que se había perdido en una edición mía anterior.
+
 ## 2026-10-24
 
 * Creación del bundle OKF del repositorio `e2c` (rama `claude/admiring-lovelace-3oh7g0`).

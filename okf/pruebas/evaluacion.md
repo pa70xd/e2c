@@ -63,7 +63,7 @@ Lo reportan la sesión `session_01Jnc7eVXwXyKjsou32zFdCn` y la orquestadora (202
 
 **Cómo leerlo:** el set sintético tiene 21 negativos, así que una precisión de 1.00 es compatible con un error real bastante mayor. Este resultado **no basta para activar** haiku: hacen falta correos reales redactados (set real) y la corrida con key sobre ellos. Que el umbral se cumpla en el sintético no equivale a cumplirlo en producción.
 
-# Set sintético v2 (rama `claude/e2c-eval-set-v2`, sin mergear)
+# Set sintético v2 (rama `claude/e2c-eval-set-v2`, mergeada en la base)
 
 Rama `claude/e2c-eval-set-v2` (commit `225b457`): `eval/sets/sintetico_v2.jsonl`, 41 casos inventados "difíciles" con 18 negativos y 21 filas esperadas (verifiqué esas tres cifras). La sesión dice que son 4 ambiguos y que lo escribió sin leer los prompts ni `haiku.py`, para no sesgarlo; eso no lo puedo comprobar.
 
@@ -74,7 +74,7 @@ Rama `claude/e2c-eval-set-v2` (commit `225b457`): `eval/sets/sintetico_v2.jsonl`
 
 # Haiku: 4 corridas de prompt v1 vs v2 (reporte de la sesión prompt-v2, NO verificado por mí)
 
-Reporta `session_01XYEn1Va9jA5mi2dFpmyQfG` (2026-10-26; v1 = gate-v1/extract-v2, v2 = gate-v2/extract-v3; el prompt no se ajustó tras ver resultados). No las repetí: no uso la key. El detalle vive en la rama `claude/e2c-prompt-v2` (`301461b`, sin mergear).
+Reporta `session_01XYEn1Va9jA5mi2dFpmyQfG` (2026-10-26; v1 = gate-v1/extract-v2, v2 = gate-v2/extract-v3; el prompt no se ajustó tras ver resultados). No las repetí: no uso la key. El detalle vive en la rama `claude/e2c-prompt-v2` (`301461b`, mergeada en la base).
 
 | Set | Prompt | Gate precisión | Recall | F1 | Cumple 0.95 | Extract por fila | Caída a regex (gate) |
 |---|---|---|---|---|---|---|---|
@@ -90,7 +90,7 @@ Reporta `session_01XYEn1Va9jA5mi2dFpmyQfG` (2026-10-26; v1 = gate-v1/extract-v2,
 * **Lectura:** sobre el set más difícil, haiku **no cumple** el umbral de 0.95. Además la caída a regex del gate (hasta 19.5 %) contamina la medición: parte de las respuestas que cuentan son de regex, no de haiku. La activación sigue sin autorizarse.
 * ~~Pendiente: `run_eval` no imprime falsos negativos, errores de tipo ni el motivo de la caída a regex~~ Resuelto en la rama `claude/e2c-eval-diagnostico` (ver abajo).
 
-# Diagnóstico del evaluador (rama `claude/e2c-eval-diagnostico`, sin mergear)
+# Diagnóstico del evaluador (rama `claude/e2c-eval-diagnostico`, mergeada en la base)
 
 Commits `60d4376` y `719504c`, sobre `sintetico_v2`. Verificado en la rama: `pytest -q` → 798 passed, 48 skipped, 1 xfailed; `run_eval.py` ahora imprime falsos negativos, errores de `tipo_evento`, cada caída a regex (id, etapa, motivo) y métricas de gate **solo-proveedor** y **sin ambiguos**. Con regex en `sintetico_v2` comprobé que imprime "Gate sin casos ambiguos (37 casos)": precisión 0.5405, recall 1.0 (TP 20, FP 17, FN 0, TN 0), lo que confirma 4 casos ambiguos de 41. Regex en el set completo: TP 23, FP 18, TN 0.
 
@@ -106,7 +106,7 @@ Commits `60d4376` y `719504c`, sobre `sintetico_v2`. Verificado en la rama: `pyt
 
 **Pendiente de decisión:** ajustar el prompt o `CLASSIFIER_MIN_CONFIDENCE` (hoy 0.7). Ajustar sobre el mismo set que se mide infla el resultado; el umbral se fijó antes de evaluar ([decisiones](../riesgos/decisiones.md)).
 
-# Backfill para el set real (rama `claude/e2c-backfill`, sin mergear)
+# Backfill para el set real (rama `claude/e2c-backfill`, mergeada en la base)
 
 Commit `25a9c34`. `eval/backfill.py` arma el set real de solo lectura desde los buzones históricos y etiqueta automáticamente con lo que quedó en `emails_log`/`email_request`/`cooler_request` (la señal: las series que entran y salen de la sábana). Comando, etiquetas y revisión manual en el [runbook, paso 7](../deploy/runbook-lunes.md). Verificado: lectura en transacción `READ ONLY` y suite 851 passed, 48 skipped, 1 xfailed; **no se corrió contra datos ni esquema reales**. Las etiquetas son automáticas y aproximadas: "sin rastro" no es `no_os`, así que no hay negativos fiables sin revisión manual. Medir con ese set no autoriza la activación mientras `redact()` siga insuficiente.
 

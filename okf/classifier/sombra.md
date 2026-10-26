@@ -9,7 +9,7 @@ tags: [classifier, sombra, shadow, fase-3]
 
 Rama `claude/e2c-sombra` (commits `7b86977` y `ca00f10`), **mergeada en la base** (`27ccc22`). Verificado en la rama: existen `classifier/shadow.py`, `eval/shadow_report.py` y `msj_clasificacion_dudosa` en `messages.py`; `python -m pytest -q` → **872 passed, 48 skipped, 1 xfailed**. Aprobado por el usuario el 2026-10-26 ([decisiones](../riesgos/decisiones.md)).
 
-> **BLOQUEANTE:** no activar `CLASSIFIER_SHADOW` con correos reales hasta mergear `redact-v2`. La sombra manda texto redactado a un proveedor externo y `redact()` actual dejó pasar datos personales en 21 correos reales ([correos reales](../pruebas/correos-reales.md)).
+> **Decisión de riesgo del usuario pendiente:** `redact-v2` está mergeado y `REDACT_VERSION = 2` abre el candado, pero quedan 2 nombres de 21 correos reales sin redactar ([redact](redact.md)). La sombra manda texto redactado a un proveedor externo; el usuario debe aceptar esa fuga residual antes de activarla con correos reales.
 
 # Variables (opcionales)
 

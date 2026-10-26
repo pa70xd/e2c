@@ -22,7 +22,7 @@ El usuario compartió 21 correos reales (.eml). La orquestadora los analizó **l
 
 ## Holanda descarta todo (bug)
 
-`es_asunto_holanda` (`parsers/holanda.py:70`) compara el asunto normalizado con `ASUNTO_HOLANDA` de forma exacta ("casos repare"; ignora mayúsculas, prefijos `RE:`/`RV:`/`FW:` y etiquetas `[..]`). Verificado en el código. Según el análisis, el asunto real lleva una fecha, así que **Holanda descarta todo, incluida la conciliación de OS**. **Corregido en la rama `claude/e2c-fix-holanda-indice` (`330763f`, sin mergear)**: el asunto acepta fecha o sufijo numérico; esa rama también saca un correo personal del índice (variable opcional `E2C_TEST_MAILBOX`). Verificado ejecutando la función y `pytest -q` → 829 passed, 48 skipped, 1 xfailed.
+`es_asunto_holanda` (`parsers/holanda.py:70`) compara el asunto normalizado con `ASUNTO_HOLANDA` de forma exacta ("casos repare"; ignora mayúsculas, prefijos `RE:`/`RV:`/`FW:` y etiquetas `[..]`). Verificado en el código. Según el análisis, el asunto real lleva una fecha, así que **Holanda descarta todo, incluida la conciliación de OS**. **Corregido en la rama `claude/e2c-fix-holanda-indice` (`330763f`, mergeada en la base)**: el asunto acepta fecha o sufijo numérico; esa rama también saca un correo personal del índice (variable opcional `E2C_TEST_MAILBOX`). Verificado ejecutando la función y `pytest -q` → 829 passed, 48 skipped, 1 xfailed.
 
 ## Dirección y etapa
 
@@ -45,7 +45,7 @@ Correos de salida de REPARE; notificaciones de sistemas del cliente (tickets de 
 
 ## `redact()` dejó pasar datos personales (BLOQUEANTE)
 
-Sobre los 21 correos, `redact()` no cubrió: 53 nombres, 7 direcciones, 6 coordenadas, 1 URL de mapa, 2 correos y 3 montos (patrones F1-F9). **No activar `CLASSIFIER_SHADOW` ni haiku con correos reales hasta mergear `redact-v2`.** Re-probado por la sesión sobre los 21 correos: nombres 53 → 2, el resto 0 (ver [redact](../classifier/redact.md); aceptar o no esos 2 es decisión de riesgo del usuario) (rama `claude/e2c-redact-v2` lista, sin mergear; hasta entonces `REDACT_VERSION` bloquea la sombra y haiku; ver [redact](../classifier/redact.md)) (`session_01GRj3nHJi8AeCXJdsKvwAEY`, rama `claude/e2c-redact-v2`). Consecuencia: el [modo sombra](../riesgos/decisiones.md) y cualquier corrida con key sobre correos reales mandarían datos personales a un proveedor externo. Ya había un límite conocido en [redact](../classifier/redact.md) (nombres sin despedida ni etiqueta no se detectan).
+Sobre los 21 correos, `redact()` v1 no cubrió: 53 nombres, 7 direcciones, 6 coordenadas, 1 URL de mapa, 2 correos y 3 montos (patrones F1-F9). `redact-v2` (mergeado, `32e7fbd`) lo corrigió según la sesión: nombres 53 → 2, el resto 0 (ver [redact](../classifier/redact.md)). Quedan 2 nombres sin redactar; aceptarlos es decisión de riesgo del usuario. El candado `REDACT_VERSION` ya está abierto (`REDACT_VERSION = 2`), así que lo que impide mandar texto real a un proveedor externo es esa decisión, no el código. El [modo sombra](../riesgos/decisiones.md) y cualquier corrida con key sobre correos reales mandarían ese texto fuera. Límite conocido: nombres sin ningún contexto no se detectan.
 
 # Relación con otros documentos
 
