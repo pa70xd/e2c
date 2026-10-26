@@ -74,12 +74,18 @@ with open("config/email_index.json", "r", encoding="utf-8") as f:
 
 
 
+# Fase 4: cada sesión de cliente nuevo agrega aquí su entrada (en INIT y en
+# REPLY), con la clave del índice: "imbera", "kof", "torrey", "oxxo" y
+# "oxxo_garantias". El cliente además debe estar en E2C_CLIENTES_HABILITADOS
+# (src/email_type.py); sin parser registrado el correo se ignora con log.
 PARSERS_INIT = {
 
     "danone"    : DANONE_INIT,
     "penafiel"   : PENAFIEL_INIT,
     "holanda"   : HOLANDA_INIT,
     "heineken" : HEINEKEN_INIT,
+
+    # <-- clientes de la Fase 4: "imbera": IMBERA_INIT, ...
 
     #tests
     "test_danone"    : DANONE_INIT,
@@ -93,6 +99,8 @@ PARSERS_REPLY = {
     "penafiel"   : PENAFIEL_REPLY,
     "holanda"   : HOLANDA_REPLY,
     "heineken": HEINEKEN_REPLY,
+
+    # <-- clientes de la Fase 4: "imbera": IMBERA_REPLY, ...
 
     #tests
     "test_danone" : DANONE_REPLY,
@@ -254,6 +262,11 @@ async def processMail(data):
         
         print(f"[CUSTOMER] {customer} - {customer_email}")
 
+        if customer not in PARSERS_INIT:
+            print(f"[INFO] Cliente '{customer}' sin parser INIT registrado; correo ignorado")
+            duckConn.close()
+            return None
+
         # Solo el primer mensaje de una conversación puede iniciar una
         # solicitud. Un correo posterior, aunque no tenga el prefijo "Re:",
         # actualiza el folio ya asociado al hilo.
@@ -291,6 +304,11 @@ async def processMail(data):
                         "entre corchetes, por ejemplo: [danone]"
                     )
                     return None
+
+            if customer not in PARSERS_REPLY:
+                print(f"[INFO] Cliente '{customer}' sin parser REPLY registrado; correo ignorado")
+                duckConn.close()
+                return None
 
             # print(f"{flujo}CUSTOMER: {customer}")
             # print(f"{flujo}DIRECCIO: {direccion}")
