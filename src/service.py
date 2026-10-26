@@ -138,6 +138,9 @@ db = DB_POSTGRE()
 # Contexto del hilo (filas de cooler_request) para el clasificador. Solo se
 # consulta con un proveedor externo; con regex no se llama.
 classifier.registrar_cargador_contexto(review.cargador(db))
+# Candado de redacción: con proveedor externo o sombra y REDACT_VERSION < 2,
+# el error queda en el log desde el arranque (y se usa regex).
+classifier.registry.verificar_redaccion()
 
 async def processMail(data):
     

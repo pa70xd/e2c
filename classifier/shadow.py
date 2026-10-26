@@ -3,6 +3,8 @@
 * ``CLASSIFIER_SHADOW`` (opcional, vacía por defecto): nombre del proveedor
   sombra (p. ej. ``haiku``). Solo corre si es distinto del gate activo
   (``CLASSIFIER_GATE``).
+* Candado: una sombra externa solo corre si ``registry.redaccion_apta()``
+  (``REDACT_VERSION >= 2``, ver ``classifier/registry.py``).
 * ``CLASSIFIER_SHADOW_SAMPLE`` (opcional, 0.0-1.0, default 1.0): fracción de
   correos que se mandan a la sombra, para controlar costo.
 
@@ -166,6 +168,8 @@ def lanzar(email, decision, ctx: Optional[ThreadCtx]) -> Optional[threading.Thre
         if nombre is None or decision is None or ctx is None:
             return None
         if nombre == registry.nombre_gate():
+            return None
+        if nombre != PROVEEDOR_REGEX and not registry.redaccion_apta("CLASSIFIER_SHADOW"):
             return None
         if random.random() >= muestra():
             return None

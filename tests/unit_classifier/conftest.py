@@ -1,7 +1,9 @@
 """Utilidades de las pruebas del clasificador.
 
 Cada prueba arranca con los proveedores por defecto (``regex``) y sin
-cargador de contexto, aunque el entorno tenga ``CLASSIFIER_*``.
+cargador de contexto, aunque el entorno tenga ``CLASSIFIER_*``. El candado de
+redacción se da por cumplido (``REDACT_VERSION`` 2); ``test_candado.py``
+prueba el caso contrario.
 """
 
 import sys
@@ -19,6 +21,8 @@ def _clasificador_por_defecto(monkeypatch):
                 "CLASSIFIER_SHADOW", "CLASSIFIER_SHADOW_SAMPLE"):
         monkeypatch.delenv(var, raising=False)
     monkeypatch.setattr(classifier, "_cargador_contexto", None)
+    monkeypatch.setattr(registry, "redact_version", lambda: registry.MIN_REDACT_VERSION)
+    monkeypatch.setattr(registry, "_candado_logueado", False)
 
 
 class Proveedores:
