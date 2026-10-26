@@ -16,7 +16,7 @@ tags: [seguridad, riesgos]
    * **Estado**: corregido mergeado en `claude/admiring-lovelace-3oh7g0` (rama `claude/e2c-fix-orquestador`). Con `CORS_ALLOW_ORIGINS` usa esos orígenes y credenciales; sin ella, `"*"` y `allow_credentials=False`.
 5. **Dockerfile**: corre como root (no define `USER`). Sin `.dockerignore`: la imagen incluye `.git` y datos de prueba.
 
-6. **Dirección personal en `email_index.json`**: la sesión fix-holanda-indice la saca del índice (rama `claude/e2c-fix-holanda-indice`, sin mergear; verificado que el índice queda con 4 claves y que `E2C_TEST_MAILBOX` se lee en `src/email_type.py`). **El historial de git conserva la dirección antigua.** `subscriptions.py` aún la tiene hardcodeada (según la sesión). La dirección también se quitó del bundle OKF (`clients/index.md`).
+6. **Dirección personal en `email_index.json`**: la sesión fix-holanda-indice la saca del índice (rama `claude/e2c-fix-holanda-indice`, mergeada en la base; verificado que el índice queda con 4 claves y que `E2C_TEST_MAILBOX` se lee en `src/email_type.py`). **El historial de git conserva la dirección antigua.** `subscriptions.py` aún la tiene hardcodeada (según la sesión). La dirección también se quitó del bundle OKF (`clients/index.md`).
 
 # Media
 

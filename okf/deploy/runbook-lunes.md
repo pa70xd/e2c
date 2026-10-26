@@ -28,7 +28,7 @@ pip install -r requirements.txt -r requirements-dev.txt
 python -m pytest -q
 ```
 
-Usa `python -m pytest`, no el binario `pytest`: puede ser de otro intérprete. Esperado en la base (`3732c25`): **1034 passed, 48 skipped, 1 xfailed** (448/24/1 en `9564d90`, antes de la Fase 3) (el xfail es "stopwords antes del regex" en Danone; los 48 skip son el SQL contra Postgres de abajo). La suite no usa red, credenciales ni producción. Detalle en [pruebas/harness.md](../pruebas/harness.md).
+Usa `python -m pytest`, no el binario `pytest`: puede ser de otro intérprete. Esperado en la base (`6d60cc8`): **1525 passed, 56 skipped, 1 xfailed** (1034/48/1 en `3732c25`). Si faltan `odfpy` o `xlrd` en tu entorno, fallan 2 o más pruebas y la cifra baja (en mi contenedor: 1523 passed + 2 failed, sin `odfpy`) (448/24/1 en `9564d90`, antes de la Fase 3) (el xfail es "stopwords antes del regex" en Danone; los 48 skip son el SQL contra Postgres de abajo). La suite no usa red, credenciales ni producción. Detalle en [pruebas/harness.md](../pruebas/harness.md).
 
 # 2. Pruebas SQL opcionales (Postgres local desechable)
 
@@ -81,7 +81,7 @@ Fase 3 (clasificador, mergeada): `classifier/`, `review/` y el proveedor haiku. 
 
 Para repetir la medición de la línea base: `python eval/run_eval.py --provider regex --set eval/sets/sintetico.jsonl` (hoy precisión de gate 0.7419, sale con código 1).
 
-**ADVERTENCIA BLOQUEANTE (PII): no actives `CLASSIFIER_SHADOW` ni haiku con correos reales hasta mergear `redact-v2`.** Re-probado por la sesión sobre los 21 correos: nombres 53 → 2, el resto 0; quedan 2 nombres sin redactar (límites en [redact](../classifier/redact.md)). Al mergear, el candado `REDACT_VERSION` se abre solo; el usuario debe aceptar esa fuga residual antes de usar correos reales. Hay un candado en el código: un proveedor externo (gate, extract o sombra) solo corre si `classifier.redact.REDACT_VERSION >= 2` (`MIN_REDACT_VERSION = 2` en `classifier/registry.py`; sin la constante cuenta como 1). Hoy `redact.py` de la base no la define, así que quedan bloqueados; (rama `claude/e2c-redact-v2`, `c15543e`, aprobada pero sin mergear; ver [redact](../classifier/redact.md)). Sobre 21 correos reales, `redact()` dejó pasar nombres, direcciones, coordenadas, correos y montos; el texto se enviaría a un proveedor externo. Ver [correos reales](../pruebas/correos-reales.md).
+**ADVERTENCIA (PII) — decisión de riesgo del usuario pendiente:** `redact-v2` ya está mergeado (`32e7fbd`) y `classifier.redact.REDACT_VERSION = 2` abre el candado del código (`MIN_REDACT_VERSION = 2` en `classifier/registry.py`; verificado en la base). Sobre los 21 correos reales la sesión midió nombres 53 → 2 y el resto en 0, pero **quedan 2 nombres sin redactar** y 21 correos no prueban cobertura general ([redact](../classifier/redact.md), [correos reales](../pruebas/correos-reales.md)). Usar `CLASSIFIER_SHADOW` o haiku con correos reales manda ese texto a un proveedor externo: el usuario debe aceptar esa fuga residual (o exigir otra capa) antes de encenderlo.
 
 Modo sombra (`CLASSIFIER_SHADOW`, `CLASSIFIER_SHADOW_SAMPLE`; mergeado en la base): ver [sombra](../classifier/sombra.md) para variables, el log `[CLASSIFIER_SHADOW]` y cómo exportarlo y medirlo con `eval/shadow_report.py`. Sigue sujeto a la advertencia de PII de arriba.
 
@@ -105,7 +105,7 @@ Variables nuevas, todas opcionales y sin valores en el repo: `CLASSIFIER_GATE`, 
 
 # 7. Opcional, solo lectura: armar el set real con backfill
 
-Rama `claude/e2c-backfill` (commit `25a9c34`), **sin mergear**. Verificado en la rama: `eval/backfill.py` y `eval/querys/*.sql` existen; el código abre PostgreSQL con `SET TRANSACTION READ ONLY`, tiene una guarda contra sentencias de escritura y `--tablas prod` exige `--confirmo-solo-lectura`; `python -m pytest -q` → 851 passed, 48 skipped, 1 xfailed. Lee los buzones de `config/email_index.json` (Graph solo GET) y los cruza con `emails_log`, `email_request` y `cooler_request` (solo SELECT).
+Rama `claude/e2c-backfill` (commit `25a9c34`), **mergeada en la base**. Verificado en la rama: `eval/backfill.py` y `eval/querys/*.sql` existen; el código abre PostgreSQL con `SET TRANSACTION READ ONLY`, tiene una guarda contra sentencias de escritura y `--tablas prod` exige `--confirmo-solo-lectura`; `python -m pytest -q` → 851 passed, 48 skipped, 1 xfailed. Lee los buzones de `config/email_index.json` (Graph solo GET) y los cruza con `emails_log`, `email_request` y `cooler_request` (solo SELECT).
 
 Con tus credenciales de siempre (`CLIENT_ID`, `CLIENT_SECRET`, `TENANT_ID`, `SECRET_PG_ACC`, `DB_HOST`, `DB_NAME`, `DB_PORT`; sin valores aquí):
 
@@ -124,5 +124,16 @@ python eval/backfill.py --tablas qa --desde 2026-07-01 --hasta 2026-10-26 --maxi
 **Advertencias:**
 
 * **Aún no se ha corrido contra datos reales ni contra el esquema real**: las columnas salen de los SQL del repo y los valores de `direction` se asumen de `detect_direccion`.
-* **`redact()` es insuficiente** ([correos reales](../pruebas/correos-reales.md)): el backfill redacta con la versión actual, así que el set generado puede traer nombres, direcciones o montos. Trátalo como dato sensible, no lo subas al repo ni lo mandes a un proveedor externo hasta mergear `redact-v2`.
+* **`redact()` deja un residuo** ([correos reales](../pruebas/correos-reales.md)): el backfill redacta con la v2 (2 nombres de 21 correos pasaron sin redactar). Trátalo como dato sensible: no lo subas al repo ni lo mandes a un proveedor externo sin revisión manual.
 * Haiku sigue sin medirse sobre correos reales.
+
+# 8. Orden recomendado para encender lo nuevo (recomendación de la orquestadora)
+
+Todo lo de la Fase 3 y la Fase 4 está **apagado por defecto**. La orquestadora recomienda este orden; yo no lo he probado.
+
+1. **Sombra primero:** `CLASSIFIER_SHADOW=haiku` con `CLASSIFIER_SHADOW_SAMPLE=0.2` (20 % de los correos). La sombra solo registra, nunca decide ni manda correos ([sombra](../classifier/sombra.md)). Requiere `ANTHROPIC_API_KEY` y, por la advertencia de PII de arriba, que el usuario haya aceptado la fuga residual de `redact`. Mide con `eval/shadow_report.py`; recuerda que "acuerdo" no es precisión.
+2. **Clientes nuevos, uno por uno:** agregarlos a `E2C_CLIENTES_HABILITADOS` (`imbera`, `torrey`, `kof`, `oxxo`, `oxxo_garantias`) **solo después de revisar sus preguntas abiertas** ([preguntas abiertas](../riesgos/preguntas-abiertas.md)). No se pueden apagar los 4 actuales con ese flag. Cada uno tiene su propio riesgo:
+   * KOF: los fixtures no vienen de archivos reales; ajustar alias con el primer correo real; falta activar la suscripción de Graph.
+   * Imbera/Torrey: criterio de garantía, formato de OS y sub-cliente sin confirmar.
+   * Oxxo: **no lo enciendas mientras la PoC externa siga leyendo el buzón** (duplica OS).
+3. Haiku como gate real (`CLASSIFIER_GATE=haiku`) solo con el set real etiquetado y precisión >= 0.95 (ver la advertencia de arriba).

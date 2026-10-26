@@ -1,13 +1,13 @@
 ---
 type: Module
 title: Oxxo (mantenimiento y garantías)
-description: Parsers deterministas (sin LLM) para los buzones de Oxxo, apagados por defecto. Fase 4, rama claude/e2c-oxxo, sin mergear.
+description: Parsers deterministas (sin LLM) para los buzones de Oxxo, apagados por defecto. Fase 4, mergeado en la base (claude/e2c-oxxo).
 tags: [parsers, oxxo, fase-4]
 ---
 
 # Estado
 
-Rama `claude/e2c-oxxo` (commits `0278796` y `ecd3c57`), aprobada por la orquestadora y en merge (**no confirmado en la base** al escribir esto). Verificado en la rama: existen `parsers/oxxo.py`, `parsers/oxxo_parse/{plantillas,excel,process_data,habilitado}.py`, `repository/oxxo/` (con 7 SQL) y 4 clases registradas en `src/service.py` (`OXXO_INIT`, `OXXO_REPLY`, `OXXO_GARANTIAS_INIT`, `OXXO_GARANTIAS_REPLY`); `python -m pytest -q` en la rama → **1153 passed, 2 failed, 56 skipped, 1 xfailed** en mi contenedor; los 2 fallos son por no tener `odfpy` (1153 + 2 = 1155, la cifra de la sesión). Los 56 skip incluyen tests contra PostgreSQL; la sesión dice haber verificado además el SQL de Oxxo contra un PG16 local desechable (10 de 10): no lo repetí.
+Rama `claude/e2c-oxxo` (commits `0278796` y `ecd3c57`), **mergeada en la base** (`e7a5b8c`). Verificado en la rama: existen `parsers/oxxo.py`, `parsers/oxxo_parse/{plantillas,excel,process_data,habilitado}.py`, `repository/oxxo/` (con 7 SQL) y 4 clases registradas en `src/service.py` (`OXXO_INIT`, `OXXO_REPLY`, `OXXO_GARANTIAS_INIT`, `OXXO_GARANTIAS_REPLY`); `python -m pytest -q` en la rama → **1153 passed, 2 failed, 56 skipped, 1 xfailed** en mi contenedor; los 2 fallos son por no tener `odfpy` (1153 + 2 = 1155, la cifra de la sesión). Los 56 skip incluyen tests contra PostgreSQL; la sesión dice haber verificado además el SQL de Oxxo contra un PG16 local desechable (10 de 10): no lo repetí.
 
 # Apagado por defecto
 

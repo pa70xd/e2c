@@ -1,15 +1,14 @@
 ---
 type: Client Integration
 title: KOF
-description: Parser KOF_INIT/KOF_REPLY ("Lay Out Repare" de KOF) con ruta, movimiento y conciliación por OS. Fase 4, rama claude/e2c-kof, sin mergear. En la base sigue siendo un stub.
+description: Parser KOF_INIT/KOF_REPLY ("Lay Out Repare" de KOF) con ruta, movimiento y conciliación por OS. Fase 4, mergeado en la base (rama claude/e2c-kof). Apagado por defecto (E2C_CLIENTES_HABILITADOS).
 resource: https://github.com/pa70xd/e2c/blob/claude/admiring-lovelace-3oh7g0/parsers/kof.py
 tags: [kof, fase-4]
 ---
 
 # Estado
 
-* **En la base (`claude/admiring-lovelace-3oh7g0`)**: `parsers/kof.py` sigue siendo un stub que solo imprime; no está registrado en `PARSERS_INIT`/`PARSERS_REPLY`; `customer.json` es de 0 bytes.
-* **En la rama `claude/e2c-kof` (`b7f6e64` y `295dc97`; aprobada por la orquestadora, que la mergea; **no la veo aún en la base**)**: parser real. Verificado: existen `parsers/kof.py`, `parsers/kof_parse/{lector_adapter,reader,business,sabana,process_data,mensajes}.py`, `config/customers/kof/{columns_names,reglas_kof}.py` y `customer.json`, 11 goldens `kof_*` y `tests/unit_kof/`; `KOF_INIT`/`KOF_REPLY` registrados como `kof` y `test_kof` en `src/service.py`. `python -m pytest -q` en la rama → **942 passed, 1 failed, 48 skipped, 1 xfailed** (medido sobre `b7f6e64`). El fallo era `test_gate_en_parser_init_cubre_danone_y_penafiel`; según la sesión, en `295dc97` esa prueba ahora acepta un subconjunto (`<=`) de clientes sin gate en el parser y la suite da 1088 passed con 0 diff en goldens (no lo repetí sobre `295dc97`). Que los goldens existentes no cambiaron es afirmación de la sesión.
+* **Mergeado en la base** (`5f3a511`; rama `claude/e2c-kof`, commits `b7f6e64` y `295dc97`). Antes era un stub que solo imprimía: parser real. Verificado: existen `parsers/kof.py`, `parsers/kof_parse/{lector_adapter,reader,business,sabana,process_data,mensajes}.py`, `config/customers/kof/{columns_names,reglas_kof}.py` y `customer.json`, 11 goldens `kof_*` y `tests/unit_kof/`; `KOF_INIT`/`KOF_REPLY` registrados como `kof` y `test_kof` en `src/service.py`. `python -m pytest -q` en la rama → **942 passed, 1 failed, 48 skipped, 1 xfailed** (medido sobre `b7f6e64`). El fallo era `test_gate_en_parser_init_cubre_danone_y_penafiel`; según la sesión, en `295dc97` esa prueba ahora acepta un subconjunto (`<=`) de clientes sin gate en el parser y la suite da 1088 passed con 0 diff en goldens (no lo repetí sobre `295dc97`). Que los goldens existentes no cambiaron es afirmación de la sesión.
 * Sigue detrás de `E2C_CLIENTES_HABILITADOS` ([despliegue](../deploy/despliegue.md)) y el buzón de KOF viene en la rama del lector (`email_index.json`, mergeada).
 
 # Flujo (según la sesión)

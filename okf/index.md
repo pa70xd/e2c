@@ -35,9 +35,10 @@ Bundle OKF del repositorio `e2c`: backend FastAPI que recibe correos de clientes
 * [Penafiel](parsers/penafiel.md)
 * [Holanda](parsers/holanda.md)
 * [Heineken](parsers/heineken.md)
-* [Imbera y Torrey](parsers/imbera-torrey.md) - "Lay Out Repare", multi-cliente y hielo (rama `claude/e2c-imbera-torrey`, sin mergear).
-* [Oxxo](parsers/oxxo.md) - mantenimiento y garantías, apagado por defecto (rama `claude/e2c-oxxo`, sin mergear).
-* [KOF](parsers/kof.md) - parser real en la rama `claude/e2c-kof` (sin mergear); en la base sigue siendo un stub.
+* [Imbera](parsers/imbera.md) y [Torrey](parsers/torrey.md) - clientes de la Fase 4, apagados por defecto.
+* [Imbera y Torrey (flujo común)](parsers/imbera-torrey.md) - "Lay Out Repare", multi-cliente y hielo (rama `claude/e2c-imbera-torrey`, mergeada en la base).
+* [Oxxo](parsers/oxxo.md) - mantenimiento y garantías, apagado por defecto (rama `claude/e2c-oxxo`, mergeada en la base).
+* [KOF](parsers/kof.md) - parser "Lay Out Repare" de KOF, mergeado en la base y apagado por defecto.
 
 ## Clientes
 

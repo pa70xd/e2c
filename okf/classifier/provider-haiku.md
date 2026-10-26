@@ -23,7 +23,7 @@ Rama `claude/e2c-provider-haiku` (commit `a27e690`), más `ea9141a`, sobre `clau
 * Fallas: timeout, error de API, rechazo o JSON inválido lanzan excepción y la decisión cae a regex.
 * Logs sin PII: operación, versión de prompt, `tipo_evento`, `confidence`, `latencia_ms` y tokens leídos de caché.
 
-# Prompt v2 (rama `claude/e2c-prompt-v2`, sin mergear)
+# Prompt v2 (rama `claude/e2c-prompt-v2`, mergeada en la base)
 
 Commit `14ca237`. Verificado en la rama: existen `classifier/prompts/{contexto_negocio,gate-v2,extract-v3}.md` y los v1 (`gate.md`, `extract.md`) intactos; `haiku.py` lee `CLASSIFIER_PROMPT_VERSION` (opcional; vacía o `v1` = los prompts actuales, `v2` = con contexto de negocio). `python -m pytest -q` → **801 passed, 48 skipped, 1 xfailed**. Según la sesión, `contexto_negocio.md`, `gate-v2` y `extract-v3` van en la parte cacheada del `system`, y los goldens no cambian.
 

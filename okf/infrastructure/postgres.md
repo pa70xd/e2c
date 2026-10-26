@@ -13,7 +13,7 @@ tags: [postgres, secret-manager]
 * Variables: `SECRET_PG_ACC`, `DB_HOST`, `DB_NAME`, `DB_PORT` (5432).
 * Sin `sslmode` explícito.
 
-# Red de seguridad contra `NaN` (rama `claude/e2c-lector-nan`, sin mergear)
+# Red de seguridad contra `NaN` (rama `claude/e2c-lector-nan`, mergeada en la base)
 
 `execute_query` convierte `NaN`, `pd.NA` y `pd.NaT` de los parámetros en `None` antes de ejecutar (`_sin_nan`, verificado en la rama). Cierra el caso en que un `NaN` de pandas llegaba a PostgreSQL y se guardaba como `'NaN'`. Detalle y límites en [lector](../parsers/lector.md).
 

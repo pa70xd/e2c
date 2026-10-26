@@ -29,7 +29,7 @@ Rama `claude/e2c-lector-excel` (commits `b3e308e`, `717cb96`, `b0758f7`, `41eafb
 
 `odfpy==1.4.1` (nuevo en `requirements.txt`, solo sdist) instaló limpio, según la sesión, en un venv nuevo con Python 3.13 (`pip install --no-cache-dir -r requirements.txt`), pero **no se probó con Python 3.14**, que es la imagen del Dockerfile: **falta verificar el build de la imagen**. En mi contenedor (Python 3.13, `pip` como root, sin venv) la instalación de `odfpy==1.4.1` falló al construir la rueda, así que el riesgo es real y depende del entorno de instalación.
 
-# Celdas vacías: `None`, no `NaN` (rama `claude/e2c-lector-nan`, sin mergear)
+# Celdas vacías: `None`, no `NaN` (rama `claude/e2c-lector-nan`, mergeada en la base)
 
 Commits `ba62b70` y `b499447`; aprobada y en merge (no confirmado en la base). Verificado en la rama: existen `DataFrameLector`, `Tabla.filas()` y `_sin_nan`; `pytest -q` → 936 passed, 2 failed (falta `odfpy`), 48 skipped, 1 xfailed (936 + 2 = 938, la cifra de la sesión).
 

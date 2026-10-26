@@ -393,6 +393,14 @@
 * Rama `claude/e2c-lector-nan` (`ba62b70`, `b499447`), aprobada y en merge (sin confirmar en la base). Verificado: `DataFrameLector`, `Tabla.filas()`, `_sin_nan` en `execute_query`; `pytest -q` → 936 passed, 2 failed (falta `odfpy`), 48 skipped, 1 xfailed. Documentado en `parsers/lector.md`, `infrastructure/postgres.md` y `riesgos/bugs.md`.
 * Cambio en la capa de datos: `execute_query` ahora transforma `NaN` en `None` en todos los parámetros. Los sitios viejos con `iterrows` siguen sin arreglar; la red los cubre.
 
+## 2026-10-26 · Fase 4 cerrada en código (base 6d60cc8)
+
+* Base `claude/admiring-lovelace-3oh7g0` en `6d60cc8`: mergeada en mi rama. Verificado: `pytest -q` → 1523 passed, 2 failed (falta `odfpy`), 56 skipped, 1 xfailed (1525 en un entorno completo, como reporta la orquestadora); `REDACT_VERSION = 2`; todas las ramas `claude/e2c-*` de código están contenidas en la base.
+* Merges (según la orquestadora): redact-v2 `32e7fbd`, okf `660024c`, oxxo `e7a5b8c`, imbera-torrey `594ca0d`, kof `5f3a511`, lector-nan `6d60cc8`.
+* Hecho: estados de todo a "mergeado"; conceptos `parsers/{kof,imbera,torrey,oxxo}.md` (apagados por defecto); `riesgos/preguntas-abiertas.md` reescrito y agrupado por cliente con responsable propuesto (REPARE operación, catálogo, dev, usuario); runbook con 1525/56/1 y orden recomendado de encendido (sombra al 20 %, luego clientes uno por uno).
+* **Cambio de estado del bloqueo de PII:** el candado `REDACT_VERSION` ya está abierto por el merge; lo que queda es una decisión de riesgo del usuario sobre 2 nombres sin redactar.
+* Corrección: al reescribir `preguntas-abiertas.md` rescaté la sección de Oxxo, que se había perdido en una edición mía anterior.
+
 ## 2026-10-24
 
 * Creación del bundle OKF del repositorio `e2c` (rama `claude/admiring-lovelace-3oh7g0`).
