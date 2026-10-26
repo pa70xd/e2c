@@ -14,6 +14,8 @@ from parsers.danone import DANONE_INIT,DANONE_REPLY
 from parsers.penafiel import PENAFIEL_INIT, PENAFIEL_REPLY
 
 from parsers.heineken import HEINEKEN_INIT, HEINEKEN_REPLY   # imports
+from parsers.imbera import IMBERA_INIT, IMBERA_REPLY
+from parsers.torrey import TORREY_INIT, TORREY_REPLY
 
 import re
 
@@ -80,12 +82,16 @@ PARSERS_INIT = {
     "penafiel"   : PENAFIEL_INIT,
     "holanda"   : HOLANDA_INIT,
     "heineken" : HEINEKEN_INIT,
+    "imbera"    : IMBERA_INIT,
+    "torrey"    : TORREY_INIT,
 
     #tests
     "test_danone"    : DANONE_INIT,
     "test_penafiel"   : PENAFIEL_INIT,
     "test_holanda"   : HOLANDA_INIT,
     "test_heineken" : HEINEKEN_INIT,
+    "test_imbera"   : IMBERA_INIT,
+    "test_torrey"   : TORREY_INIT,
 }
 PARSERS_REPLY = {
 
@@ -93,12 +99,16 @@ PARSERS_REPLY = {
     "penafiel"   : PENAFIEL_REPLY,
     "holanda"   : HOLANDA_REPLY,
     "heineken": HEINEKEN_REPLY,
+    "imbera"    : IMBERA_REPLY,
+    "torrey"    : TORREY_REPLY,
 
     #tests
     "test_danone" : DANONE_REPLY,
     "test_penafiel" : PENAFIEL_REPLY,
     "test_holanda"   : HOLANDA_REPLY,
     "test_heineken": HEINEKEN_REPLY,
+    "test_imbera"   : IMBERA_REPLY,
+    "test_torrey"   : TORREY_REPLY,
 }
 
 # Clientes cuyo parser INIT ya pasa por el gate del clasificador en

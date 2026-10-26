@@ -1,0 +1,36 @@
+{
+  "deliveries": [
+    {
+      "message": {
+        "id": "msg-imbera-seg",
+        "subject": "Seguimiento reporte REP-201026_3",
+        "from": "contacto@imbera-cliente.example.com",
+        "to": [
+          "cliente.imbera@repare.example.com"
+        ],
+        "attachments": []
+      },
+      "result": null,
+      "error": null,
+      "replies_sent": 0
+    }
+  ],
+  "repo_calls": [
+    {
+      "module": "danone.DB_POSTGRE",
+      "fn": "conversation_exists",
+      "params": {
+        "conversation_id": "conv-imbera-001"
+      }
+    },
+    {
+      "module": "imbera.DB_POSTGRE",
+      "fn": "email_init_exist",
+      "params": {
+        "mail_id": "msg-imbera-seg"
+      }
+    }
+  ],
+  "external_calls": [],
+  "replies": []
+}
