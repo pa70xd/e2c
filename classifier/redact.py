@@ -311,7 +311,7 @@ def _es_nombre(s: str) -> bool:
 # ------------------------------------------------- nombres en contexto (F1,F2,F4,F5,F8)
 _CADENAS = {
     "oxxo", "jumex", "kof", "femsa", "imbera", "repare", "emerald", "solkos", "coca", "cola",
-    "coca-cola", "pepsi", "bimbo", "danone", "bachoco", "sigma", "lala",
+    "coca-cola", "pepsi", "bimbo", "danone", "bachoco", "sigma",
 }
 _EMPRESA = re.compile(
     r"\bS\.?[ ]?A\.?(?![\w])|\bC\.?[ ]?V\.?(?![\w])|\bS\.?[ ]?de[ ]?R\.?[ ]?L\b|\bS\.?[ ]?A\.?[ ]?B\b",
@@ -443,15 +443,33 @@ _ETQ_SIGUE = re.compile(
 )
 _CAMPO = re.compile(
     rf"(?:^|(?<=[|;\t])|(?<=[ ]{{2}}))[ \t]*(?:[-*•][ \t]*)?"
-    rf"(?P<et>(?P<f>{_ET_PERSONA_FUERTE})|(?P<w>{_ET_PERSONA_DEBIL})|(?P<d>{_ET_DIRECCION}))"
+    rf"(?P<et>(?P<f>{_ET_PERSONA_FUERTE})|(?P<w>{_ET_PERSONA_DEBIL})|(?P<d>{_ET_DIRECCION})|(?P<s>direcci[oó]n|domicilio))"
     rf"[ \t]*(?::|：|[ \t]-[ \t]|(?=\t))[ \t]*",
     _FLAGS,
 )
+_PERSONA_EN_TIENDA = re.compile(
+    rf"(?P<pre>[ \t]-[ \t]+)(?P<n>[{_LETRA}][{_LETRA}'’.\-]*(?:[ ]+[{_LETRA}][{_LETRA}'’.\-]*){{1,4}})"
+    r"(?P<post>[ \t]*,[ \t]*(?i:ubicad[oa]s?[ ]+en)\b)"
+)
+
+
+_DESCRIPTOR_TIENDA = {"tienda", "plaza", "sucursal", "bodega", "centro", "zona", "norte", "sur", "oriente",
+                      "poniente", "almacen", "cedis", "cd", "local", "region", "regional", "pdv", "cr"}
+
+
+def _persona_en_tienda(m: re.Match) -> str:
+    n = m.group("n")
+    palabras = n.split()
+    if any(_plano(w) in _CADENAS or _CONTENIDO.search(w) or _plano(w) in _DESCRIPTOR_TIENDA for w in palabras):
+        return m.group(0)
+    return m.group("pre") + ID + m.group("post")
+
+
 _UBICADA = re.compile(
     r"\b(?P<et>(?:est[aá][ ]+)?ubicad[oa]s?[ ]+en|se[ ]+encuentra[ ]+en[ ]+la[ ]+direcci[oó]n)[ \t]+(?!\[)", _FLAGS
 )
 _SENAS_CALLE = re.compile(
-    r"\b\d{5}\b|(?-i:\b[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+[ ]+(?:No\.?[ ]*|#[ ]*)?\d+\b)|\b(?:calle|av|avenida|blvd|boulevard|bulevar|col|colonia|carretera|calzada|privada|prolongaci[oó]n|"
+    r"\b\d{5}\b|\b(?:lt|mz|lote|manzana|local|int|no|num)\.?[ ]*\d|(?-i:\b[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+[ ]+(?:No\.?[ ]*|#[ ]*)?\d+\b)|\b(?:calle|av|avenida|blvd|boulevard|bulevar|col|colonia|carretera|calzada|privada|prolongaci[oó]n|"
     r"fracc|fraccionamiento|km|esquina|esq|entre|s/n|c\.?p)\b",
     _FLAGS,
 )
@@ -485,6 +503,7 @@ def _campos_linea(linea: str):
 
     Devuelve (línea, pendiente); ``pendiente`` es 'p'/'d' si una etiqueta de persona o
     dirección quedó sin valor y este seguirá en la línea siguiente."""
+    linea = _PERSONA_EN_TIENDA.sub(_persona_en_tienda, linea)
     pendiente = None
     out = []
     cur = pos = 0
@@ -504,11 +523,12 @@ def _campos_linea(linea: str):
             break
         ini = m.end()
         resto = linea[ini:]
-        if m.group("d"):
+        if m.group("d") or m.group("s"):
             if not resto.strip():
-                pendiente = "d"
+                pendiente = "d" if m.group("d") else None
             n = _fin_direccion(resto)
-            if n and not resto.lstrip().startswith("[") and not _VACIO.match(resto[:n].strip()):
+            if n and not resto.lstrip().startswith("[") and not _VACIO.match(resto[:n].strip()) \
+                    and (m.group("d") or _SENAS_CALLE.search(resto[:n])):
                 out.append(linea[cur:ini] + DIRECCION)
                 cur = pos = ini + n
                 continue
@@ -646,8 +666,11 @@ _COL_TEL = re.compile(
     r"(?:tel(?:[eé]fono)?s?|cel(?:ular)?|m[oó]vil|whats?[ ]?app|fax|n[uú]mero[ ]+de[ ]+"
     r"(?:contacto|tel[eé]fono|celular))(?:[ ]+(?:de|del)[ ]+\w+(?:[ ]+\w+)?|[ ]+\w+)?", _FLAGS)
 _COL_CORREO = re.compile(r"(?:correo|e-?mail|mail)(?:[ ]+\w+(?:[ ]+\w+)?)?", _FLAGS)
+_SENS = ("p", "t", "c", "d", "u")
+_COL_UBIC = re.compile(r"(?:latitud|longitud|lat|lng|coordenadas?|gps)(?:[ ]+\w+)?", _FLAGS)
 _COL_DIR = re.compile(
-    r"(?:calle|colonia|col\.?|c\.?[ ]?p\.?|c[oó]digo[ ]+postal|direcci[oó]n|domicilio|"
+    r"(?:calle(?:[ ]+y[ ]+n[uú]mero)?|colonia|col\.?|c\.?[ ]?p\.?|c[oó]digo[ ]+postal|direcci[oó]n|domicilio|"
+    r"referencias?[ ]+del[ ]+domicilio|"
     r"n[uú]m(?:ero|\.)?[ ]+(?:ext(?:erior)?|int(?:erior)?)|no\.?[ ]+(?:ext|int)(?:erior)?\.?)"
     r"(?:[ ]+(?:de|del)[ ]+(?:env[ií]o|entrega|garant[ií]a|facturaci[oó]n)|[ ]+fiscal|[ ]+particular)*",
     _FLAGS,
@@ -657,7 +680,7 @@ _COL_GENERICA = re.compile(
     r"municipio|tienda|pdv|punto[ ]+de[ ]+venta|cliente|cadena|sucursal|tipo(?:[ ]+de[ ]+servicio)?|"
     r"servicio|observaciones|comentarios|equipo|falla|cantidad|descripci[oó]n|motivo|acci[oó]n|activo|"
     r"prioridad|zona|regi[oó]n|id|no\.?|#|n[uú]mero|solicitud|canal|distribuidor|proveedor|"
-    r"referencia|nombre[ ]+de(?:l|[ ]+la)[ ]+(?:tienda|pdv|punto[ ]+de[ ]+venta|sucursal|equipo|cadena))"
+    r"referencia|negocio|nombre[ ]+del[ ]+negocio|nombre[ ]+de(?:l|[ ]+la)[ ]+(?:tienda|pdv|punto[ ]+de[ ]+venta|sucursal|equipo|cadena))"
     r"(?:[ ]+\w+){0,2}", _FLAGS)
 
 
@@ -666,11 +689,12 @@ def _tipo_columna(celda: str):
     c = celda.strip().strip(":*_ ").strip()
     if not c or len(c) > 40 or re.search(r"\d{3}", c) or "[" in c:
         return None
-    if _COL_GENERICA.fullmatch(c) and not _COL_PERSONA.fullmatch(c):
-        return "g"
-    for tipo, rx in (("p", _COL_PERSONA), ("t", _COL_TEL), ("c", _COL_CORREO), ("d", _COL_DIR)):
+    for tipo, rx in (("p", _COL_PERSONA), ("t", _COL_TEL), ("c", _COL_CORREO), ("d", _COL_DIR),
+                     ("u", _COL_UBIC)):
         if rx.fullmatch(c):
             return tipo
+    if _COL_GENERICA.fullmatch(c):
+        return "g"
     return None
 
 
@@ -687,7 +711,15 @@ def _valor_tabla(tipo: str, val: str) -> str:
         return lead + (TELEFONO if len(re.sub(r"\D", "", v)) >= 6 and "[" not in v else v) + trail
     if tipo == "c":
         return lead + (CORREO if "[CORREO]" not in v else v) + trail
+    if tipo == "u":
+        return lead + (UBICACION if re.search(r"\d", v) else v) + trail
     return lead + DIRECCION + trail
+
+
+_PARECE_ETIQUETA = re.compile(
+    r"^(?:no\.?|n[uú]m(?:ero)?\.?|c[oó]d(?:igo)?\.?|id|folio|ticket|serie|modelo|fecha|estado|municipio|"
+    r"ciudad|tipo|referencia|nombre)\b|[()]"
+    , _FLAGS)
 
 
 def _celdas(cuerpo: str):
@@ -709,7 +741,7 @@ def _tablas(cuerpos):
         interior = celdas[1:-1] if sep == "|" and not celdas[0].strip() and not celdas[-1].strip() else celdas
         offset = 1 if interior is not celdas else 0
         tipos = [_tipo_columna(c) for c in interior]
-        sensibles = [k for k, tp in enumerate(tipos) if tp in ("p", "t", "c", "d")]
+        sensibles = [k for k, tp in enumerate(tipos) if tp in _SENS]
         if not sensibles:
             i += 1
             continue
@@ -739,7 +771,7 @@ def _tablas(cuerpos):
                 _tipo_columna(interior[k]) is not None for k in range(0, len(interior), 2)):
             cambio = False
             for k in range(0, len(interior), 2):
-                if tipos[k] in ("p", "t", "c", "d"):
+                if tipos[k] in _SENS:
                     nuevo = _valor_tabla(tipos[k], interior[k + 1])
                     cambio |= nuevo != interior[k + 1]
                     interior[k + 1] = nuevo
@@ -758,21 +790,43 @@ def _tablas(cuerpos):
             tipos.append(tp)
             j += 1
         k = len(tipos)
-        if k >= 2 and any(tp in ("p", "t", "c", "d") for tp in tipos):
+        if k >= 2 and any(tp in _SENS for tp in tipos):
             vals = []
             m = j
             if m < n and not cuerpos[m].strip():
                 m += 1
-            while m < n and cuerpos[m].strip() and "|" not in cuerpos[m] and len(vals) < k:
+            while (m < n and cuerpos[m].strip() and "|" not in cuerpos[m] and len(cuerpos[m]) <= 80
+                   and len(vals) < 12 * k and _tipo_columna(cuerpos[m]) is None):
                 vals.append(m)
                 m += 1
-            filas = 1 if len(vals) == k else 0
-            for c, tp in enumerate(tipos if filas else ()):
-                if tp in ("p", "t", "c", "d"):
-                    cuerpos[vals[c]] = _valor_tabla(tp, cuerpos[vals[c]])
+            if len(vals) >= k and len(vals) % k:
+                vals = vals[:k]
+            if len(vals) < k:  # "valores" que son etiquetas: formulario etiqueta/valor, no esta tabla
+                vals = []
+            filas = len(vals) // k if vals else 0
+            for f in range(filas):
+                for c, tp in enumerate(tipos):
+                    if tp in _SENS:
+                        idx = vals[f * k + c]
+                        cuerpos[idx] = _valor_tabla(tp, cuerpos[idx])
             i = max(m, i + 1) if filas else j
         else:
             i = max(j, i + 1)
+    # 3) formulario con una celda por línea: etiqueta, valor, etiqueta, valor...
+    for i in range(n - 1):
+        c = cuerpos[i]
+        if not c.strip() or "|" in c:
+            continue
+        tp = _tipo_columna(c)
+        if tp not in ("p", "t", "d", "u"):
+            continue
+        if tp == "d" and re.fullmatch(r"\s*(?:direcci[oó]n|domicilio)\s*:?\s*", c, _FLAGS):
+            continue  # "Dirección" sola: puede ser la del punto de venta
+        sig = cuerpos[i + 1]
+        if not sig.strip() or _tipo_columna(sig) is not None or _PARECE_ETIQUETA.search(sig.strip()) \
+                or len(sig) > 100:
+            continue
+        cuerpos[i + 1] = _valor_tabla(tp, sig)
     return cuerpos
 
 
@@ -1038,6 +1092,28 @@ def _es_nombre_firma(cuerpo: str) -> bool:
     return bool(_NOMBRE_MAY.fullmatch(c) or (len(c.split()) >= 2 and _NOMBRE_RE.fullmatch(c)))
 
 
+_CARGO = re.compile(
+    r"\b(?:gerente|subgerente|coordinador[a]?|supervisor[a]?|director[a]?|ejecutiv[oa]|analista|t[eé]cnic[oa]|"
+    r"jefe|jefa|encargad[oa]|asesor[a]?|representante|especialista|l[ií]der|administrador[a]?|ingenier[oa]|"
+    r"auxiliar|asistente|vendedor[a]?|promotor[a]?|operador[a]?|capturista|regional|ventas)\b",
+    _FLAGS,
+)
+
+
+def _linea_nombre_cargo(cuerpo: str) -> bool:
+    """"Nombre Apellido" al inicio de una línea corta (puede seguir un cargo: "Pedro Gómez - Jefe de
+    Mantenimiento"); sus dos primeras palabras no son de contenido ni de saludo."""
+    c = cuerpo.strip()
+    toks = c.split()
+    if not 2 <= len(toks) <= 12 or len(c) > 80 or _SERIE_TOKEN.search(c) or re.search(r"\d{3}", c):
+        return False
+    for t in toks[:2]:
+        if not re.fullmatch(_PALABRA, t) or _CONTENIDO.search(t) or _plano(t) in _NO_SALUDO \
+                or _plano(t) in _CADENAS or _NO_FIRMA_NOMBRE.search(t):
+            return False
+    return True
+
+
 def _firmas_contacto(t: str) -> str:
     """F7: bloque nombre + cargo + "C:/T:/Cel" + teléfono, aun sin despedida conocida."""
     lineas = t.split("\n")
@@ -1048,6 +1124,17 @@ def _firmas_contacto(t: str) -> str:
     while i < n:
         pref, c = partes[i]
         prof = pref.count(">")
+        sig_cargo = (i + 1 < n and partes[i + 1][0].count(">") == prof
+                     and len(partes[i + 1][1].strip()) <= 60 and _CARGO.search(partes[i + 1][1]))
+        if _es_nombre_firma(c) and sig_cargo or (
+                _linea_nombre_cargo(c) and _CARGO.search(c) and not _es_frontera(c)):
+            fin = i + 1
+            while fin < n and partes[fin][0].count(">") == prof and (
+                    _linea_firma(partes[fin][1]) or (fin == i + 1 and sig_cargo)):
+                fin += 1
+            out.append(f"{_pref(pref)}{FIRMA}")
+            i = fin
+            continue
         if _es_nombre_firma(c):
             j = i + 1
             ok = False
@@ -1080,16 +1167,19 @@ def _firmas(t: str) -> str:
         """Índice (exclusivo) de la última línea del bloque que empieza en ``desde``."""
         fin = desde
         j = desde
+        primera = True
         while j < n:
             pref, cuerpo = partes[j]
             if cuerpo.strip() == "":
                 j += 1
                 continue
+            libre = primera and parar_en_contenido and _linea_nombre_cargo(cuerpo)
+            primera = False
             if pref.count(">") != profundidad or _es_frontera(cuerpo):
                 break
             if cuerpo.strip() == FIRMA:  # bloque ya redactado: lo absorbe y termina
                 return j + 1
-            if parar_en_contenido and (
+            if parar_en_contenido and not libre and (
                 _es_contenido(cuerpo) or len(cuerpo.strip()) > _LINEA_LARGA
             ):
                 break
@@ -1168,6 +1258,17 @@ def _firmas(t: str) -> str:
 
 
 # ---------------------------------------------------------------------- público
+def _pasada(t: str) -> str:
+    t = _correos(t)
+    t = _ids(t)
+    t = _ubicaciones(t)
+    t = _montos(t)
+    t = _telefonos(t)
+    t = _nombres(t)
+    t = _firmas(t)
+    return re.sub(r"[ \t]+$", "", t, flags=re.M)
+
+
 def redact(text: str, conservar: Iterable[str] = ()) -> str:
     """Sustituye PII por marcadores estables. Idempotente y sin dependencias.
 
@@ -1186,13 +1287,14 @@ def redact(text: str, conservar: Iterable[str] = ()) -> str:
         if nuevo != t:
             protegidos.append((marca, tok))
             t = nuevo
-    t = _correos(t)
-    t = _ids(t)
-    t = _ubicaciones(t)
-    t = _montos(t)
-    t = _telefonos(t)
-    t = _nombres(t)
-    t = _firmas(t)
+    # punto fijo: lo redactado en una pasada cambia el contexto de la siguiente (una tabla
+    # tapada deja de ser "Folio:"...), así que se repite hasta que no cambie nada; así
+    # redact(redact(x)) == redact(x) por construcción
+    for _ in range(5):
+        previo = t
+        t = _pasada(t)
+        if t == previo:
+            break
     t = re.sub(r"[ \t]+$", "", t, flags=re.M)
     for marca, tok in protegidos:
         t = t.replace(marca, tok)

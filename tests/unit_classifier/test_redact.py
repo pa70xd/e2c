@@ -524,9 +524,9 @@ def test_f4_campos_etiquetados(entrada, esperado):
     "Contacto: tienda",
     "Responsable: mantenimiento",
     "Contacto: pendiente",
-    "Dirección: Calle Hidalgo 12, Col. Centro, C.P. 06000",
     "Dirección del PDV: Calle Sur 3",
-    "Domicilio: Av Norte 4",
+    "Dirección: la tienda de la plaza",
+    "Domicilio: conocido",
     "El cooler está ubicado en la tienda OXXO Centro",
     "Ubicado en el pasillo 3",
 ])
@@ -960,3 +960,105 @@ def test_conservar_sigue_funcionando_con_v2():
 def test_redact_version():
     from classifier import redact as modulo
     assert modulo.REDACT_VERSION == 2
+
+
+# ======================================================================
+# Ronda 2 (fugas de la batería real): formularios de una celda por línea,
+# tablas de varias filas, firmas sin despedida, plantilla de tienda y "Dirección:".
+# ======================================================================
+FORMULARIO = (
+    "Nombre Del Cliente\nCADENA X SA DE CV\nTeléfono Local\n0\nTeléfono Celular\n0\n"
+    "Correo electrónico\n\nNombre Del Negocio\nTIENDA 123\nNo de Cliente (SAP)\n10000000\n"
+    "Calle y numero\nAV SIEMPRE VIVA SN\nColonia\nCENTRO\nMunicipio\nCIUDAD\nCP\n00000\n"
+    "Estado\nXX\nReferencia del domicilio\n\nLatitud\n19.4\nLongitud\n-99.1"
+)
+
+
+def test_r2_formulario_una_celda_por_linea():
+    salida = redact(FORMULARIO)
+    esperado = (
+        "Nombre Del Cliente\nCADENA X SA DE CV\nTeléfono Local\n0\nTeléfono Celular\n0\n"
+        "Correo electrónico\n\nNombre Del Negocio\nTIENDA 123\nNo de Cliente (SAP)\n10000000\n"
+        "Calle y numero\n[DIRECCION]\nColonia\n[DIRECCION]\nMunicipio\nCIUDAD\nCP\n[DIRECCION]\n"
+        "Estado\nXX\nReferencia del domicilio\n\nLatitud\n[UBICACION]\nLongitud\n[UBICACION]"
+    )
+    assert salida == esperado
+
+
+def test_r2_formulario_con_persona_y_telefono():
+    entrada = "Nombre del contacto\nItzel Quiroz\nTeléfono celular\n5555550101\nFolio\n12345678"
+    assert redact(entrada) == "Nombre del contacto\n[ID]\nTeléfono celular\n[TELEFONO]\nFolio\n12345678"
+
+
+def test_r2_formulario_no_toma_etiquetas_por_valores():
+    texto = "Correo electrónico\nNo de Cliente (SAP)\nColonia\nMunicipio\nFolio\n12345678"
+    assert redact(texto) == texto
+
+
+def test_r2_tabla_aplanada_varias_filas():
+    entrada = (
+        "Nombre\nTeléfono\nFolio\nAna Ruiz\n5555550101\n12345678\nJuan Pérez\n5555550102\n12345679"
+    )
+    esperado = "Nombre\nTeléfono\nFolio\n[ID]\n[TELEFONO]\n12345678\n[ID]\n[TELEFONO]\n12345679"
+    assert redact(entrada) == esperado
+
+
+def test_r2_tabla_aplanada_se_detiene_en_linea_en_blanco():
+    entrada = "Contacto\nFolio\nAna Ruiz\n12345678\n\nJuan Pérez necesita baja"
+    assert redact(entrada) == "Contacto\nFolio\n[ID]\n12345678\n\nJuan Pérez necesita baja"
+
+
+@pytest.mark.parametrize("entrada, esperado", [
+    ("Gracias\nPedro Gómez - Jefe de Mantenimiento\nEMPRESA SA DE CV", "Gracias\n[FIRMA]"),
+    ("Saludos.\nJuan Pérez\nCoordinador de Mantenimiento\nGrupo Norte", "Saludos.\n[FIRMA]"),
+    ("Por favor revisar.\nJuan Pérez\nGerente de Zona\nEmpresa Norte SA de CV", "Por favor revisar.\n[FIRMA]"),
+    ("Listo.\nJuan Pérez - Coordinador de Mantenimiento\nEmpresa Norte\n\nDe: Ana Ruiz\nEnviado: x",
+     "Listo.\n[FIRMA]\n\nDe: [ID]\nEnviado: x"),
+    ("Quedamos.\nANA RUIZ\nAsesor Comercial\nGrupo Norte SA", "Quedamos.\n[FIRMA]"),
+    ("> Gracias\n> Rosa Díaz\n> Gerente\n> Empresa Norte\n>\n> Retiro de cooler FVC14-E1",
+     "> Gracias\n> [FIRMA]\n>\n> Retiro de cooler FVC14-E1"),
+])
+def test_r2_firmas_con_cargo_y_empresa(entrada, esperado):
+    assert redact(entrada) == esperado
+
+
+@pytest.mark.parametrize("texto", [
+    "Gracias\nInstalación Cooler Norte\nGracias\nCAMBIO DE EQUIPO",
+    "Hola\nRetiro del cooler\nGerente de la tienda dice que no hay acceso al local por la tarde de hoy",
+])
+def test_r2_firmas_no_se_comen_contenido(texto):
+    assert redact(texto) == texto
+
+
+def test_r2_plantilla_de_tienda_con_persona_y_direccion():
+    entrada = ("La tienda OXXO 1234 PLAZA CENTRO TIENDA 55 - JUAN PEREZ LOPEZ, ubicada en "
+               "Esquina Sur y Norte Lt1 14240 colonia LOMAS, Ciudad")
+    assert redact(entrada) == "La tienda OXXO 1234 PLAZA CENTRO TIENDA 55 - [ID], ubicada en [DIRECCION]"
+    assert redact("La tienda OXXO X - Ana Ruiz, ubicada en Calle Sur 3 colonia Norte, CDMX") == \
+        "La tienda OXXO X - [ID], ubicada en [DIRECCION]"
+
+
+def test_r2_guion_en_tienda_sin_persona_no_se_toca():
+    texto = "La tienda OXXO 1234 PLAZA CENTRO - Sucursal Norte, ubicada en la bodega"
+    assert redact(texto) == texto
+
+
+@pytest.mark.parametrize("entrada, esperado", [
+    ("Dirección: Av. Siempre Viva 100, Col. Centro, 00000", "Dirección: [DIRECCION]"),
+    ("Dirección: Esquina A y B Lt1 14240 colonia LOMAS", "Dirección: [DIRECCION]"),
+    ("Domicilio: Av Norte 4", "Domicilio: [DIRECCION]"),
+])
+def test_r2_direccion_sin_calificar_con_senas_de_calle(entrada, esperado):
+    assert redact(entrada) == esperado
+
+
+@pytest.mark.parametrize("nombre", ["Ana", "Rosa", "Luz", "Sol", "Cruz", "Lala", "Mario", "Hortensia", "Itzel"])
+def test_r2_saludo_con_nombre_sin_coma(nombre):
+    assert redact(f"{nombre} buenas tardes\nsolicito baja") == "[ID] buenas tardes\nsolicito baja"
+    assert redact(f"{nombre} buen día") == "[ID] buen día"
+
+
+def test_r2_idempotencia_por_punto_fijo():
+    for texto in (FORMULARIO, "Nombre\nTeléfono\nFolio\nAna Ruiz\n5555550101\n12345678\nTel:\n" * 3):
+        una = redact(texto)
+        assert redact(una) == una
