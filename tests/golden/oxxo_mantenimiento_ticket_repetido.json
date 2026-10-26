@@ -1,0 +1,43 @@
+{
+  "deliveries": [
+    {
+      "message": {
+        "id": "msg-ox-repetido",
+        "subject": "Abierto-Asignado ----> 10000001",
+        "from": "notificaciones@oxxo-sistema.example.com",
+        "to": [
+          "cliente.oxxo@repare.example.com"
+        ],
+        "attachments": []
+      },
+      "result": null,
+      "error": null,
+      "replies_sent": 0
+    }
+  ],
+  "repo_calls": [
+    {
+      "module": "danone.DB_POSTGRE",
+      "fn": "conversation_exists",
+      "params": {
+        "conversation_id": "conv-msg-ox-repetido"
+      }
+    },
+    {
+      "module": "danone.DB_POSTGRE",
+      "fn": "email_init_exist",
+      "params": {
+        "mail_id": "msg-ox-repetido"
+      }
+    },
+    {
+      "module": "oxxo.DB_OXXO",
+      "fn": "get_by_folio",
+      "params": {
+        "folio": "10000001"
+      }
+    }
+  ],
+  "external_calls": [],
+  "replies": []
+}

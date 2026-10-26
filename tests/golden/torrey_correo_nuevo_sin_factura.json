@@ -1,0 +1,336 @@
+{
+  "deliveries": [
+    {
+      "message": {
+        "id": "msg-torrey-sinpdf",
+        "subject": "Garantía equipos Torrey",
+        "from": "contacto@torrey-cliente.example.com",
+        "to": [
+          "cliente.torrey@repare.example.com"
+        ],
+        "attachments": [
+          "lay_out_repare_torrey.xlsx"
+        ]
+      },
+      "result": "recibido",
+      "error": null,
+      "replies_sent": 1
+    }
+  ],
+  "repo_calls": [
+    {
+      "module": "danone.DB_POSTGRE",
+      "fn": "conversation_exists",
+      "params": {
+        "conversation_id": "conv-torrey-001"
+      }
+    },
+    {
+      "module": "imbera.DB_POSTGRE",
+      "fn": "email_init_exist",
+      "params": {
+        "mail_id": "msg-torrey-sinpdf"
+      }
+    },
+    {
+      "module": "imbera.DB_POSTGRE",
+      "fn": "save_email_log_init",
+      "params": {
+        "email_model": {
+          "id": null,
+          "request_code": null,
+          "graph_message_id": "msg-torrey-sinpdf",
+          "internet_message_id": "<msg-torrey-sinpdf@mail.example.com>",
+          "conversation_id": "conv-torrey-001",
+          "conversation_index": "idx-msg-torrey-sinpdf",
+          "parent_message_id": null,
+          "change_key": "ck-msg-torrey-sinpdf",
+          "link_email": "https://mail.example.com/owa/?ItemID=msg-torrey-sinpdf",
+          "direction": "INBOUND",
+          "sender_name": "Contacto Torrey Ejemplo",
+          "sender_email": "contacto@torrey-cliente.example.com",
+          "recipients_to": [
+            {
+              "name": null,
+              "email": "cliente.torrey@repare.example.com"
+            }
+          ],
+          "recipients_cc": [],
+          "recipients_bcc": [],
+          "subject": "Garantía equipos Torrey",
+          "body": "Buen día.\nAdjunto Lay Out Repare y factura.\nSaludos,\nContacto Torrey Ejemplo",
+          "has_attachments": true,
+          "attachment_count": 0,
+          "processing_status": "RECEIVED",
+          "processing_message": null,
+          "received_at": "2026-03-02T15:30:00+00:00",
+          "sent_at": "2026-03-02T15:30:00+00:00",
+          "created_at": "<now>",
+          "updated_at": "<now>",
+          "customer": "torrey"
+        }
+      }
+    },
+    {
+      "module": "imbera.DB_POSTGRE",
+      "fn": "send_email_request",
+      "params": {
+        "parametros": {
+          "request_code": "REPARE_000101",
+          "customer": "torrey",
+          "status": "IN_PROGRESS",
+          "priority": "MEDIUM",
+          "total_coolers": 2,
+          "pending_coolers": 2,
+          "completed_coolers": 0,
+          "failed_coolers": 0,
+          "assigned_to": "NA"
+        }
+      }
+    },
+    {
+      "module": "imbera.DB_POSTGRE",
+      "fn": "send_email_coolers",
+      "params": {
+        "parametros": {
+          "request_code": "REPARE_000101",
+          "row_number": 1,
+          "status": "PENDING",
+          "rejection_reason": null,
+          "prioridad": "MEDIUM",
+          "folio": null,
+          "ticket_solicitud": null,
+          "assigned_to": null,
+          "gestion_observaciones": "Garantía: SI (asunto,buzon_cliente) | Variante: distribuidora | Distribuidor: D-3001 | Fecha factura: 2026-02-10 | Estado: NUEVO LEON",
+          "fecha_asignacion": null,
+          "fecha_atencion": null,
+          "fecha_completado": null,
+          "id_cliente": "C-4001",
+          "fecha_solicitud": null,
+          "modelo": "TOR-V300",
+          "serie_fabricante": "SER-TOR-0001",
+          "serie_dnn_bnf": null,
+          "tipo_servicio": "RUTA",
+          "canal": null,
+          "region": null,
+          "plaza": null,
+          "razon_social": null,
+          "direccion": "AV EJEMPLO 101",
+          "cp": "64000",
+          "ciudad": "MONTERREY",
+          "colonia": "CENTRO",
+          "latitud": "25.6701",
+          "longitud": "-100.3101",
+          "ruta": "distribuidora",
+          "telefono_1": "5550100001",
+          "telefono_2": null,
+          "comentarios": "No enfría",
+          "cbu": null,
+          "cliente": "TORREY",
+          "os": null
+        }
+      }
+    },
+    {
+      "module": "imbera.DB_POSTGRE",
+      "fn": "send_email_coolers",
+      "params": {
+        "parametros": {
+          "request_code": "REPARE_000101",
+          "row_number": 2,
+          "status": "PENDING",
+          "rejection_reason": null,
+          "prioridad": "MEDIUM",
+          "folio": null,
+          "ticket_solicitud": null,
+          "assigned_to": null,
+          "gestion_observaciones": "Garantía: SI (asunto,buzon_cliente) | Variante: distribuidora | Distribuidor: D-3001 | Fecha factura: 2026-02-10 | Estado: NUEVO LEON",
+          "fecha_asignacion": null,
+          "fecha_atencion": null,
+          "fecha_completado": null,
+          "id_cliente": "C-4002",
+          "fecha_solicitud": null,
+          "modelo": "TOR-HL50",
+          "serie_fabricante": "SER-TOR-0002",
+          "serie_dnn_bnf": null,
+          "tipo_servicio": "RUTA",
+          "canal": null,
+          "region": null,
+          "plaza": null,
+          "razon_social": null,
+          "direccion": "AV EJEMPLO 102",
+          "cp": "64000",
+          "ciudad": "MONTERREY",
+          "colonia": "CENTRO",
+          "latitud": "25.6701",
+          "longitud": "-100.3101",
+          "ruta": "distribuidora",
+          "telefono_1": "5550100002",
+          "telefono_2": null,
+          "comentarios": "Máquina de hielo no produce",
+          "cbu": null,
+          "cliente": "IMBERA",
+          "os": null
+        }
+      }
+    }
+  ],
+  "external_calls": [],
+  "replies": [
+    {
+      "in_reply_to": "msg-torrey-sinpdf",
+      "to": [
+        "cliente.torrey@repare.example.com"
+      ],
+      "body": "<div style=\" font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; max-width: 680px; color: #24292f; font-size: 14px; line-height: 1.6; \"> <p style=\"font-size: 15px; margin-bottom: 20px;\"> 🤖 Estimado usuario REPARE, </p> <div style=\" border: 1px solid #d0d7de; border-radius: 6px; padding: 20px; background: #f6f8fa; \"> <div style=\"font-size: 14px; font-weight: bold; margin-bottom: 12px;\"> REQUEST RECEIVED </div> <div style=\"color: #57606a;\"> Hemos recibido su solicitud y ha iniciado el <b>proceso de validación</b>. </div> </div> <div style=\" margin-top: 18px; padding: 14px 16px; border: 1px solid #d0d7de; border-radius: 6px; background: #ffffff; \"> <div style=\"font-size: 12px; color: #57606a; margin-bottom: 5px;\"> FOLIO </div> <div style=\"font-size: 18px; font-weight: bold; letter-spacing: 1px;\">REPARE_000101</div> </div> <div style=\" margin-top: 18px; padding: 14px 16px; border: 1px solid #d0d7de; border-radius: 6px; background: #ffffff; \"> <div style=\"font-size: 12px; color: #57606a; margin-bottom: 5px;\"> ACEPTADAS (2) </div> <table style=\"border-collapse:collapse;margin-top:10px;font-size:13px;\"><tr style=\"color:#57606a;\"><th style='padding:4px 10px;text-align:left;'>Fila</th><th style='padding:4px 10px;text-align:left;'>Serie</th><th style='padding:4px 10px;text-align:left;'>Modelo</th><th style='padding:4px 10px;text-align:left;'>Cliente OS</th><th style='padding:4px 10px;text-align:left;'>Garantía</th></tr><tr><td style='padding:4px 10px;border-top:1px solid #d0d7de;'>4</td><td style='padding:4px 10px;border-top:1px solid #d0d7de;'>SER-TOR-0001</td><td style='padding:4px 10px;border-top:1px solid #d0d7de;'>TOR-V300</td><td style='padding:4px 10px;border-top:1px solid #d0d7de;'>TORREY</td><td style='padding:4px 10px;border-top:1px solid #d0d7de;'>SI</td></tr><tr><td style='padding:4px 10px;border-top:1px solid #d0d7de;'>6</td><td style='padding:4px 10px;border-top:1px solid #d0d7de;'>SER-TOR-0002</td><td style='padding:4px 10px;border-top:1px solid #d0d7de;'>TOR-HL50</td><td style='padding:4px 10px;border-top:1px solid #d0d7de;'>IMBERA</td><td style='padding:4px 10px;border-top:1px solid #d0d7de;'>SI</td></tr></table> </div> <div style=\" margin-top: 18px; padding: 14px 16px; border: 1px solid #d0d7de; border-radius: 6px; background: #ffffff; \"> <div style=\"font-size: 12px; color: #57606a; margin-bottom: 5px;\"> RECHAZADAS (0) </div> <div style=\"color:#57606a;\">Ninguna</div> </div> <div style=\" margin-top: 18px; padding: 14px 16px; border: 1px solid #d0d7de; border-radius: 6px; background: #ffffff; \"> <div style=\"font-size: 12px; color: #57606a; margin-bottom: 5px;\"> AVISOS </div> <ul style='margin:0;padding-left:18px;color:#57606a;'><li>No se encontró la factura en PDF (formato obligatorio: Lay Out Repare con factura).</li><li>1 equipo(s) se generan para el cliente IMBERA y se contestan en este hilo.</li></ul> </div> <p style=\"color: #57606a; margin-top: 18px;\"> Se adjunta la <b>pre-sábana</b> correspondiente a su solicitud. </p> </div>",
+      "attachments": [
+        {
+          "name": "SABANA_RUTA.xlsx",
+          "sheets": [
+            {
+              "title": "Ordenes",
+              "state": "visible",
+              "rows": [
+                [
+                  "Distribuidora",
+                  "Categoría",
+                  "Linea",
+                  "Modelo ",
+                  "N° de activo",
+                  "Serie",
+                  "Comentarios Cliente",
+                  "Hora Atención",
+                  "Prioridad",
+                  "Folio",
+                  "Ticket de solicitud",
+                  "Canal",
+                  "Correo electrónico solicitante",
+                  "N° de Cliente",
+                  "Nombre punto de venta",
+                  "Calle",
+                  "Número",
+                  "Entre calle",
+                  "y calle",
+                  "Colonia",
+                  "Municipio",
+                  "Código Postal",
+                  "Latitud",
+                  "Longitud",
+                  "Telefono y/o fax",
+                  "Teléfono adicional",
+                  "Correo electrónico",
+                  "Nombre contacto punto de venta",
+                  "Código Postal Generado",
+                  "Colonia Generado",
+                  "Ciudad Generado",
+                  "Estado Generado",
+                  "Pais Generado"
+                ],
+                [
+                  "D-3001",
+                  null,
+                  null,
+                  "TOR-V300",
+                  null,
+                  "SER-TOR-0001",
+                  "Falla: No enfría | Garantía: SI (asunto,buzon_cliente) | Fecha factura: 2026-02-10 | Cliente OS: TORREY",
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "C-4001",
+                  null,
+                  "AV EJEMPLO",
+                  "101",
+                  null,
+                  null,
+                  "CENTRO",
+                  "MONTERREY",
+                  "64000",
+                  "25.6701",
+                  "-100.3101",
+                  "5550100001",
+                  null,
+                  null,
+                  "RECIBE EJEMPLO UNO",
+                  null,
+                  null,
+                  null,
+                  null,
+                  null
+                ],
+                [
+                  "D-3001",
+                  null,
+                  null,
+                  "TOR-HL50",
+                  null,
+                  "SER-TOR-0002",
+                  "Falla: Máquina de hielo no produce | Garantía: SI (asunto,buzon_cliente) | Fecha factura: 2026-02-10 | Cliente OS: IMBERA",
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "C-4002",
+                  null,
+                  "AV EJEMPLO",
+                  "102",
+                  null,
+                  null,
+                  "CENTRO",
+                  "MONTERREY",
+                  "64000",
+                  "25.6701",
+                  "-100.3101",
+                  "5550100002",
+                  null,
+                  null,
+                  "RECIBE EJEMPLO DOS",
+                  null,
+                  null,
+                  null,
+                  null,
+                  null
+                ]
+              ]
+            },
+            {
+              "title": "LinesByCategories",
+              "state": "hidden",
+              "max_row": 12
+            },
+            {
+              "title": "ModelsByLines",
+              "state": "hidden",
+              "max_row": 544
+            },
+            {
+              "title": "CustomerDistributors",
+              "state": "hidden",
+              "max_row": 3473
+            },
+            {
+              "title": "Categories",
+              "state": "hidden",
+              "max_row": 21
+            },
+            {
+              "title": "CommercialChannels",
+              "state": "hidden",
+              "max_row": 8
+            },
+            {
+              "title": "Priority",
+              "state": "hidden",
+              "max_row": 4
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

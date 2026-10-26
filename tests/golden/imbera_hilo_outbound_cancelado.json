@@ -1,0 +1,53 @@
+{
+  "deliveries": [
+    {
+      "message": {
+        "id": "msg-imbera-out-canc",
+        "subject": "RE: ORDEN DE SERVICIO JUMEX -- MONTERREY -- REP-261026_1",
+        "from": "cliente.imbera@repare.example.com",
+        "to": [
+          "contacto@imbera-cliente.example.com"
+        ],
+        "attachments": []
+      },
+      "result": null,
+      "error": null,
+      "replies_sent": 0
+    }
+  ],
+  "repo_calls": [
+    {
+      "module": "imbera.DB_POSTGRE",
+      "fn": "email_reply_validate",
+      "params": {
+        "conversation_id": "conv-imbera-001",
+        "subject": "RE: ORDEN DE SERVICIO JUMEX -- MONTERREY -- REP-261026_1"
+      }
+    },
+    {
+      "module": "imbera.DB_POSTGRE",
+      "fn": "get_cooler_rows",
+      "params": {
+        "request_code": "REPARE_000042"
+      }
+    },
+    {
+      "module": "imbera.DB_POSTGRE",
+      "fn": "update_os_por_fila",
+      "params": {
+        "request_code": "REPARE_000042",
+        "row_number": 1,
+        "os_value": "4031000002"
+      }
+    },
+    {
+      "module": "imbera.DB_POSTGRE",
+      "fn": "get_email_request_status",
+      "params": {
+        "request_code": "REPARE_000042"
+      }
+    }
+  ],
+  "external_calls": [],
+  "replies": []
+}

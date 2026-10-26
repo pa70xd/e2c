@@ -103,6 +103,8 @@ def test_flag_vacio_cliente_nuevo_se_ignora_sin_responder(con_imbera, capsys):
 
 def test_flag_sin_parser_registrado_se_ignora_con_log(con_imbera, monkeypatch, capsys):
     monkeypatch.setenv(FLAG, "imbera")
+    # Imbera ya tiene parser: se quita para probar el caso sin registro.
+    monkeypatch.delitem(service.PARSERS_INIT, "imbera", raising=False)
     assert "imbera" not in service.PARSERS_INIT
     assert con_imbera.deliver(_a_imbera()) is None
     assert con_imbera.replies == []
@@ -113,6 +115,7 @@ def test_flag_sin_parser_registrado_se_ignora_con_log(con_imbera, monkeypatch, c
 def test_flag_sin_parser_reply_registrado_se_ignora_con_log(con_imbera, monkeypatch, capsys):
     monkeypatch.setenv(FLAG, "imbera")
     monkeypatch.setitem(service.PARSERS_INIT, "imbera", object)  # solo INIT registrado
+    monkeypatch.delitem(service.PARSERS_REPLY, "imbera", raising=False)
     correo = make_email(
         subject="Re: Solicitud", body="x", sender=EXTRA, to=[CAJA_IMBERA],
         message_id="m3", conversation_id="c1",

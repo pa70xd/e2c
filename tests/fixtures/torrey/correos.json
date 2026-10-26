@@ -1,0 +1,14 @@
+{
+  "init": {
+    "subject": "Garantía equipos Torrey",
+    "body": "Buen día.\nAdjunto Lay Out Repare y factura.\nSaludos,\nContacto Torrey Ejemplo"
+  },
+  "outbound_texto": {
+    "subject": "RE: Garantía equipos Torrey",
+    "body": "Comparto orden generada: 4032000001\nSaludos,\nOperador REPARE Ejemplo"
+  },
+  "comandos": {
+    "ayuda": "bot.ayuda",
+    "cancelar": "bot.cancelar"
+  }
+}

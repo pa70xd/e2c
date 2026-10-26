@@ -1,0 +1,30 @@
+{
+  "deliveries": [
+    {
+      "message": {
+        "id": "msg-imbera-out-pieza",
+        "subject": "RE: ORDEN DE SERVICIO JUMEX -- MONTERREY -- REP-261026_1",
+        "from": "cliente.imbera@repare.example.com",
+        "to": [
+          "contacto@imbera-cliente.example.com"
+        ],
+        "attachments": []
+      },
+      "result": null,
+      "error": null,
+      "replies_sent": 0
+    }
+  ],
+  "repo_calls": [
+    {
+      "module": "imbera.DB_POSTGRE",
+      "fn": "email_reply_validate",
+      "params": {
+        "conversation_id": "conv-imbera-001",
+        "subject": "RE: ORDEN DE SERVICIO JUMEX -- MONTERREY -- REP-261026_1"
+      }
+    }
+  ],
+  "external_calls": [],
+  "replies": []
+}

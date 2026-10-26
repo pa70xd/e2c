@@ -1,0 +1,135 @@
+{
+  "deliveries": [
+    {
+      "message": {
+        "id": "msg-kof-out-completa",
+        "subject": "RE: BITACORA Plaza Ejemplo 02/03/2026",
+        "from": "cliente.kof@repare.example.com",
+        "to": [
+          "contacto@kof-cliente.example.com"
+        ],
+        "attachments": [
+          "respuesta_bitacora.xlsx"
+        ]
+      },
+      "result": "recibido",
+      "error": null,
+      "replies_sent": 1
+    }
+  ],
+  "repo_calls": [
+    {
+      "module": "gen.DB_POSTGRE",
+      "fn": "email_reply_validate",
+      "params": {
+        "conversation_id": "conv-kof-001",
+        "subject": "RE: BITACORA Plaza Ejemplo 02/03/2026"
+      }
+    },
+    {
+      "module": "gen.DB_POSTGRE",
+      "fn": "update_cooler",
+      "params": {
+        "request_code": "REPARE_000042",
+        "df": {
+          "__dataframe__": {
+            "columns": [
+              "serial_number",
+              "serial_dnn",
+              "os",
+              "status"
+            ],
+            "rows": [
+              [
+                "KN0000001",
+                "SAPN00001",
+                "403000001",
+                "ACCEPTED"
+              ],
+              [
+                "KV0000001",
+                "SAPV00001",
+                "403000002",
+                "ACCEPTED"
+              ],
+              [
+                "KN0000002",
+                "SAPN00002",
+                "403000003",
+                "ACCEPTED"
+              ],
+              [
+                "KN0000003",
+                "SAPN00003",
+                "",
+                "REJECTED"
+              ],
+              [
+                "KV0000003",
+                "SAPV00003",
+                "403000005",
+                "ACCEPTED"
+              ],
+              [
+                "KN0000004",
+                "SAPN00004",
+                "403000006",
+                "ACCEPTED"
+              ],
+              [
+                "KN0000005",
+                "SAPN00005",
+                "403000007",
+                "ACCEPTED"
+              ],
+              [
+                "KV0000005",
+                "SAPV00005",
+                "403000008",
+                "ACCEPTED"
+              ],
+              [
+                "KN0000006",
+                "SAPN00006",
+                "403000009",
+                "ACCEPTED"
+              ]
+            ]
+          }
+        }
+      }
+    },
+    {
+      "module": "gen.DB_POSTGRE",
+      "fn": "update_email_request",
+      "params": {
+        "request_code": "REPARE_000042"
+      }
+    },
+    {
+      "module": "gen.DB_POSTGRE",
+      "fn": "get_email_request_status",
+      "params": {
+        "request_code": "REPARE_000042"
+      }
+    },
+    {
+      "module": "gen.DB_POSTGRE",
+      "fn": "get_total_coolers",
+      "params": {
+        "request_code": "REPARE_000042"
+      }
+    }
+  ],
+  "external_calls": [],
+  "replies": [
+    {
+      "in_reply_to": "msg-kof-out-completa",
+      "to": [
+        "cliente.kof@repare.example.com"
+      ],
+      "body": "<div style=\" font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; max-width: 680px; color: #24292f; font-size: 14px; line-height: 1.6; \"> <p style=\"font-size: 15px; margin-bottom: 20px;\"> 🤖 Estimado usuario REPARE, </p> <div style=\" border: 1px solid #d0d7de; border-radius: 6px; padding: 20px; background: #f6f8fa; \"> <div style=\" font-size: 14px; font-weight: bold; margin-bottom: 12px; \"> REQUEST COMPLETED </div> <div style=\"color: #57606a;\"> La solicitud <b>REPARE_000042</b> ha sido <b>finalizada correctamente</b>. </div> </div> <div style=\" margin-top: 18px; border: 1px solid #d0d7de; border-radius: 6px; padding: 14px 16px; background: #ffffff; \"> <div style=\" font-size: 12px; color: #57606a; margin-bottom: 8px; \"> RESUMEN </div> <div style=\"color: #57606a;\"> <b>3</b> equipos procesados<br> <b>2</b> equipos con OS asignada<br> <b>1</b> equipos sin OS asignada </div> </div> </div>",
+      "attachments": []
+    }
+  ]
+}

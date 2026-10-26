@@ -50,6 +50,25 @@ class AdjuntoIlegible(ValueError):
     """El archivo no es una hoja de cálculo que se pueda abrir."""
 
 
+class DataFrameLector(pd.DataFrame):
+    """DataFrame de celdas ``str`` o ``None`` (nunca NaN).
+
+    Con pandas 3, ``iterrows`` reconstruye cada fila como Series y, al inferir
+    el dtype ``str`` por defecto, convierte los ``None`` en NaN. Aquí se fuerza
+    ``object`` para que los faltantes lleguen como ``None`` (p. ej. a
+    PostgreSQL). ``itertuples``, ``to_dict`` e ``iloc`` ya conservan ``None``.
+    """
+
+    @property
+    def _constructor(self):
+        return DataFrameLector
+
+    def iterrows(self):
+        columnas = self.columns
+        for indice, valores in zip(self.index, self.to_numpy(dtype=object)):
+            yield indice, pd.Series(valores, index=columnas, dtype=object, name=indice)
+
+
 @dataclass
 class Tabla:
     archivo: str
@@ -59,6 +78,10 @@ class Tabla:
     columnas: list[str]  # normalizadas, únicas, en el orden de la hoja
     df: pd.DataFrame
     descartes: dict[str, int] = field(default_factory=dict)
+
+    def filas(self) -> list[dict]:
+        """Filas como dicts ``{columna: str | None}``, con la fila de la hoja en ``_fila``."""
+        return [{"_fila": i, **fila} for i, fila in zip(self.df.index, self.df.to_dict("records"))]
 
 
 def es_adjunto_soportado(nombre: str) -> bool:
@@ -187,6 +210,7 @@ def _construir(
     cuerpo = cuerpo[conservar]
     cuerpo = cuerpo.map(lambda v: str(v).strip() if _lleno(v) else None).astype(object)
     cuerpo = cuerpo.where(cuerpo.notna(), None)
+    cuerpo = DataFrameLector(cuerpo)
     return nombres, cuerpo, descartes
 
 

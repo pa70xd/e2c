@@ -1,0 +1,38 @@
+{
+  "init_ruta": {
+    "subject": "ORDEN DE SERVICIO JUMEX -- MONTERREY -- REP-261026_1",
+    "body": "Buen día.\nSe adjunta el layout con los equipos a revisar.\nSaludos,\nContacto Imbera Ejemplo"
+  },
+  "init_garantia": {
+    "subject": "SOLICITUD DE GARANTIA OS123456 COMERCIALIZADORA EJEMPLO",
+    "body": "Hola.\nEquipo nuevo dañado al recibirlo. Adjunto factura y layout.\nSaludos"
+  },
+  "seguimiento": {
+    "subject": "Seguimiento reporte REP-201026_3",
+    "body": "Buen día, ¿nos apoyan con el estatus del reporte?\nGracias"
+  },
+  "outbound_excel": {
+    "subject": "RE: ORDEN DE SERVICIO JUMEX -- MONTERREY -- REP-261026_1",
+    "body": "Hola. Adjunto las OS generadas.\nSaludos,\nOperador REPARE Ejemplo"
+  },
+  "outbound_texto": {
+    "subject": "RE: ORDEN DE SERVICIO JUMEX -- MONTERREY -- REP-261026_1",
+    "body": "Buen día.\nComparto orden generada: 4031000002\nSaludos,\nOperador REPARE Ejemplo"
+  },
+  "outbound_texto_series": {
+    "subject": "RE: ORDEN DE SERVICIO JUMEX -- MONTERREY -- REP-261026_1",
+    "body": "Equipo SER-IMB-0004 orden generada: 4031000005\nEquipo SER-IMB-0001 orden generada: 4031000006"
+  },
+  "outbound_espera_pieza": {
+    "subject": "RE: ORDEN DE SERVICIO JUMEX -- MONTERREY -- REP-261026_1",
+    "body": "Hola, el equipo se encuentra en espera de pieza.\nSaludos,\nOperador REPARE Ejemplo"
+  },
+  "inbound_reenvio": {
+    "subject": "RE: ORDEN DE SERVICIO JUMEX -- MONTERREY -- REP-261026_1",
+    "body": "Se corrige la serie del segundo equipo.\nSaludos"
+  },
+  "comandos": {
+    "estatus": "bot.estatus",
+    "ayuda": "bot.ayuda"
+  }
+}

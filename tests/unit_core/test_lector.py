@@ -166,3 +166,52 @@ def test_xls_visible_y_oculta():
     assert [t.hoja for t in _leer("ruta.xls", fx.VOCAB_RUTA, hojas_ocultas="nunca")] == ["RUTA"]
     # La oculta tiene otro encabezado: en "si_coinciden" no se lee.
     assert [t.hoja for t in _leer("ruta.xls", fx.VOCAB_RUTA)] == ["RUTA"]
+
+
+# --- faltantes: None, nunca NaN (pandas 3 los vuelve NaN en iterrows) --------
+
+def _es_nan(v):
+    return isinstance(v, float)
+
+
+def test_celdas_vacias_son_none_en_todas_las_formas_de_iterar():
+    for nombre, vocab, claves in [("ruta.xlsx", fx.VOCAB_RUTA, fx.CLAVES_RUTA), ("kof.xlsx", fx.VOCAB_KOF, fx.CLAVES_KOF)]:
+        for t in _leer(nombre, vocab, claves):
+            valores = {
+                "iterrows": [v for _, f in t.df.iterrows() for v in f],
+                "itertuples": [v for f in t.df.itertuples(index=False) for v in f],
+                "records": [v for f in t.df.to_dict("records") for v in f.values()],
+                "filas": [v for f in t.filas() for k, v in f.items() if k != "_fila"],
+                "iloc": [v for i in range(len(t.df)) for v in t.df.iloc[i].tolist()],
+                "values": [v for f in t.df.values.tolist() for v in f],
+            }
+            for forma, vs in valores.items():
+                assert not any(_es_nan(v) for v in vs), f"{nombre}/{t.hoja}: NaN en {forma}"
+                assert all(v is None or isinstance(v, str) for v in vs), forma
+            assert None in valores["iterrows"] or nombre == "kof.xlsx"
+
+
+def test_iterrows_conserva_none_y_el_indice_de_fila():
+    (t,) = _leer("ruta.xlsx", fx.VOCAB_RUTA, fx.CLAVES_RUTA)
+    (idx, fila) = list(t.df.iterrows())[1]
+    assert idx == 7 and fila.name == 7
+    assert fila["NO SERIE"] is None and fila["FOLIO"] == "F-2"
+
+
+def test_none_sobrevive_a_filtrar_y_copiar():
+    (t,) = _leer("ruta.xlsx", fx.VOCAB_RUTA, fx.CLAVES_RUTA)
+    sub = t.df[t.df["FOLIO"] == "F-2"].copy()
+    assert [v for _, f in sub.iterrows() for v in f if v is None]
+    assert t.df.drop(columns=["CALLE"]).to_dict("records")[1]["NO SERIE"] is None
+
+
+def test_filas_trae_la_fila_original():
+    (t,) = _leer("ruta.xlsx", fx.VOCAB_RUTA, fx.CLAVES_RUTA)
+    assert [f["_fila"] for f in t.filas()] == [3, 7]
+    assert t.filas()[1]["NO SERIE"] is None
+
+
+def test_tabla_vacia_tambien_es_iterable():
+    (t,) = _leer("encabezado_fila1.xlsx", fx.VOCAB_RUTA, hojas_ocultas="nunca")
+    vacio = t.df.iloc[0:0]
+    assert list(vacio.iterrows()) == [] and t.df.to_dict("records")

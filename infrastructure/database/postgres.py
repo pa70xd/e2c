@@ -1,6 +1,7 @@
 from psycopg2.extras import RealDictCursor
 from dotenv import load_dotenv
 from google.cloud import secretmanager
+import numpy as np
 import pandas as pd
 import psycopg2
 import json
@@ -40,7 +41,30 @@ def get_connection():
         raise Exception(f"Error creando conexión a PostgreSQL: {e}")
 
 
+def _sin_nan(valor):
+    """float NaN, pd.NA y NaT -> None (PostgreSQL guardaría 'NaN' o fallaría).
+
+    Red de seguridad central: con pandas 3, iterrows y similares vuelven NaN los
+    faltantes de un DataFrame. Recorre tuplas, listas y dicts de parámetros; lo
+    demás (str, bytes, Json, fechas) pasa intacto.
+    """
+    if valor is None or isinstance(valor, (str, bytes)):
+        return valor
+    if isinstance(valor, tuple):
+        return tuple(_sin_nan(v) for v in valor)
+    if isinstance(valor, list):
+        return [_sin_nan(v) for v in valor]
+    if isinstance(valor, dict):
+        return {k: _sin_nan(v) for k, v in valor.items()}
+    if valor is pd.NA or valor is pd.NaT:
+        return None
+    if isinstance(valor, (float, np.floating)) and valor != valor:
+        return None
+    return valor
+
+
 def execute_query(query: str, params: tuple = ()):
+    params = _sin_nan(params)
     conn = get_connection()
 
     try:
