@@ -45,8 +45,15 @@ class SetInvalido(ValueError):
 
 
 # ------------------------------------------------------------------ carga
-def cargar_set(ruta: str) -> list[dict]:
+def es_etiquetado(caso) -> bool:
+    """Caso con etiqueta completa: es_os y tipo_evento no son null (backfill)."""
+    esp = caso.get("esperado") if isinstance(caso, dict) else None
+    return isinstance(esp, dict) and esp.get("es_os") is not None and esp.get("tipo_evento") is not None
+
+
+def cargar_set(ruta: str, solo_etiquetados: bool = False, split: str | None = None, omitidos: dict | None = None) -> list[dict]:
     casos, ids = [], set()
+    omitidos = omitidos if omitidos is not None else {}
     with open(ruta, encoding="utf-8") as fh:
         for n, linea in enumerate(fh, 1):
             if not linea.strip():
@@ -55,6 +62,14 @@ def cargar_set(ruta: str) -> list[dict]:
                 caso = json.loads(linea)
             except ValueError as e:
                 raise SetInvalido(f"línea {n}: JSON inválido ({e})") from None
+            if split and isinstance(caso, dict) and caso.get("split") != split:
+                omitidos["otro_split"] = omitidos.get("otro_split", 0) + 1
+                continue
+            if solo_etiquetados and not es_etiquetado(caso):
+                omitidos["sin_etiqueta"] = omitidos.get("sin_etiqueta", 0) + 1
+                continue
+            if not es_etiquetado(caso) and isinstance(caso, dict) and isinstance(caso.get("esperado"), dict):
+                raise SetInvalido(f"línea {n}: {caso.get('id', '?')}: caso sin etiqueta completa (es_os o tipo_evento null); usa --solo-etiquetados")
             validar_caso(caso, n)
             if caso["id"] in ids:
                 raise SetInvalido(f"línea {n}: id repetido {caso['id']!r}")
@@ -376,17 +391,22 @@ def main(argv=None) -> int:
     ap.add_argument("--set", dest="ruta", required=True, help="JSONL del set")
     ap.add_argument("--umbral", type=float, default=UMBRAL_PRECISION_GATE, help="precisión mínima del gate")
     ap.add_argument("--json", dest="salida_json", help="guarda el resumen en este archivo JSON")
+    ap.add_argument("--solo-etiquetados", action="store_true", help="ignora los casos sin etiqueta completa (es_os o tipo_evento null, p. ej. del backfill)")
+    ap.add_argument("--split", choices=("ajuste", "examen"), help="usa solo los casos de este split (campo split del backfill)")
     args = ap.parse_args(argv)
 
     if args.provider == "haiku" and not os.getenv("ANTHROPIC_API_KEY"):
         print("ANTHROPIC_API_KEY no está definida: haiku no corre. Sin llamadas, sin evaluación.")
         return 0
 
+    omitidos: dict = {}
     try:
-        casos = cargar_set(args.ruta)
+        casos = cargar_set(args.ruta, args.solo_etiquetados, args.split, omitidos)
     except (OSError, SetInvalido) as e:
         print(f"Set inválido: {e}", file=sys.stderr)
         return 2
+    if omitidos:
+        print("Casos omitidos: " + " · ".join(f"{k} {v}" for k, v in sorted(omitidos.items())))
 
     resultados, errores = [], []
     for caso in casos:
