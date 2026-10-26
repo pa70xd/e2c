@@ -6,12 +6,13 @@
 #      TIPO DE MOVIMIENTO; CANAL.
 #   B) Varias filas: una fila de GRUPOS ("DATOS DE DIRECCIÓN", "CASO DE
 #      CONTAR CON LOS DATOS", "NOMBRE DE QUIÉN RECIBIRÁ EL SERVICIO") con
-#      celdas combinadas y, debajo, la fila de columnas. Los nombres de
-#      columna se repiten entre grupos, por eso el alias se busca primero
-#      como "GRUPO | COLUMNA" y luego como "COLUMNA".
+#      celdas combinadas y, debajo, la fila de columnas. El lector común
+#      elige la fila de columnas (la de grupos no puntúa) y no conserva el
+#      grupo: si un nombre se repite entre grupos, el lector lo renombra
+#      "NOMBRE_2" y aquí gana el primero.
 #
-# Las llaves ya van normalizadas (mayúsculas, sin acentos, espacios
-# simples): ver parsers/imbera_parse/lector.py::normalizar.
+# Las llaves se comparan con parsers.core.lector.normalizar_encabezado
+# (mayúsculas, sin acentos, espacios simples, "/" sin espacios).
 
 NAMES_COLUMNS = {
     # --- variante A ---
@@ -37,21 +38,23 @@ NAMES_COLUMNS = {
     "NUMERO DE DISTRIBUIDOR IMBERA/TORREY": "NUM DISTRIBUIDOR",
     "NUMERO DE CLIENTE QUE REPORTA EL EQUIPO": "NUM CLIENTE",
 
-    "DATOS DE DIRECCION | CALLE": "CALLE",
-    "DATOS DE DIRECCION | NUMERO": "NUMERO",
-    "DATOS DE DIRECCION | COLONIA": "COLONIA",
-    "DATOS DE DIRECCION | CP": "CP",
-    "DATOS DE DIRECCION | CODIGO POSTAL": "CP",
-    "DATOS DE DIRECCION | MUNICIPIO": "MUNICIPIO",
-    "DATOS DE DIRECCION | ESTADO": "ESTADO",
+    # Grupo "DATOS DE DIRECCIÓN".
+    "CALLE": "CALLE",
+    "NUMERO": "NUMERO",
+    "COLONIA": "COLONIA",
+    "CP": "CP",
+    "CODIGO POSTAL": "CP",
+    "ESTADO": "ESTADO",
 
-    "CASO DE CONTAR CON LOS DATOS | LATITUD": "LATITUD",
-    "CASO DE CONTAR CON LOS DATOS | LONGITUD": "LONGITUD",
+    # Grupo "CASO DE CONTAR CON LOS DATOS".
+    "LATITUD": "LATITUD",
+    "LONGITUD": "LONGITUD",
 
-    # PII: nunca se loguea ni se manda a un LLM (solo se persiste).
-    "NOMBRE DE QUIEN RECIBIRA EL SERVICIO | NOMBRE": "CONTACTO NOMBRE",
-    "NOMBRE DE QUIEN RECIBIRA EL SERVICIO | TELEFONO": "CONTACTO TELEFONO",
-    "NOMBRE DE QUIEN RECIBIRA EL SERVICIO | CORREO": "CONTACTO CORREO",
+    # Grupo "NOMBRE DE QUIÉN RECIBIRÁ EL SERVICIO". PII: nunca se loguea ni
+    # se manda a un LLM (solo se persiste y va en la pre-sábana).
+    "NOMBRE": "CONTACTO NOMBRE",
+    "TELEFONO": "CONTACTO TELEFONO",
+    "CORREO": "CONTACTO CORREO",
 
     # Respuesta de REPARE (outbound con Excel).
     "OS": "OS",
@@ -76,10 +79,6 @@ ENCABEZADO_DATOS = {"MODELO", "SERIE"}
 
 # Hoja preferida del layout.
 HOJA_RUTA = "RUTA"
-
-# Filas que se revisan para encontrar el encabezado (variante B: grupos +
-# columnas).
-MAX_FILAS_ENCABEZADO = 10
 
 # Fila "basura": no trae ninguno de estos campos (p. ej. la fila de ejemplo
 # del layout o una fila con solo el default de una lista desplegable). Se

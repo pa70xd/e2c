@@ -1,63 +1,41 @@
-"""Adaptador al lector común de Excel (Imbera y Torrey).
+"""Adaptador de Imbera/Torrey al lector común (parsers/core/lector.py).
 
-El lector común ``parsers/core/lector.py`` lo escribe la sesión
-lector-excel. Mientras no esté en la base, ``leer_hojas`` usa openpyxl
-directo. Cuando llegue, solo cambia ``leer_hojas`` (mismo contrato: una
-``Hoja`` por pestaña, con su estado de visibilidad, filas crudas y celdas
-combinadas); el resto del parser no se toca.
-
-TODO(lector-excel): reemplazar ``_leer_con_openpyxl`` por el lector común.
+Una sola función, ``leer_tablas``, llama a ``leer_adjunto`` con el
+vocabulario del "Lay Out Repare" y ``hojas_ocultas="si_coinciden"``: las
+hojas de catálogo ocultas ("LinesByCategori", "ModelsByLines") no se leen y
+una hoja oculta con el mismo encabezado que la de datos sí.
 """
 
 from __future__ import annotations
 
-import datetime as dt
+import re
 import unicodedata
-from dataclasses import dataclass, field
-from io import BytesIO
 
-from openpyxl import load_workbook
+from config.customers.imbera.columns_names import CAMPOS_FILA_REAL, NAMES_COLUMNS
+from parsers.core.lector import AdjuntoIlegible, Tabla, es_adjunto_soportado, leer_adjunto  # noqa: F401
 
-
-@dataclass
-class Hoja:
-    nombre: str
-    visible: bool
-    # Valores crudos por fila (fila 1 de Excel = índice 0).
-    filas: list[list]
-    # Rangos combinados como (fila_min, col_min, fila_max, col_max), 1-indexados.
-    combinadas: list[tuple[int, int, int, int]] = field(default_factory=list)
+# Columnas del layout que identifican una fila real (el lector descarta las
+# filas sin ninguna).
+CLAVES = tuple(alias for alias, canonico in NAMES_COLUMNS.items() if canonico in CAMPOS_FILA_REAL)
 
 
-def _leer_con_openpyxl(content: bytes) -> list[Hoja]:
-    wb = load_workbook(BytesIO(content), data_only=True)
-    try:
-        hojas = []
-        for ws in wb.worksheets:
-            hojas.append(Hoja(
-                nombre=ws.title,
-                visible=ws.sheet_state == "visible",
-                filas=[list(fila) for fila in ws.iter_rows(values_only=True)],
-                combinadas=[
-                    (r.min_row, r.min_col, r.max_row, r.max_col)
-                    for r in ws.merged_cells.ranges
-                ],
-            ))
-        return hojas
-    finally:
-        wb.close()
-
-
-leer_hojas = _leer_con_openpyxl
+def leer_tablas(nombre: str, contenido: bytes) -> list[Tabla]:
+    return leer_adjunto(
+        nombre,
+        contenido,
+        NAMES_COLUMNS.keys(),
+        hojas_ocultas="si_coinciden",
+        claves=CLAVES,
+    )
 
 
 # ---------------------------------------------------------------------------
-# Normalización de celdas
+# Normalización de texto (asunto, cuerpo y celdas)
 # ---------------------------------------------------------------------------
 
 def normalizar(texto) -> str:
     """Mayúsculas, sin acentos y con espacios simples ("Ñ" se conserva para
-    no confundir "AÑO" con "ANO"; "N°" se conserva)."""
+    no confundir "AÑO" con "ANO")."""
     if texto is None:
         return ""
     texto = str(texto).replace("ñ", "\0").replace("Ñ", "\0")
@@ -67,16 +45,16 @@ def normalizar(texto) -> str:
     return " ".join(texto.split())
 
 
+_FECHA_SIN_HORA = re.compile(r"^(\d{4}-\d{2}-\d{2}) 00:00:00$")
+
+
 def celda_a_texto(valor) -> str:
-    """Valor de celda como texto estable: fechas en ISO, enteros sin ".0"."""
-    if valor is None:
+    """Celda del lector (str o None) como texto estable: "" si está vacía y
+    las fechas sin hora como AAAA-MM-DD."""
+    # El lector común deja None, pero según la versión de pandas una celda
+    # vacía puede llegar como NaN.
+    if valor is None or (isinstance(valor, float) and valor != valor):
         return ""
-    if isinstance(valor, dt.datetime):
-        if valor.time() == dt.time(0, 0):
-            return valor.date().isoformat()
-        return valor.isoformat(sep=" ")
-    if isinstance(valor, dt.date):
-        return valor.isoformat()
-    if isinstance(valor, float) and valor.is_integer():
-        return str(int(valor))
-    return str(valor).strip()
+    texto = str(valor).strip()
+    m = _FECHA_SIN_HORA.match(texto)
+    return m.group(1) if m else texto

@@ -1,4 +1,5 @@
-"""Adjuntos del correo (Imbera y Torrey): los Excel del "Lay Out Repare"
+"""Adjuntos del correo (Imbera y Torrey): las hojas de cálculo del "Lay Out Repare"
+(.xlsx, .xls, .xlsm y .ods, las que lee el lector común)
 se registran como tablas de DuckDB; del resto (PDF, fotos) solo se
 conserva el nombre, para las señales de garantía."""
 
@@ -6,14 +7,9 @@ from __future__ import annotations
 
 import base64
 from dataclasses import dataclass, field
-from pathlib import Path
 
 from parsers.imbera_parse.layout import leer_layout
-
-EXCEL_EXTENSIONS = (".xlsx", ".xlsm")
-# Sin xlrd en requirements: un .xls no se puede leer y se avisa como
-# archivo sin layout.
-EXCEL_NO_SOPORTADO = (".xls",)
+from parsers.imbera_parse.lector import es_adjunto_soportado
 
 
 @dataclass
@@ -53,11 +49,7 @@ async def get_adjuntos(client, user_id, mail_id, duck_conn) -> Adjuntos:
         if nombre.startswith("~$"):
             continue
 
-        extension = Path(nombre).suffix.lower()
-        if extension in EXCEL_NO_SOPORTADO:
-            resultado.excel_sin_layout.append(nombre)
-            continue
-        if extension not in EXCEL_EXTENSIONS:
+        if not es_adjunto_soportado(nombre):
             resultado.otros.append(nombre)
             continue
 
@@ -66,7 +58,7 @@ async def get_adjuntos(client, user_id, mail_id, duck_conn) -> Adjuntos:
 
         content = _contenido(attachment)
         table_name = f"excel_{index}"
-        df = leer_layout(content, table_name)
+        df = leer_layout(content, table_name, nombre)
         if df is None:
             resultado.excel_sin_layout.append(nombre)
             continue

@@ -31,6 +31,8 @@ FILAS_SOLICITUD = [
 
 
 def instalar(harness, monkeypatch):
+    # Clientes de la Fase 4: apagados por defecto (E2C_CLIENTES_HABILITADOS).
+    monkeypatch.setenv("E2C_CLIENTES_HABILITADOS", "imbera,torrey")
     for cliente, buzon in BUZONES.items():
         monkeypatch.setitem(service.validator.mailboxes, buzon, cliente)
         monkeypatch.setitem(service.CUSTOMER_INDEX, buzon, cliente)
