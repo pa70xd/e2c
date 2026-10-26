@@ -1,0 +1,78 @@
+{
+  "deliveries": [
+    {
+      "message": {
+        "id": "msg-imbera-out-xlsx",
+        "subject": "RE: ORDEN DE SERVICIO JUMEX -- MONTERREY -- REP-261026_1",
+        "from": "cliente.imbera@repare.example.com",
+        "to": [
+          "contacto@imbera-cliente.example.com"
+        ],
+        "attachments": [
+          "respuesta_os.xlsx"
+        ]
+      },
+      "result": "recibido",
+      "error": null,
+      "replies_sent": 1
+    }
+  ],
+  "repo_calls": [
+    {
+      "module": "imbera.DB_POSTGRE",
+      "fn": "email_reply_validate",
+      "params": {
+        "conversation_id": "conv-imbera-001",
+        "subject": "RE: ORDEN DE SERVICIO JUMEX -- MONTERREY -- REP-261026_1"
+      }
+    },
+    {
+      "module": "imbera.DB_POSTGRE",
+      "fn": "update_os_por_serie",
+      "params": {
+        "request_code": "REPARE_000042",
+        "serie": "SER-IMB-0001",
+        "os_value": "4031000001"
+      }
+    },
+    {
+      "module": "imbera.DB_POSTGRE",
+      "fn": "get_email_request_status",
+      "params": {
+        "request_code": "REPARE_000042"
+      }
+    },
+    {
+      "module": "imbera.DB_POSTGRE",
+      "fn": "update_email_request",
+      "params": {
+        "request_code": "REPARE_000042"
+      }
+    },
+    {
+      "module": "imbera.DB_POSTGRE",
+      "fn": "get_email_request_status",
+      "params": {
+        "request_code": "REPARE_000042"
+      }
+    },
+    {
+      "module": "imbera.DB_POSTGRE",
+      "fn": "get_total_coolers",
+      "params": {
+        "request_code": "REPARE_000042"
+      }
+    }
+  ],
+  "external_calls": [],
+  "replies": [
+    {
+      "in_reply_to": "msg-imbera-out-xlsx",
+      "to": [
+        "cliente.imbera@repare.example.com"
+      ],
+      "body": "<div style=\" font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; max-width: 680px; color: #24292f; font-size: 14px; line-height: 1.6; \"> <p style=\"font-size: 15px; margin-bottom: 20px;\"> 🤖 Estimado usuario REPARE, </p> <div style=\" border: 1px solid #d0d7de; border-radius: 6px; padding: 20px; background: #f6f8fa; \"> <div style=\" font-size: 14px; font-weight: bold; margin-bottom: 12px; \"> CHANGES APPLIED </div> <div style=\"color: #57606a;\"> Los cambios de la solicitud <b>REPARE_000042</b> han sido aplicados correctamente. </div> </div> <div style=\" margin-top: 18px; border: 1px solid #d0d7de; border-radius: 6px; padding: 14px 16px; background: #ffffff; \"> <div style=\" font-size: 12px; color: #57606a; margin-bottom: 8px; \"> RESUMEN </div> <div style=\"color: #57606a;\"> <b>3</b> equipos procesados<br> <b>2</b> equipos con OS (ACEPTADOS)<br> <b>1</b> equipos sin OS (PENDIENTES)<br> <b>0</b> equipos sin OS (RECHAZADOS) </div> </div> </div>",
+      "attachments": []
+    }
+  ]
+}

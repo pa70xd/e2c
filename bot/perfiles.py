@@ -82,3 +82,25 @@ def perfil_oxxo(db, db_oxxo, msj, process, customer):
         estatus_vacio=lambda solicitud: msj.msj_folio_requerido(solicitud.folio),
         logs=_logs_folio("OXXO"),
     )
+
+
+def _perfil_layout(db, msj, process, etiqueta):
+    """Imbera y Torrey: solicitud por hilo, todo desde su DB_POSTGRE
+    (repository/imbera); estatus vacío -> msj_fail."""
+    return PerfilBot(
+        msj=msj,
+        repo=db,
+        estatus=lambda request_code: db.email_request_bot_status(request_code),
+        datos_global=lambda: db.get_email_request_global(),
+        archivo_global=lambda data: process.process_email_request_global(data),
+        estatus_vacio=lambda solicitud: msj.msj_fail(),
+        logs=_logs_folio(etiqueta),
+    )
+
+
+def perfil_imbera(db, msj, process):
+    return _perfil_layout(db, msj, process, "IMBERA")
+
+
+def perfil_torrey(db, msj, process):
+    return _perfil_layout(db, msj, process, "TORREY")
