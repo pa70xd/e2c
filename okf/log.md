@@ -265,6 +265,12 @@
 * Reporte de la sesión (no verificado, requiere key): haiku v1 sobre `sintetico_v2` gate 0.9167, 7 caídas a regex (17.1 %) todas `confianza_baja`; solo-haiku P 1.00, R 0.944; extract 18/21; hipótesis `filas_no_cargadas` descartada. Mi inferencia: el incumplimiento viene de las caídas, no de haiku; anotada como inferencia en [pruebas/evaluacion.md](pruebas/evaluacion.md).
 * Pendiente de decisión: ajustar prompt o `CLASSIFIER_MIN_CONFIDENCE` (0.7), con el riesgo de sobreajustar al set que se mide.
 
+## 2026-10-26 · Decisiones: duda a revisión, modo sombra y backfill; sesiones nuevas
+
+* Registradas en [riesgos/decisiones.md](riesgos/decisiones.md): (1) en un hilo, haiku con confianza baja va a revisión humana, no a regex (en init sigue a regex); (2) se aprueba el modo sombra; (3) se aprueba el backfill de solo lectura con etiquetas automáticas del histórico (las series que entran y salen de la sábana).
+* Sesiones nuevas: sombra + duda→revisión (opus) · session_01E9q7mT1muX4Ayrtc2z8Bg9 · `claude/e2c-sombra` (variables opcionales `CLASSIFIER_SHADOW`, `CLASSIFIER_SHADOW_SAMPLE`); backfill (sonnet) · session_01F6oVDx61MHMbSLJoHLekdz · `claude/e2c-backfill`. En curso.
+* El usuario compartió 21 correos reales (.eml); la orquestadora los analiza localmente y no se documenta su contenido. Esperando el resumen redactado.
+
 ## 2026-10-24
 
 * Creación del bundle OKF del repositorio `e2c` (rama `claude/admiring-lovelace-3oh7g0`).
