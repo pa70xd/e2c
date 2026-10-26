@@ -375,6 +375,10 @@
 * Rama `claude/e2c-oxxo` (`ecd3c57`), aprobada, en merge (sin confirmar en la base). Verificado: lector común y `cliente_habilitado` en el código; `pytest -q` → 1153 passed, 2 failed (falta `odfpy` aquí), 56 skipped, 1 xfailed.
 * Puntos abiertos en `parsers/oxxo.md` y `riesgos/preguntas-abiertas.md`. Principal: riesgo de duplicado con la PoC; el corte lo decide REPARE.
 
+## 2026-10-26 · Imbera y Torrey: actualización
+
+* Rama `claude/e2c-imbera-torrey` (`01bf07a`), sin mergear. Verificado: usan `leer_adjunto` con `si_coinciden`, los buzones están en `email_index.json`, `pytest -q` → 1081 passed, 2 failed (falta `odfpy`), 48 skipped, 1 xfailed. Reemplaza lo anotado sobre el adaptador propio.
+
 ## 2026-10-24
 
 * Creación del bundle OKF del repositorio `e2c` (rama `claude/admiring-lovelace-3oh7g0`).
