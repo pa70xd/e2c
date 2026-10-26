@@ -254,6 +254,11 @@
 * Corrección: el outbound (REPARE→cliente) siempre continúa. Documentada en [classifier/core.md](classifier/core.md); prompts v2 en [classifier/provider-haiku.md](classifier/provider-haiku.md).
 * Pendiente: medir las 4 corridas sobre `sintetico_v2`; no hay cifras de v2.
 
+## 2026-10-26 · prompt-v2: 4 corridas de haiku (reporte)
+
+* La sesión `session_01XYEn1Va9jA5mi2dFpmyQfG` reporta 4 corridas (v1/v2 × sintetico/sintetico_v2); tabla completa en [pruebas/evaluacion.md](pruebas/evaluacion.md). Resumen: sobre `sintetico`, precisión de gate 0.9787 (v1) y 0.9783 (v2); sobre `sintetico_v2`, 0.9167 (v1) y 0.9200 (v2) → **no cumple 0.95**. v2 no mejora de forma medible. Caída a regex del gate hasta 19.5 % en `sintetico_v2`.
+* **No verificado por mí.** Hay una discrepancia sin explicar con la primera evaluación (1.00 vs 0.9787 en el mismo set). Rama `claude/e2c-prompt-v2` (`301461b`) sin mergear.
+
 ## 2026-10-24
 
 * Creación del bundle OKF del repositorio `e2c` (rama `claude/admiring-lovelace-3oh7g0`).

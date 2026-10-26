@@ -72,9 +72,27 @@ Rama `claude/e2c-eval-set-v2` (commit `225b457`): `eval/sets/sintetico_v2.jsonl`
 * La sesión no pudo correr `pytest` en su contenedor (falta `msgraph`); el evaluador sí corrió en mi entorno.
 * Sigue siendo sintético: no sustituye el set real.
 
+# Haiku: 4 corridas de prompt v1 vs v2 (reporte de la sesión prompt-v2, NO verificado por mí)
+
+Reporta `session_01XYEn1Va9jA5mi2dFpmyQfG` (2026-10-26; v1 = gate-v1/extract-v2, v2 = gate-v2/extract-v3; el prompt no se ajustó tras ver resultados). No las repetí: no uso la key. El detalle vive en la rama `claude/e2c-prompt-v2` (`301461b`, sin mergear).
+
+| Set | Prompt | Gate precisión | Recall | F1 | Cumple 0.95 | Extract por fila | Caída a regex (gate) |
+|---|---|---|---|---|---|---|---|
+| sintetico (67) | v1 | 0.9787 | 1.0000 | 0.9892 | sí | 0.951 | 3.0 % |
+| sintetico (67) | v2 | 0.9783 | 0.9783 | 0.9783 | sí | 0.951 | 4.5 % |
+| sintetico_v2 (41) | v1 | 0.9167 | 0.9565 | 0.9362 | **no** | 0.905 | 19.5 % |
+| sintetico_v2 (41) | v2 | 0.9200 | 1.0000 | 0.9583 | **no** | 0.952 | 14.6 % |
+
+* **Nota:** esta corrida da en `sintetico` precisión 0.9787 con v1, no 1.00 como en el reporte anterior de la primera evaluación; la diferencia no está explicada (el LLM no es determinista, o cambió el código/prompt entre corridas). No la puedo resolver sin repetir.
+* Sin los 4 casos ambiguos de `sintetico_v2` (cálculo a mano de la sesión): v1 0.9524, v2 0.9545, que cumplen por poco.
+* Latencia media ~2.0-2.1 s, p95 3.2-3.6 s. Tokens de entrada de v2: +67 a +88 % frente a v1 (parte cacheada).
+* **Conclusión de la sesión:** v2 no mejora de forma medible (dentro del ruido). Persisten `imb-noos-01`, `hol-dup-01` y 2 casos `nueva_solicitud` → `modificar_filas`.
+* **Lectura:** sobre el set más difícil, haiku **no cumple** el umbral de 0.95. Además la caída a regex del gate (hasta 19.5 %) contamina la medición: parte de las respuestas que cuentan son de regex, no de haiku. La activación sigue sin autorizarse.
+* Pendiente señalado: `run_eval` no imprime falsos negativos, errores de tipo ni el motivo de la caída a regex.
+
 # Lo que NO está medido
 
-* Haiku sobre `sintetico_v2` y sobre correos reales. No existe el set real (espera los correos de ejemplo).
+* Haiku sobre correos reales (sobre `sintetico_v2` ya hay una medición reportada, arriba). No existe el set real (espera los correos de ejemplo).
 * Costo en USD: depende de `EVAL_PRICE_IN` y `EVAL_PRICE_OUT`; el reporte que me llegó solo da tokens.
 * El set sintético son 67 casos; es una estimación gruesa.
 * La línea base regex mide la lógica heredada, no una activación nueva: el umbral aplica a activar un proveedor externo.
