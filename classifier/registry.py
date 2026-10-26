@@ -3,6 +3,8 @@
 * ``CLASSIFIER_GATE``: proveedor del gate (default ``regex``).
 * ``CLASSIFIER_EXTRACT``: proveedor de la extracción (default ``regex``).
 * ``CLASSIFIER_MIN_CONFIDENCE``: confianza mínima del gate externo (default 0.7).
+* ``CLASSIFIER_SHADOW`` y ``CLASSIFIER_SHADOW_SAMPLE``: modo sombra, ver
+  ``classifier/shadow.py``.
 
 Son opcionales y nuevas. Se leen en cada llamada, así que no hace falta
 reiniciar para cambiarlas en pruebas.

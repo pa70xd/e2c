@@ -26,6 +26,7 @@ from src.email_type import EMAIL_TYPE
 from infrastructure.graphapi.graphapi import reply_mail_onl_text, reply_mail_init_files
 from parsers.gen_parse.reader import GEN_READER
 import classifier
+from classifier import shadow as classifier_shadow
 from classifier.contracts import ETAPA_INIT, ETAPA_REPLY
 import review
 
@@ -116,6 +117,8 @@ def classifier_evaluar(email, customer, etapa, direccion=None):
     except Exception as e:
         print(f"[CLASSIFIER][ERROR] {type(e).__name__}; se sigue sin gate")
         return True, None, None
+    # Modo sombra (CLASSIFIER_SHADOW): solo registra; en un thread aparte.
+    classifier_shadow.lanzar(email, decision, ctx)
     if classifier.debe_continuar(decision, ctx):
         return True, decision, ctx
     print(f"[CLASSIFIER][INFO] {etapa} descartado: tipo={decision.tipo_evento}")
