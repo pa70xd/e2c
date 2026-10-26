@@ -32,12 +32,40 @@ Corrí el evaluador sobre el set sintético en la rama:
 * Extract (regex): exactitud por fila 0.0 (0 de 41), porque regex devuelve `[]` y las filas salen del Excel.
 * Latencia: media 11.2 ms, p95 0.7 ms.
 
+# Correr con key en entornos cloud
+
+La plataforma descarta las variables `ANTHROPIC_*` en la sesión de ejecución. La key de la organización se guardó con otro nombre, `E2C_ANTHROPIC_API_KEY` (solo el nombre; el valor no va al repo), y se pasa así:
+
+```
+env -u ANTHROPIC_BASE_URL ANTHROPIC_API_KEY="$E2C_ANTHROPIC_API_KEY" python eval/run_eval.py --provider haiku --set <ruta>
+```
+
+(`-u ANTHROPIC_BASE_URL` quita la URL base del proxy de la plataforma. Comando según la orquestadora; no lo ejecuté.)
+
 # Por qué el set sintético no basta para activar
 
 Activar un proveedor externo exige correos reales redactados (set real fuera del repo) y una corrida con key real. El set sintético sirve para regresión y para comparar proveedores, no para decidir la activación (lo señala también la orquestadora).
 
+# Resultado reportado: haiku sobre el set sintético (NO verificado por mí)
+
+Lo reportan la sesión `session_01Jnc7eVXwXyKjsou32zFdCn` y la orquestadora (2026-10-26), con una key de la organización del usuario; yo no la usé y **no repetí la medición**. No he visto el reporte completo.
+
+* Smoke (`eval/smoke_haiku.py`): OK.
+* Gate (67 casos sintéticos): precisión 1.00, recall 1.00, F1 1.00, 0 falsos positivos; el umbral de 0.95 **se cumple** sobre este set.
+* Extract: 95.1 % por fila (39 de 41).
+* Caída a regex: gate 1.5 %, extract 2.2 %.
+* Latencia: media 2.0 s, p95 3.2 s. Tokens: ~128 k de entrada, ~7.7 k de salida.
+* Comparación: regex en el mismo set, precisión 0.74 con 16 falsos positivos (no cumple).
+* Dos confusiones de tipo de evento en extract: `cancelar_filas` → `modificar_filas` y `cancelar_solicitud` → `estatus`.
+* Pendiente señalado por la sesión: los motivos de la caída a regex no se imprimen en `run_eval`.
+
+**Veredicto técnico (orquestadora): cumple el umbral en el sintético, pero NO se activa.** El set es sintético, tiene solo 21 negativos y lo escribió un modelo; falta el set real.
+
+**Cómo leerlo:** el set sintético tiene 21 negativos, así que una precisión de 1.00 es compatible con un error real bastante mayor. Este resultado **no basta para activar** haiku: hacen falta correos reales redactados (set real) y la corrida con key sobre ellos. Que el umbral se cumpla en el sintético no equivale a cumplirlo en producción.
+
 # Lo que NO está medido
 
-* **Haiku no se ha corrido**: sin key, ni `eval/smoke_haiku.py` ni la evaluación con `--provider haiku`. No hay ninguna cifra de precisión de haiku.
-* Solo hay set sintético; el set real no existe todavía (espera los correos de ejemplo). Con 67 casos y 21 negativos (16 FP + 5 TN), la precisión es una estimación gruesa: no sustituye una evaluación con correos reales.
+* Haiku sobre correos reales. No existe el set real (espera los correos de ejemplo).
+* Costo en USD: depende de `EVAL_PRICE_IN` y `EVAL_PRICE_OUT`; el reporte que me llegó solo da tokens.
+* El set sintético son 67 casos; es una estimación gruesa.
 * La línea base regex mide la lógica heredada, no una activación nueva: el umbral aplica a activar un proveedor externo.
