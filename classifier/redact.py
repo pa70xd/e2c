@@ -63,7 +63,9 @@ Criterio v2 (nombres y direcciones)
 * Saludos: se ignoran palabras de grupo ("equipo", "todos", "soporte"...) y cadenas;
   tras "Buen día," con coma solo se redacta si lo siguiente va en mayúscula.
 
-Limitaciones: nombres sin despedida ni etiqueta no se detectan sin un modelo;
+Limitaciones: nombres sin despedida ni etiqueta no se detectan sin un modelo (p. ej. "NOMBRE
+APELLIDO" solo en una línea entre líneas en blanco; o el valor de una columna de contacto
+en una tabla aplanada desalineada por una celda vacía);
 direcciones fiscales dentro de un bloque de firma se redactan junto al bloque
 (el bloque termina en la primera línea con palabras de acción, equipo, serie,
 folio, dirección de punto de venta o una línea larga de prosa).
@@ -283,11 +285,20 @@ def _coord_etiqueta(m: re.Match) -> str:
     return f"{m.group('et')}{m.group('sep')}{UBICACION}"
 
 
+_COORD_SUELTA = re.compile(r"(?m)^(?P<pre>[ \t>|]*)(?P<v>-?\d{1,3}\.\d{4,})[ \t]*$")
+
+
+def _coord_suelta(m: re.Match) -> str:
+    v = abs(float(m.group("v")))
+    return m.group("pre") + UBICACION if 14 <= v <= 33 or 86 <= v <= 118 else m.group(0)
+
+
 def _ubicaciones(t: str) -> str:
     t = _URL_MAPA.sub(UBICACION, t)
     t = _COORD_DMS.sub(UBICACION, t)
     t = _COORD_ETIQ.sub(_coord_etiqueta, t)
-    return _COORD_PAR.sub(_coord_par, t)
+    t = _COORD_PAR.sub(_coord_par, t)
+    return _COORD_SUELTA.sub(_coord_suelta, t)
 
 
 def _montos(t: str) -> str:
@@ -810,9 +821,7 @@ def _tablas(cuerpos):
                    and len(vals) < 12 * k and _tipo_columna(cuerpos[m]) is None):
                 vals.append(m)
                 m += 1
-            if len(vals) >= k and len(vals) % k:
-                vals = vals[:k]
-            if len(vals) < k:  # "valores" que son etiquetas: formulario etiqueta/valor, no esta tabla
+            if len(vals) < k or len(vals) % k:  # no cuadra: sin redacción por posición
                 vals = []
             filas = len(vals) // k if vals else 0
             for f in range(filas):

@@ -1165,3 +1165,35 @@ def test_r3_idempotencia():
     for texto in (FORMULARIO_BARRAS, "@JUAN PEREZ (GCM) COBRANZA\nDe: JUAN PEREZ - GRUPO NORTE <j@example.com>"):
         una = redact(texto)
         assert redact(una) == una
+
+
+# ----------------------------------------------------------------- ronda 4
+@pytest.mark.parametrize("entrada, esperado", [
+    ("19.432612", "[UBICACION]"),
+    ("-99.13321", "[UBICACION]"),
+    ("99.13321", "[UBICACION]"),
+    ("| 26.0612", "| [UBICACION]"),
+    ("> -98.3401", "> [UBICACION]"),
+    ("Nota\n19.4326\nfin", "Nota\n[UBICACION]\nfin"),
+])
+def test_r4_coordenada_suelta_en_su_linea(entrada, esperado):
+    assert redact(entrada) == esperado
+
+
+@pytest.mark.parametrize("texto", [
+    "5.1234", "45.6789", "150.1234", "19.43", "Total 19.4326 piezas", "-5.12345", "12.3456",
+])
+def test_r4_decimales_fuera_de_rango_o_con_texto_no_son_coordenada(texto):
+    assert redact(texto) == texto
+
+
+def test_r4_tabla_aplanada_que_no_cuadra_no_se_redacta_por_posicion():
+    # 3 encabezados y 4 líneas de valores: no es múltiplo -> solo reglas por patrón
+    entrada = "Contacto\nFolio\nFecha\nAna Ruiz\n12345678\nlunes\ntexto libre extra"
+    assert redact(entrada) == entrada
+    # el teléfono se redacta por patrón aunque la tabla no cuadre
+    assert redact("Teléfono\nFolio\nCalle\n5555550101\n12345678\nSur 3\nextra") == \
+        "Teléfono\nFolio\nCalle\n[TELEFONO]\n12345678\nSur 3\nextra"
+    # si cuadra, sí
+    assert redact("Contacto\nFolio\nFecha\nAna Ruiz\n12345678\nlunes") == \
+        "Contacto\nFolio\nFecha\n[ID]\n12345678\nlunes"
