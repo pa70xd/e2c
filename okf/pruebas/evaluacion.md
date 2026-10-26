@@ -88,7 +88,23 @@ Reporta `session_01XYEn1Va9jA5mi2dFpmyQfG` (2026-10-26; v1 = gate-v1/extract-v2,
 * Latencia media ~2.0-2.1 s, p95 3.2-3.6 s. Tokens de entrada de v2: +67 a +88 % frente a v1 (parte cacheada).
 * **Conclusión de la sesión:** v2 no mejora de forma medible (dentro del ruido). Persisten `imb-noos-01`, `hol-dup-01` y 2 casos `nueva_solicitud` → `modificar_filas`.
 * **Lectura:** sobre el set más difícil, haiku **no cumple** el umbral de 0.95. Además la caída a regex del gate (hasta 19.5 %) contamina la medición: parte de las respuestas que cuentan son de regex, no de haiku. La activación sigue sin autorizarse.
-* Pendiente señalado: `run_eval` no imprime falsos negativos, errores de tipo ni el motivo de la caída a regex.
+* ~~Pendiente: `run_eval` no imprime falsos negativos, errores de tipo ni el motivo de la caída a regex~~ Resuelto en la rama `claude/e2c-eval-diagnostico` (ver abajo).
+
+# Diagnóstico del evaluador (rama `claude/e2c-eval-diagnostico`, sin mergear)
+
+Commits `60d4376` y `719504c`, sobre `sintetico_v2`. Verificado en la rama: `pytest -q` → 798 passed, 48 skipped, 1 xfailed; `run_eval.py` ahora imprime falsos negativos, errores de `tipo_evento`, cada caída a regex (id, etapa, motivo) y métricas de gate **solo-proveedor** y **sin ambiguos**. Con regex en `sintetico_v2` comprobé que imprime "Gate sin casos ambiguos (37 casos)": precisión 0.5405, recall 1.0 (TP 20, FP 17, FN 0, TN 0), lo que confirma 4 casos ambiguos de 41. Regex en el set completo: TP 23, FP 18, TN 0.
+
+**Corrida de haiku v1 sobre `sintetico_v2`, reportada por la sesión (NO verificada por mí, necesita key):**
+
+* Gate: precisión 0.9167, recall 0.9565, **no cumple 0.95**.
+* **7 caídas a regex (17.1 %), todas por `gate:confianza_baja`**; 0 caídas de extract.
+* **Solo-haiku (34 casos, sin las caídas): precisión 1.00, recall 0.944.**
+* Extract: 18 de 21 filas.
+* Hipótesis descartada: `haiku_filas_no_cargadas`. Los 24 casos `reply` traen `thread_ctx.filas`.
+
+**Inferencia mía, no de la sesión:** las cifras sugieren que el incumplimiento de 0.95 viene de las respuestas de baja confianza que caen a regex (que acierta poco), no de errores de haiku en las que contesta. Habría que confirmarlo; cambiar `CLASSIFIER_MIN_CONFIDENCE` mueve esas caídas y también el riesgo de aceptar respuestas dudosas.
+
+**Pendiente de decisión:** ajustar el prompt o `CLASSIFIER_MIN_CONFIDENCE` (hoy 0.7). Ajustar sobre el mismo set que se mide infla el resultado; el umbral se fijó antes de evaluar ([decisiones](../riesgos/decisiones.md)).
 
 # Lo que NO está medido
 

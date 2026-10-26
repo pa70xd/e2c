@@ -259,6 +259,12 @@
 * La sesión `session_01XYEn1Va9jA5mi2dFpmyQfG` reporta 4 corridas (v1/v2 × sintetico/sintetico_v2); tabla completa en [pruebas/evaluacion.md](pruebas/evaluacion.md). Resumen: sobre `sintetico`, precisión de gate 0.9787 (v1) y 0.9783 (v2); sobre `sintetico_v2`, 0.9167 (v1) y 0.9200 (v2) → **no cumple 0.95**. v2 no mejora de forma medible. Caída a regex del gate hasta 19.5 % en `sintetico_v2`.
 * **No verificado por mí.** Hay una discrepancia sin explicar con la primera evaluación (1.00 vs 0.9787 en el mismo set). Rama `claude/e2c-prompt-v2` (`301461b`) sin mergear.
 
+## 2026-10-26 · eval-diagnostico: resumen
+
+* Rama `claude/e2c-eval-diagnostico` (`719504c`), sin mergear. Verificado: 798 passed, 48 skipped, 1 xfailed; el evaluador imprime FN, errores de tipo, caídas a regex y métricas solo-proveedor/sin ambiguos (probado con regex: 37 casos sin ambiguos).
+* Reporte de la sesión (no verificado, requiere key): haiku v1 sobre `sintetico_v2` gate 0.9167, 7 caídas a regex (17.1 %) todas `confianza_baja`; solo-haiku P 1.00, R 0.944; extract 18/21; hipótesis `filas_no_cargadas` descartada. Mi inferencia: el incumplimiento viene de las caídas, no de haiku; anotada como inferencia en [pruebas/evaluacion.md](pruebas/evaluacion.md).
+* Pendiente de decisión: ajustar prompt o `CLASSIFIER_MIN_CONFIDENCE` (0.7), con el riesgo de sobreajustar al set que se mide.
+
 ## 2026-10-24
 
 * Creación del bundle OKF del repositorio `e2c` (rama `claude/admiring-lovelace-3oh7g0`).
