@@ -243,6 +243,11 @@
 * La orquestadora confirma la primera evaluación real de haiku (set sintético, 67 casos): gate P=1.00/R=1.00/0 FP, extract 39/41 con 2 confusiones de tipo (`cancelar_filas`→`modificar_filas`, `cancelar_solicitud`→`estatus`), latencia media 2.0 s (p95 3.2 s), regex 0.74. Veredicto: cumple en el sintético, **NO se activa** (21 negativos, escrito por un modelo, falta el set real). Sigue sin ser verificado por mí.
 * Documentado en [pruebas/evaluacion.md](pruebas/evaluacion.md), runbook y `despliegue.md`: la plataforma descarta `ANTHROPIC_*`, la key va en `E2C_ANTHROPIC_API_KEY` y se pasa con `env -u ANTHROPIC_BASE_URL ANTHROPIC_API_KEY="$E2C_ANTHROPIC_API_KEY"` (solo el nombre de la variable).
 
+## 2026-10-26 · eval-set-v2: resumen
+
+* Rama `claude/e2c-eval-set-v2` (`225b457`), sin mergear. Verificado: `sintetico_v2.jsonl` con 41 casos, 18 negativos y 21 filas esperadas; regex: precisión de gate 0.5610 (NO CUMPLE), extract 0/21. Los "4 ambiguos" y que se escribió sin leer los prompts son afirmación de la sesión.
+* Haiku no corrido sobre v2. Documentado en [pruebas/evaluacion.md](pruebas/evaluacion.md).
+
 ## 2026-10-24
 
 * Creación del bundle OKF del repositorio `e2c` (rama `claude/admiring-lovelace-3oh7g0`).

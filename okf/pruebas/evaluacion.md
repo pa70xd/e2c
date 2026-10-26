@@ -63,9 +63,18 @@ Lo reportan la sesión `session_01Jnc7eVXwXyKjsou32zFdCn` y la orquestadora (202
 
 **Cómo leerlo:** el set sintético tiene 21 negativos, así que una precisión de 1.00 es compatible con un error real bastante mayor. Este resultado **no basta para activar** haiku: hacen falta correos reales redactados (set real) y la corrida con key sobre ellos. Que el umbral se cumpla en el sintético no equivale a cumplirlo en producción.
 
+# Set sintético v2 (rama `claude/e2c-eval-set-v2`, sin mergear)
+
+Rama `claude/e2c-eval-set-v2` (commit `225b457`): `eval/sets/sintetico_v2.jsonl`, 41 casos inventados "difíciles" con 18 negativos y 21 filas esperadas (verifiqué esas tres cifras). La sesión dice que son 4 ambiguos y que lo escribió sin leer los prompts ni `haiku.py`, para no sesgarlo; eso no lo puedo comprobar.
+
+* **Regex (medido por mí en la rama):** precisión de gate 0.5610, recall 1.0000, F1 0.7188 — **no cumple** 0.95; extract 0 de 21 filas. Regex marca todo como OS.
+* **Haiku no se ha corrido** sobre v2. Es la medición que más falta: v2 tiene casi el doble de proporción de negativos (18 de 41 frente a 21 de 67) y fue escrito sin ver el prompt.
+* La sesión no pudo correr `pytest` en su contenedor (falta `msgraph`); el evaluador sí corrió en mi entorno.
+* Sigue siendo sintético: no sustituye el set real.
+
 # Lo que NO está medido
 
-* Haiku sobre correos reales. No existe el set real (espera los correos de ejemplo).
+* Haiku sobre `sintetico_v2` y sobre correos reales. No existe el set real (espera los correos de ejemplo).
 * Costo en USD: depende de `EVAL_PRICE_IN` y `EVAL_PRICE_OUT`; el reporte que me llegó solo da tokens.
 * El set sintético son 67 casos; es una estimación gruesa.
 * La línea base regex mide la lógica heredada, no una activación nueva: el umbral aplica a activar un proveedor externo.
